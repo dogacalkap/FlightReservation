@@ -1,0 +1,38 @@
+@* Views/Flights/Index.cshtml *@
+@model IEnumerable<FlightReservation.Models.Flight>
+
+@{
+    ViewData["Title"] = "Flights";
+}
+
+<h1>Flights</h1>
+
+<p>
+    <a asp-action="Create" class="btn btn-primary">New Flight</a>
+</p>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Flight Number</th>
+            <th>From</th>
+            <th>To</th>
+            <th>Departure</th>
+            <th>Arrival</th>
+            <th>Price</th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model)
+{
+        <tr>
+            <td>@item.FlightNumber</td>
+            <td>@item.FromAirport?.Code</td>
+            <td>@item.ToAirport?.Code</td>
+            <td>@item.DepartureTime</td>
+            <td>@item.ArrivalTime</td>
+            <td>@item.Price</td>
+        </tr>
+}
+    </tbody>
+</table>

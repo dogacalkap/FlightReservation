@@ -1,0 +1,33 @@
+@model IEnumerable<FlightReservation.Models.Airport>
+
+@{
+    ViewData["Title"] = "Airports";
+}
+
+<h1>Airports</h1>
+
+<p>
+    <a asp-action="Create" class="btn btn-primary">New Airport</a>
+</p>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Code</th>
+            <th>Name</th>
+            <th>City</th>
+            <th>Country</th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model)
+{
+        <tr>
+            <td>@item.Code</td>
+            <td>@item.Name</td>
+            <td>@item.City</td>
+            <td>@item.Country</td>
+        </tr>
+}
+    </tbody>
+</table>
