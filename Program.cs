@@ -5,6 +5,17 @@ AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowAngular",
+        policy =>
+        {
+            // Angular uygulamasının adresi (localhost:4200)
+            policy.WithOrigins("http://localhost:4200") 
+                  .AllowAnyHeader()
+                  .AllowAnyMethod();
+        });
+});
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 
@@ -25,8 +36,13 @@ if (!app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 app.UseStaticFiles();
 
+// 1. Rotalama başlar.
 app.UseRouting();
 
+// 2. CORS uygulaması: Routing'den hemen sonra, Authorization'dan önce yerleştirilir.
+app.UseCors("AllowAngular"); 
+
+// 3. Yetkilendirme kontrol edilir.
 app.UseAuthorization();
 
 app.MapControllerRoute(

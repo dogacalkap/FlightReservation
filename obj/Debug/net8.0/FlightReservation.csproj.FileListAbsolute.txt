@@ -102,3 +102,4 @@
 /Users/doga/Projects/FlightReservation/obj/Debug/net8.0/FlightReservation.pdb
 /Users/doga/Projects/FlightReservation/obj/Debug/net8.0/FlightReservation.genruntimeconfig.cache
 /Users/doga/Projects/FlightReservation/obj/Debug/net8.0/ref/FlightReservation.dll
+/Users/doga/Projects/FlightReservation/obj/Debug/net8.0/FlightReservation.sourcelink.json
