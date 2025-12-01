@@ -1,64 +1,52 @@
 @model FlightReservation.Models.Flight
-
 @using Microsoft.AspNetCore.Mvc.Rendering
-
 @{
     ViewData["Title"] = "Create Flight";
     var airports = ViewData["Airports"] as SelectList;
 }
 
-<h1>Create Flight</h1>
+<h2>Create Flight</h2>
 
-<form asp-action="Create" method="post">
-    <!-- TÜM MODEL HATALARINI BURADA GÖRECEĞİZ -->
-    <div asp-validation-summary="All" class="text-danger"></div>
+<form asp-action="Create" method="post" class="mt-4">
 
-    <div class="form-group">
+    <div asp-validation-summary="All" class="text-danger mb-3"></div>
+
+    <div class="form-group mb-3">
         <label asp-for="FlightNumber"></label>
-        <input asp-for="FlightNumber" class="form-control" />
-        <span asp-validation-for="FlightNumber" class="text-danger"></span>
+        <input asp-for="FlightNumber" class="form-control"/>
     </div>
 
-    <div class="form-group">
-        <label asp-for="FromAirportId">From Airport</label>
-        <select asp-for="FromAirportId" class="form-control"
-                asp-items="airports">
+    <div class="form-group mb-3">
+        <label>From Airport</label>
+        <select asp-for="FromAirportId" asp-items="airports" class="form-control">
             <option value="">Select...</option>
         </select>
-        <span asp-validation-for="FromAirportId" class="text-danger"></span>
     </div>
 
-    <div class="form-group">
-        <label asp-for="ToAirportId">To Airport</label>
-        <select asp-for="ToAirportId" class="form-control"
-                asp-items="airports">
+    <div class="form-group mb-3">
+        <label>To Airport</label>
+        <select asp-for="ToAirportId" asp-items="airports" class="form-control">
             <option value="">Select...</option>
         </select>
-        <span asp-validation-for="ToAirportId" class="text-danger"></span>
     </div>
 
-    <div class="form-group">
-        <label asp-for="DepartureTime"></label>
-        <input asp-for="DepartureTime" type="datetime-local" class="form-control" />
-        <span asp-validation-for="DepartureTime" class="text-danger"></span>
+    <div class="row mb-3">
+        <div class="col">
+            <label>Departure</label>
+            <input asp-for="DepartureTime" type="datetime-local" class="form-control"/>
+        </div>
+
+        <div class="col">
+            <label>Arrival</label>
+            <input asp-for="ArrivalTime" type="datetime-local" class="form-control"/>
+        </div>
     </div>
 
-    <div class="form-group">
-        <label asp-for="ArrivalTime"></label>
-        <input asp-for="ArrivalTime" type="datetime-local" class="form-control" />
-        <span asp-validation-for="ArrivalTime" class="text-danger"></span>
+    <div class="form-group mb-3">
+        <label>Price (₺)</label>
+        <input asp-for="Price" type="number" class="form-control"/>
     </div>
 
-    <div class="form-group">
-        <label asp-for="Price"></label>
-        <input asp-for="Price" class="form-control" type="number" step="0.01" />
-        <span asp-validation-for="Price" class="text-danger"></span>
-    </div>
-
-    <button type="submit" class="btn btn-primary">Save</button>
-    <a asp-action="Index" class="btn btn-secondary">Back to List</a>
+    <button class="btn btn-primary">Create</button>
+    <a asp-action="Index" class="btn btn-secondary">Back</a>
 </form>
-
-@section Scripts {
-    @{ await Html.RenderPartialAsync("_ValidationScriptsPartial"); }
-}

@@ -16,7 +16,10 @@ namespace FlightReservation.Controllers.Api
             _context = context;
         }
 
+        // ------------------------------------------------------------
         // GET: api/FlightsApi
+        // Şehir + Kod + Ad bilgileri ile uçuş listesi döner
+        // ------------------------------------------------------------
         [HttpGet]
         public async Task<ActionResult<IEnumerable<object>>> GetFlights()
         {
@@ -27,12 +30,28 @@ namespace FlightReservation.Controllers.Api
                 {
                     f.Id,
                     f.FlightNumber,
+
+                    // IDs
                     f.FromAirportId,
                     f.ToAirportId,
+
+                    // Codes
                     FromAirportCode = f.FromAirport.Code,
                     ToAirportCode = f.ToAirport.Code,
+
+                    // Names
+                    FromAirportName = f.FromAirport.Name,
+                    ToAirportName = f.ToAirport.Name,
+
+                    // Cities
+                    FromAirportCity = f.FromAirport.City,
+                    ToAirportCity = f.ToAirport.City,
+
+                    // Times
                     f.DepartureTime,
                     f.ArrivalTime,
+
+                    // Price
                     f.Price
                 })
                 .ToListAsync();
@@ -40,7 +59,10 @@ namespace FlightReservation.Controllers.Api
             return Ok(flights);
         }
 
-        // GET: api/FlightsApi/5
+        // ------------------------------------------------------------
+        // GET: api/FlightsApi/{id}
+        // Tek uçuş detayını döner
+        // ------------------------------------------------------------
         [HttpGet("{id}")]
         public async Task<ActionResult<object>> GetFlight(int id)
         {
@@ -52,10 +74,19 @@ namespace FlightReservation.Controllers.Api
                 {
                     f.Id,
                     f.FlightNumber,
+
                     f.FromAirportId,
                     f.ToAirportId,
+
                     FromAirportCode = f.FromAirport.Code,
                     ToAirportCode = f.ToAirport.Code,
+
+                    FromAirportName = f.FromAirport.Name,
+                    ToAirportName = f.ToAirport.Name,
+
+                    FromAirportCity = f.FromAirport.City,
+                    ToAirportCity = f.ToAirport.City,
+
                     f.DepartureTime,
                     f.ArrivalTime,
                     f.Price
@@ -68,7 +99,10 @@ namespace FlightReservation.Controllers.Api
             return Ok(flight);
         }
 
+        // ------------------------------------------------------------
         // POST: api/FlightsApi
+        // Admin – Create flight
+        // ------------------------------------------------------------
         [HttpPost]
         public async Task<ActionResult<Flight>> CreateFlight([FromBody] Flight flight)
         {
@@ -81,7 +115,10 @@ namespace FlightReservation.Controllers.Api
             return CreatedAtAction(nameof(GetFlight), new { id = flight.Id }, flight);
         }
 
-        // PUT: api/FlightsApi/5
+        // ------------------------------------------------------------
+        // PUT: api/FlightsApi/{id}
+        // Admin – Update flight
+        // ------------------------------------------------------------
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateFlight(int id, [FromBody] Flight flight)
         {
@@ -109,7 +146,10 @@ namespace FlightReservation.Controllers.Api
             return NoContent();
         }
 
-        // DELETE: api/FlightsApi/5
+        // ------------------------------------------------------------
+        // DELETE: api/FlightsApi/{id}
+        // Admin – Delete flight
+        // ------------------------------------------------------------
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteFlight(int id)
         {

@@ -19,10 +19,15 @@ namespace FlightReservation.Controllers.Api
         // GET: api/Airportsapi
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Airport>>> GetAirports()
-        {
-            var airports = await _context.Airports.ToListAsync();
+     {
+            var airports = await _context.Airports
+            .OrderBy(a => a.City)  
+            .ThenBy(a => a.Name)    
+            .ToListAsync();
+
             return Ok(airports);
-        }
+    }
+
 
         // GET: api/Airportsapi/5
         [HttpGet("{id}")]

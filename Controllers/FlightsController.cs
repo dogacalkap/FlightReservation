@@ -31,14 +31,7 @@ namespace FlightReservation.Controllers
         // GET: /Flights/Create
         public async Task<IActionResult> Create()
         {
-            // Havalimanlarını veritabanından çek
-            var airports = await _context.Airports
-                .Select(a => new { a.Id, a.Code })
-                .ToListAsync();
-
-            // Dropdown için listeyi ViewData'ya koy
-            ViewData["Airports"] = new SelectList(airports, "Id", "Code");
-
+            await LoadAirportDropdowns();
             return View();
         }
 
@@ -47,22 +40,31 @@ namespace FlightReservation.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(Flight flight)
         {
+            // Airport validation
+            if (flight.FromAirportId == flight.ToAirportId)
+                ModelState.AddModelError("", "Departure and arrival airports cannot be the same.");
+
+            if (flight.ArrivalTime <= flight.DepartureTime)
+                ModelState.AddModelError("", "Arrival time must be after departure time.");
+
             if (!ModelState.IsValid)
             {
-                // Hata olursa dropdown tekrar dolu gelsin diye
-                var airports = await _context.Airports
-                    .Select(a => new { a.Id, a.Code })
-                    .ToListAsync();
-
-                ViewData["Airports"] = new SelectList(airports, "Id", "Code");
-
+                await LoadAirportDropdowns();
                 return View(flight);
             }
 
-            // Her şey yolundaysa flight kaydını ekle
             _context.Add(flight);
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
+        }
+
+        private async Task LoadAirportDropdowns()
+        {
+            var airports = await _context.Airports
+                .Select(a => new { a.Id, a.Code })
+                .ToListAsync();
+
+            ViewData["Airports"] = new SelectList(airports, "Id", "Code");
         }
     }
 }
