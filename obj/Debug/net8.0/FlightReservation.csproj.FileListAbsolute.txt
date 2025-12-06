@@ -103,3 +103,16 @@
 /Users/doga/Projects/FlightReservation/obj/Debug/net8.0/FlightReservation.genruntimeconfig.cache
 /Users/doga/Projects/FlightReservation/obj/Debug/net8.0/ref/FlightReservation.dll
 /Users/doga/Projects/FlightReservation/obj/Debug/net8.0/FlightReservation.sourcelink.json
+/Users/doga/Projects/FlightReservation/bin/Debug/net8.0/flight-client/angular.json
+/Users/doga/Projects/FlightReservation/bin/Debug/net8.0/flight-client/package-lock.json
+/Users/doga/Projects/FlightReservation/bin/Debug/net8.0/flight-client/package.json
+/Users/doga/Projects/FlightReservation/bin/Debug/net8.0/flight-client/src/assets/lottie/flight.json
+/Users/doga/Projects/FlightReservation/bin/Debug/net8.0/flight-client/src/assets/lottie/flightAnimation.json
+/Users/doga/Projects/FlightReservation/bin/Debug/net8.0/flight-client/tsconfig.app.json
+/Users/doga/Projects/FlightReservation/bin/Debug/net8.0/flight-client/tsconfig.json
+/Users/doga/Projects/FlightReservation/bin/Debug/net8.0/flight-client/tsconfig.spec.json
+/Users/doga/Projects/FlightReservation/bin/Debug/net8.0/flight-client/src/assets/lottie/bag-underseat.json
+/Users/doga/Projects/FlightReservation/bin/Debug/net8.0/flight-client/src/assets/lottie/cabin-bag.json
+/Users/doga/Projects/FlightReservation/bin/Debug/net8.0/flight-client/src/assets/lottie/confetti.json
+/Users/doga/Projects/FlightReservation/bin/Debug/net8.0/flight-client/src/assets/lottie/large-bag.json
+/Users/doga/Projects/FlightReservation/bin/Debug/net8.0/flight-client/src/assets/lottie/shine.json

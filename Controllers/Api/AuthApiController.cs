@@ -25,6 +25,9 @@ namespace FlightReservation.Controllers.Api
             if (string.IsNullOrWhiteSpace(user.Email) || string.IsNullOrWhiteSpace(user.Password))
                 return BadRequest("Email and password cannot be empty.");
 
+            if (user.Password.Length < 6)
+            return BadRequest(new { error = "Şifre en az 6 karakter olmalıdır." });
+
             if (await _context.Users.AnyAsync(u => u.Email == user.Email))
                 return BadRequest("This email is already registered.");
 
@@ -87,6 +90,9 @@ namespace FlightReservation.Controllers.Api
 
             if (string.IsNullOrWhiteSpace(dto.NewPassword))
                 return BadRequest("New password cannot be empty.");
+
+            if (dto.NewPassword.Length < 6)
+                return BadRequest(new { error = "Yeni şifre en az 6 karakter olmalıdır." });
 
             var user = await _context.Users
                 .FirstOrDefaultAsync(u => u.Email == dto.Email && u.TCKN == dto.TCKN);

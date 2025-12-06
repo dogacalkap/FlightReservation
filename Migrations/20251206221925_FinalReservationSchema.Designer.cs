@@ -3,6 +3,7 @@ using System;
 using FlightReservation.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace FlightReservation.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20251206221925_FinalReservationSchema")]
+    partial class FinalReservationSchema
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -246,16 +249,12 @@ namespace FlightReservation.Migrations
                     b.Property<int>("FlightId")
                         .HasColumnType("integer");
 
-                    b.Property<bool>("IsReserved")
+                    b.Property<bool>("IsOccupied")
                         .HasColumnType("boolean");
-
-                    b.Property<DateTime>("ReservedAt")
-                        .HasColumnType("timestamp without time zone");
 
                     b.Property<string>("SeatNumber")
                         .IsRequired()
-                        .HasMaxLength(4)
-                        .HasColumnType("character varying(4)");
+                        .HasColumnType("text");
 
                     b.Property<int?>("UserId")
                         .HasColumnType("integer");
@@ -267,36 +266,6 @@ namespace FlightReservation.Migrations
                     b.HasIndex("UserId");
 
                     b.ToTable("SeatOccupations");
-                });
-
-            modelBuilder.Entity("FlightReservation.Models.SeatReservation", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("FlightId")
-                        .HasColumnType("integer");
-
-                    b.Property<DateTime>("ReservedAt")
-                        .HasColumnType("timestamp without time zone");
-
-                    b.Property<string>("SeatNumber")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<int>("UserId")
-                        .HasColumnType("integer");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("FlightId");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("SeatReservations");
                 });
 
             modelBuilder.Entity("FlightReservation.Models.Ticket", b =>
@@ -468,25 +437,6 @@ namespace FlightReservation.Migrations
                     b.HasOne("FlightReservation.Models.User", "User")
                         .WithMany()
                         .HasForeignKey("UserId");
-
-                    b.Navigation("Flight");
-
-                    b.Navigation("User");
-                });
-
-            modelBuilder.Entity("FlightReservation.Models.SeatReservation", b =>
-                {
-                    b.HasOne("FlightReservation.Models.Flight", "Flight")
-                        .WithMany()
-                        .HasForeignKey("FlightId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("FlightReservation.Models.User", "User")
-                        .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
 
                     b.Navigation("Flight");
 
