@@ -116,3 +116,7 @@
 /Users/doga/Projects/FlightReservation/bin/Debug/net8.0/flight-client/src/assets/lottie/confetti.json
 /Users/doga/Projects/FlightReservation/bin/Debug/net8.0/flight-client/src/assets/lottie/large-bag.json
 /Users/doga/Projects/FlightReservation/bin/Debug/net8.0/flight-client/src/assets/lottie/shine.json
+/Users/doga/Projects/FlightReservation/bin/Debug/net8.0/flight-client/src/assets/lottie/business.json
+/Users/doga/Projects/FlightReservation/bin/Debug/net8.0/flight-client/src/assets/lottie/discount.json
+/Users/doga/Projects/FlightReservation/bin/Debug/net8.0/flight-client/src/assets/lottie/plane.json
+/Users/doga/Projects/FlightReservation/bin/Debug/net8.0/flight-client/src/assets/lottie/student.json

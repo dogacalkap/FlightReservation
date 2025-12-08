@@ -19,6 +19,10 @@ namespace FlightReservation.Data
         public DbSet<ExtraReward> ExtraRewards { get; set; }
         public DbSet<BaggageSelection> BaggageSelections { get; set; }
         public DbSet<Reservation> Reservations { get; set; }
+        public DbSet<ContactMessage> ContactMessages { get; set; }
+        public DbSet<Message> Messages { get; set; }
+
+
 
 
 

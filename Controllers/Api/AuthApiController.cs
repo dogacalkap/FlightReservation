@@ -58,7 +58,12 @@ namespace FlightReservation.Controllers.Api
             if (user.Password != dto.Password)
                 return Unauthorized("Incorrect password.");
 
-            return Ok(new { message = "Login successful.", user });
+            return Ok(new { 
+            userId = user.Id,
+            email = user.Email,
+            fullName = user.FullName
+            });
+
         }
 
         // ------------------------------------------------------
@@ -105,6 +110,8 @@ namespace FlightReservation.Controllers.Api
 
             return Ok(new { message = "Password has been updated successfully." });
         }
+
+
     }
 
     // DTOs

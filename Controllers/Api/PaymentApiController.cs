@@ -63,6 +63,31 @@ namespace FlightReservation.Controllers.Api
 
                 _context.PaymentCards.Add(card);
             }
+            // -------------------------------------------
+// ✔ KOLTUK REZERVASYONU (FlightSeat tablosuna kayıt)
+// -------------------------------------------
+        var seat = await _context.SeatOccupations
+        .FirstOrDefaultAsync(s => s.FlightId == dto.FlightId && s.SeatNumber == dto.SeatNumber);
+
+            if (seat == null)
+        {
+            seat = new SeatOccupation
+        {
+            FlightId = dto.FlightId,
+            SeatNumber = dto.SeatNumber,
+            IsReserved = true,
+            UserId = dto.UserId
+            };
+
+        _context.SeatOccupations.Add(seat);
+        }
+        else
+        {
+            seat.IsReserved = true;
+            seat.UserId = dto.UserId;
+        }
+
+
 
             // 🎫 TICKET CREATE
             var ticket = new Ticket
@@ -102,6 +127,7 @@ namespace FlightReservation.Controllers.Api
     public class PaymentDto
     {
         public int UserId { get; set; }
+        
         public int FlightId { get; set; }
         public string SeatNumber { get; set; }
         public int BaggageCount { get; set; }
