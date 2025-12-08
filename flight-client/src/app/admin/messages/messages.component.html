@@ -1,0 +1,30 @@
+<h2 class="title">İletişim Mesajları</h2>
+
+<div *ngIf="loading" class="loading">Mesajlar yükleniyor...</div>
+
+<div *ngIf="!loading && messages.length === 0" class="no-data">
+  Henüz mesaj bulunmuyor.
+</div>
+
+<div class="messages-grid">
+  
+  <div *ngFor="let m of messages" class="message-card">
+
+    <div class="card-header">
+      <h3>{{ m.fullName }}</h3>
+      <span class="date">{{ m.createdAt | date:'dd.MM.yyyy HH:mm' }}</span>
+    </div>
+
+    <p class="email"><i class="bi bi-envelope"></i> {{ m.email }}</p>
+
+    <p class="subject">
+      <strong>Konu:</strong> {{ m.subject }}
+    </p>
+
+    <p class="text">
+      {{ m.message }}
+    </p>
+
+  </div>
+
+</div>

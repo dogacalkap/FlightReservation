@@ -1,0 +1,97 @@
+<div style="color: black;">
+<div>
+  <h2>Flights</h2>
+
+  <div *ngIf="error" style="color:red; margin-bottom:10px;">
+    {{ error }}
+  </div>
+
+  <form [formGroup]="form" (ngSubmit)="saveFlight()" style="margin-bottom:20px;">
+    <div style="margin-bottom:8px;">
+      <label>Flight Number:</label>
+      <input type="text" formControlName="flightNumber">
+    </div>
+
+    <div style="margin-bottom:8px;">
+      <label>From Airport:</label>
+      <select formControlName="fromAirportId">
+        <option [ngValue]="null">-- Select --</option>
+        <option *ngFor="let a of airports" [ngValue]="a.id">
+          {{ a.code }} - {{ a.city }}
+        </option>
+      </select>
+    </div>
+
+    <div style="margin-bottom:8px;">
+      <label>To Airport:</label>
+      <select formControlName="toAirportId">
+        <option [ngValue]="null">-- Select --</option>
+        <option *ngFor="let a of airports" [ngValue]="a.id">
+          {{ a.code }} - {{ a.city }}
+        </option>
+      </select>
+    </div>
+
+    <div style="margin-bottom:8px;">
+      <label>Departure Time:</label>
+      <input type="datetime-local" formControlName="departureTime">
+    </div>
+
+    <div style="margin-bottom:8px;">
+      <label>Arrival Time:</label>
+      <input type="datetime-local" formControlName="arrivalTime">
+    </div>
+
+    <div style="margin-bottom:8px;">
+      <label>Price:</label>
+      <input type="number" formControlName="price">
+    </div>
+
+    <button type="submit">
+      {{ editId === null ? 'Create Flight' : 'Update Flight' }}
+    </button>
+
+    <button type="button" (click)="clearForm()" style="margin-left:10px;">
+      Clear
+    </button>
+  </form>
+
+  <div *ngIf="loading">Loading...</div>
+
+  <table *ngIf="!loading" border="1" cellpadding="8">
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Flight No</th>
+        <th>From</th>
+        <th>To</th>
+        <th>Departure</th>
+        <th>Arrival</th>
+        <th>Price</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+
+    <tbody>
+      <tr *ngFor="let f of flights">
+        <td>{{ f.id }}</td>
+        <td>{{ f.flightNumber }}</td>
+        <td>
+          {{ f.fromAirportCode || f.fromAirportId }}
+        </td>
+        <td>
+          {{ f.toAirportCode || f.toAirportId }}
+        </td>
+        <td>{{ f.departureTime | date:'short' }}</td>
+        <td>{{ f.arrivalTime | date:'short' }}</td>
+        <td>{{ f.price }}</td>
+        <td>
+          <button (click)="editFlight(f)">Edit</button>
+          <button (click)="onDeleteClick($event)" [attr.data-id]="f.id">
+            Delete
+          </button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>

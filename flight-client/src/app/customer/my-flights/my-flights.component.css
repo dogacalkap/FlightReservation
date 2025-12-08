@@ -1,0 +1,96 @@
+.title {
+  font-size: 28px;
+  font-weight: 700;
+  margin-bottom: 25px;
+  text-align: center;
+}
+
+.empty {
+  text-align: center;
+  margin-top: 50px;
+  font-size: 18px;
+  opacity: 0.7;
+}
+
+.empty i {
+  display: block;
+  font-size: 40px;
+  margin-bottom: 10px;
+  color: #777;
+}
+
+/* CONTAINER */
+.tickets-container {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+/* TICKET CARD */
+.ticket-card {
+  background: white;
+  border-radius: 16px;
+  padding: 22px;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.08);
+  border-left: 6px solid #6a5dfc;
+  animation: fadeIn 0.4s ease-out;
+}
+
+/* HEADER */
+.ticket-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 14px;
+}
+
+.route {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.route .arrow {
+  margin: 0 4px;
+  font-size: 20px;
+}
+
+.flight-number {
+  font-size: 14px;
+  opacity: 0.7;
+}
+
+/* BODY */
+.ticket-body p {
+  margin: 6px 0;
+  font-size: 15px;
+}
+
+/* FOOTER */
+.ticket-footer {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 14px;
+  opacity: 0.7;
+}
+
+hr {
+  margin: 12px 0;
+  opacity: 0.2;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

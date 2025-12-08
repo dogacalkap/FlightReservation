@@ -1,0 +1,121 @@
+/* ========================================= */
+/*                 GENEL                     */
+/* ========================================= */
+.title {
+  font-size: 28px;
+  margin-bottom: 25px;
+  font-weight: 600;
+}
+
+/* ========================================= */
+/*              BİLET KARTI                  */
+/* ========================================= */
+.ticket-card {
+  width: 100%;
+  max-width: 900px;
+  margin-bottom: 25px;
+  display: flex;
+  justify-content: space-between;
+  padding: 25px;
+  border-radius: 20px;
+  background: #ffffffd1;
+  backdrop-filter: blur(10px);
+  box-shadow: 0 10px 25px rgba(0,0,0,0.12);
+  border: 3px solid #b388ff; /* Mor premium çerçeve */
+  box-shadow: 0 10px 25px rgba(179, 136, 255, 0.3);
+}
+
+.ticket-left {
+  width: 60%;
+}
+
+.ticket-right {
+  width: 35%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.ticket-img {
+  width: 90%;
+  opacity: 0.85;
+}
+
+.info-row {
+  display: flex;
+  margin: 8px 0;
+}
+
+.label {
+  width: 120px;
+  color: #555;
+}
+
+.value {
+  font-weight: 600;
+}
+
+.price-row {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 18px;
+  font-size: 20px;
+}
+
+.price {
+  color: #d87f00;
+  font-weight: bold;
+}
+
+/* ========================================= */
+/*            KART BİLGİLERİ FORMU           */
+/* ========================================= */
+.payment-card {
+  width: 100%;
+  max-width: 900px;
+  padding: 25px;
+  border-radius: 20px;
+  background: #ffffff;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+  margin-bottom: 40px;
+}
+
+.payment-card input {
+  width: 100%;
+  padding: 12px;
+  margin-top: 5px;
+  margin-bottom: 15px;
+  border-radius: 12px;
+  border: 1px solid #ddd;
+  font-size: 16px;
+}
+
+.row-2 {
+  display: flex;
+  gap: 20px;
+}
+
+.checkbox-row {
+  margin-top: 10px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.pay-btn {
+  margin-top: 20px;
+  width: 100%;
+  padding: 14px;
+  background: linear-gradient(135deg, #ff0066, #ff8a00);
+  color: white;
+  border: none;
+  border-radius: 14px;
+  font-size: 18px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.result {
+  margin-top: 15px;
+  font-size: 16px;
+}

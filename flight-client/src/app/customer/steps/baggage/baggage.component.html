@@ -1,0 +1,88 @@
+<h2 class="title">Bagaj Seçimi</h2>
+
+<div class="banner">
+  <h3>Bagaj İhtiyacınız İçin Teklifimizi Kaçırmayın!</h3>
+  <p>
+    Seyahatinizde size eşlik edecek ihtiyaçlarınız için havalimanında daha fazla ücret ödemeyin.
+    Bagajınızı şimdi ekleyin, %20 indirim avantajını kaçırmayın!
+  </p>
+</div>
+
+<div class="baggage-cards">
+
+  <!-- Card 1 -->
+  <div class="card">
+    <ng-lottie 
+      [options]="{ path: bagUnderSeat, loop: true }" 
+      class="lottie">
+    </ng-lottie>
+
+    <h4>El Çantası</h4>
+    <ul>
+      <li>40×30×15 cm boyutlarında</li>
+      <li>En fazla 4 kg</li>
+      <li>Yalnızca 1 adet</li>
+    </ul>
+  </div>
+
+  <!-- Card 2 -->
+  <div class="card">
+    <ng-lottie 
+      [options]="{ path: cabinBag, loop: true }" 
+      class="lottie">
+    </ng-lottie>
+
+    <h4>Kabin Bagajı</h4>
+    <ul>
+      <li>55×40×23 cm boyutlarında</li>
+      <li>En fazla 8 kg</li>
+      <li>1 adet</li>
+    </ul>
+  </div>
+
+  <!-- Card 3 -->
+  <div class="card">
+    <ng-lottie 
+      [options]="{ path: largeBag, loop: true }"
+      class="lottie">
+    </ng-lottie>
+
+    <h4>Uçak Altı Bagaj</h4>
+    <ul>
+      <li>Parça başı 32 kg'a kadar</li>
+      <li>Birden fazla parça alabilirsiniz</li>
+      <li>Bagaj teslim alanında alınır</li>
+    </ul>
+  </div>
+
+</div>
+
+<!-- ===================== -->
+<!--   BAGAJ SEÇİMİ BÖLÜMÜ -->
+<!-- ===================== -->
+
+<div class="checked-baggage-box">
+
+  <h3>Uçak Altı Bagaj Seçimi</h3>
+
+  <div class="baggage-select-row">
+
+    <button class="counter-btn" (click)="decrease()">−</button>
+
+    <span class="baggage-count">{{ baggageCount }}</span>
+
+    <button class="counter-btn" (click)="increase()">+</button>
+
+    <span class="price">{{ baggageCount * baggagePrice }} TRY</span>
+
+  </div>
+
+  <div class="info">
+    Ekstra her bir bagaj için 32 kg'a kadar taşıma hakkı tanımlanır.
+  </div>
+
+</div>
+
+<div class="continue-wrapper">
+  <button class="continue-btn" (click)="continue()">Devam Et</button>
+</div>

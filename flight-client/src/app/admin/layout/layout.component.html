@@ -1,0 +1,48 @@
+<div class="admin-wrapper">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="sidebar-header">
+      <h3>Admin Panel</h3>
+    </div>
+
+    <nav class="menu">
+
+      <!-- Airports -->
+      <a routerLink="/admin/airports" routerLinkActive="active">
+        <i class="bi bi-building"></i>
+        Airports
+      </a>
+
+      <!-- Flights -->
+      <a routerLink="/admin/flights" routerLinkActive="active">
+        <i class="bi bi-airplane"></i>
+        Flights
+      </a>
+
+      <!-- Messages (YENİ EKLEDİK) -->
+      <a routerLink="/admin/messages" routerLinkActive="active">
+        <i class="bi bi-envelope"></i>
+        Messages
+      </a>
+
+    </nav>
+
+    <button class="logout-btn" (click)="logout()">
+      <i class="bi bi-box-arrow-right"></i>
+      Logout
+    </button>
+  </aside>
+
+  <!-- CONTENT -->
+  <main class="content">
+    <nav class="topbar">
+      <span>Admin Dashboard</span>
+    </nav>
+
+    <section class="page">
+      <router-outlet></router-outlet>
+    </section>
+  </main>
+
+</div>

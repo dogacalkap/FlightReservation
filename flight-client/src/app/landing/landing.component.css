@@ -1,0 +1,141 @@
+/* MAIN CONTAINER */
+.landing-container {
+  width: 100%;
+  height: 100vh;
+  background: #fff7f4;
+  position: relative;
+  overflow: hidden;
+  font-family: 'Inter', sans-serif;
+}
+
+/* NAVBAR */
+.navbar {
+  width: 100%;
+  padding: 25px 60px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.logo {
+  font-size: 28px;
+  font-weight: 700;
+}
+
+.menu {
+  display: flex;
+  gap: 40px;
+  list-style: none;
+  font-weight: 500;
+}
+.menu li a {
+  color: inherit;
+  text-decoration: none;
+}
+
+
+.nav-buttons {
+  display: flex;
+  gap: 10px;
+}
+
+.btn-outline {
+  padding: 10px 20px;
+  border: 1px solid #ccc;
+  background: white;
+  border-radius: 10px;
+  cursor: pointer;
+}
+
+.btn-primary {
+  padding: 10px 20px;
+  border: none;
+  background: #ff5a5a;
+  color: white;
+  border-radius: 10px;
+  cursor: pointer;
+}
+
+/* HERO SECTION */
+.hero {
+  margin-top: 60px;
+  padding: 0 90px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.hero-text h1 {
+  font-size: 64px;
+  font-weight: 800;
+  color: #7c00ff;
+}
+
+.hero-text p {
+  font-size: 20px;
+  margin-top: 10px;
+}
+
+.cta-btn {
+  margin-top: 25px;
+  padding: 14px 30px;
+  font-size: 18px;
+  background: #ff5a5a;
+  border: none;
+  color: white;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.cta-btn:hover {
+  background: #e14f4f;
+}
+
+/* === NEW: LOTTIE ANIMATION STYLE === */
+.hero-animation {
+  width: 350px;
+  height: 350px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  right: 10px;
+  top: 20px;
+}
+
+.lottie-plane {
+  width: 100%;
+  height: 100%;
+}
+
+/* Purple Wave Background */
+.background-shape {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  height: 40%;
+  background: linear-gradient(135deg, #7b2cff, #4a00d2);
+  border-top-left-radius: 60px;
+  z-index: 0;
+}
+
+
+/* RESPONSIVE */
+@media (max-width: 1000px) {
+  .hero {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .hero-animation {
+    position: static;
+    width: 300px;
+    height: 300px;
+    margin-top: 30px;
+  }
+
+  .hero-text h1 {
+    font-size: 46px;
+  }
+}

@@ -1,0 +1,99 @@
+<div class="container">
+
+  <!-- SAYFA BAŞLIĞI -->
+  <h2 class="mb-4">Airports</h2>
+
+  <!-- FORM CARD -->
+  <div class="card shadow-sm mb-4">
+    <div class="card-body">
+      <h5 class="card-title mb-3">
+        {{ editId ? 'Update Airport' : 'Create Airport' }}
+      </h5>
+
+      <form [formGroup]="form" (ngSubmit)="saveAirport()" class="row g-3">
+
+        <div class="col-md-3">
+          <label class="form-label">Code</label>
+          <input type="text" class="form-control" formControlName="code">
+        </div>
+
+        <div class="col-md-3">
+          <label class="form-label">Name</label>
+          <input type="text" class="form-control" formControlName="name">
+        </div>
+
+        <div class="col-md-3">
+          <label class="form-label">City</label>
+          <input type="text" class="form-control" formControlName="city">
+        </div>
+
+        <div class="col-md-3">
+          <label class="form-label">Country</label>
+          <input type="text" class="form-control" formControlName="country">
+        </div>
+
+        <!-- Hata mesajı -->
+        <div class="col-12" *ngIf="error">
+          <div class="alert alert-danger mt-2">{{ error }}</div>
+        </div>
+
+        <div class="col-12 d-flex gap-2 mt-3">
+          <button class="btn btn-primary" type="submit">
+            {{ editId ? 'Update' : 'Create' }}
+          </button>
+          <button type="button" class="btn btn-secondary" (click)="clearForm()">
+            Clear
+          </button>
+        </div>
+
+      </form>
+    </div>
+  </div>
+
+  <!-- LİSTE CARD -->
+  <div class="card shadow-sm">
+    <div class="card-body">
+
+      <h5 class="card-title mb-3">Airports List</h5>
+
+      <div *ngIf="loading">Loading...</div>
+      <div *ngIf="error && !loading" class="text-danger">{{ error }}</div>
+
+      <table class="table table-hover align-middle" *ngIf="!loading">
+        <thead class="table-dark">
+          <tr>
+            <th>ID</th>
+            <th>Code</th>
+            <th>Name</th>
+            <th>City</th>
+            <th>Country</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          <tr *ngFor="let a of airports">
+            <td>{{ a.id }}</td>
+            <td>{{ a.code }}</td>
+            <td>{{ a.name }}</td>
+            <td>{{ a.city }}</td>
+            <td>{{ a.country }}</td>
+
+            <td>
+              <button class="btn btn-sm btn-warning me-2"
+                      (click)="editAirport(a)">
+                Edit
+              </button>
+
+              <button class="btn btn-sm btn-danger" (click)="onDeleteClick(a.id)">
+                 Delete
+              </button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+
+    </div>
+  </div>
+
+</div>

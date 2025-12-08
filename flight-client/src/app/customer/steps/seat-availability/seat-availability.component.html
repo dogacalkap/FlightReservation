@@ -1,0 +1,108 @@
+<div class="search-wrapper">
+
+  <div class="search-card">
+
+    <div class="search-header">
+      <h2>Uçuş Ara</h2>
+    </div>
+
+    <div class="search-grid">
+
+      <!-- FROM -->
+      <div class="input-box">
+        <label>Nereden</label>
+        <div class="input-inner">
+          <i class="bi bi-airplane"></i>
+          <select [(ngModel)]="fromAirportId">
+            <option value="">Seçiniz</option>
+            <option *ngFor="let a of airports" [value]="a.id">
+              {{ a.city }} ({{ a.code }})
+            </option>
+          </select>
+        </div>
+      </div>
+
+      <!-- SWAP BUTTON -->
+      <button class="swap-btn" (click)="swapAirports()">
+        <i class="bi bi-arrow-left-right"></i>
+      </button>
+
+      <!-- TO -->
+      <div class="input-box">
+        <label>Nereye</label>
+        <div class="input-inner">
+          <i class="bi bi-geo-alt"></i>
+          <select [(ngModel)]="toAirportId">
+            <option value="">Seçiniz</option>
+            <option *ngFor="let a of airports" [value]="a.id">
+              {{ a.city }} ({{ a.code }})
+            </option>
+          </select>
+        </div>
+      </div>
+
+      <!-- DATE -->
+      <div class="input-box">
+        <label>Gidiş</label>
+        <div class="input-inner">
+          <i class="bi bi-calendar"></i>
+          <input type="date" [(ngModel)]="selectedDate">
+        </div>
+      </div>
+
+      <!-- CLASS -->
+      <div class="input-box">
+        <label>Sınıf</label>
+        <div class="input-inner">
+          <i class="bi bi-person"></i>
+          <select [(ngModel)]="travelClass">
+            <option value="economy">Economy</option>
+            <option value="business">Business</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- SEARCH BUTTON -->
+      <div class="search-btn-wrapper">
+        <button class="search-btn" (click)="searchFlights()">
+          Uçuş Ara
+        </button>
+      </div>
+
+    </div>
+
+  </div>
+
+  <!-- WARNINGS -->
+  <div class="warning-area">
+    <div class="warning-box" *ngIf="showFillWarning">Lütfen tüm alanları doldurun.</div>
+    <div class="warning-box noflights" *ngIf="showNoFlightsWarning">
+      Seçilen kriterlerde uçuş bulunamadı.
+    </div>
+  </div>
+
+  <!-- RESULTS -->
+  <div class="results">
+    <div class="flight-card" *ngFor="let f of filteredFlights">
+
+      <div class="flight-left">
+        <div class="route">
+          {{ f.fromAirportCity }} → {{ f.toAirportCity }}
+        </div>
+        <div class="time">
+          Kalkış: {{ f.departureTime | date:'short' }}
+        </div>
+        <div class="time">
+          Varış: {{ f.arrivalTime | date:'short' }}
+        </div>
+      </div>
+
+      <div class="flight-right">
+        <div class="price">{{ f.finalPrice }} ₺</div>
+        <button class="select-btn" (click)="selectFlight(f)">Seç</button>
+      </div>
+
+    </div>
+  </div>
+
+</div>

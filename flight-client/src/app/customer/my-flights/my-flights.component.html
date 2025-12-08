@@ -1,0 +1,38 @@
+<h2 class="title">Uçuşlarım</h2>
+
+<div *ngIf="tickets.length === 0" class="empty">
+  <i class="bi bi-airplane"></i>
+  Henüz bir biletiniz bulunmuyor.
+</div>
+
+<div class="tickets-container">
+  <div class="ticket-card" *ngFor="let t of tickets">
+
+    <!-- Header -->
+    <div class="ticket-header">
+      <div class="route">
+        <i class="bi bi-geo-alt-fill"></i>
+        <span class="city">{{ t.flight.fromAirportId }}</span>
+        <span class="arrow">→</span>
+        <span class="city">{{ t.flight.toAirportId }}</span>
+      </div>
+      <div class="flight-number">Flight #{{ t.flight.flightNumber }}</div>
+    </div>
+
+    <!-- Body -->
+    <div class="ticket-body">
+      <p><b>Tarih:</b> {{ t.flight.departureTime | date:'dd MMM yyyy - HH:mm' }}</p>
+      <p><b>Koltuk:</b> {{ t.seatNumber }}</p>
+      <p><b>Fiyat:</b> {{ t.finalPrice }} ₺</p>
+    </div>
+
+    <hr>
+
+    <!-- Footer -->
+    <div class="ticket-footer">
+      <i class="bi bi-clock"></i>
+      Satın alma zamanı: {{ t.createdAt | date:'dd MMM yyyy - HH:mm' }}
+    </div>
+
+  </div>
+</div>

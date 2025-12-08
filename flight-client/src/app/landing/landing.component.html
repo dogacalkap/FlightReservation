@@ -1,0 +1,47 @@
+<div class="landing-container">
+
+  <!-- NAVBAR -->
+  <nav class="navbar">
+    <div class="logo">SuperAirlines</div>
+
+    <ul class="menu">
+      <ul class="menu">
+      <li><a routerLink="/my-flights" class="clickable">Uçuşlarım</a></li>
+      <li><a routerLink="/offers" class="clickable">Fırsatlar</a></li>
+      <li><a routerLink="/about" class="clickable">Hakkımızda</a></li>
+      <li><a routerLink="/contact" class="clickable">İletişim</a></li>
+    </ul>
+
+    </ul>
+
+    <div class="nav-buttons">
+      <button routerLink="/login" class="btn-outline">Giriş Yap</button>
+      <button routerLink="/customer" class="btn-primary">Bilet Al</button>
+    </div>
+  </nav>
+
+  <!-- HERO SECTION -->
+  <section class="hero">
+
+    <!-- LEFT: TEXT -->
+    <div class="hero-text">
+      <h1>Uçuşunu Bir Tıkla Planla!</h1>
+      <p>En uygun fiyatlarla uçuş ara, karşılaştır ve kolayca bilet al.</p>
+    </div>
+
+    <!-- RIGHT: LOTTIE ANIMATION -->
+    <div class="hero-animation">
+      <ng-lottie 
+        [options]="flightAnimation"
+        width="350px"
+        height="350px"
+        class="lottie-plane">
+      </ng-lottie>
+    </div>
+
+  </section>
+
+  <!-- WAVE BACKGROUND -->
+  <div class="background-shape"></div>
+
+</div>

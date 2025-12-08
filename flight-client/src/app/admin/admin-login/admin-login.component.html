@@ -1,0 +1,36 @@
+<div class="admin-login-container">
+
+  <div class="login-card">
+
+  <button class="back-icon" (click)="goHome()">
+    <i class="bi bi-arrow-left"></i>
+  </button>
+
+
+    <!-- Lottie admin animation -->
+    <div class="animation-box">
+      <ng-lottie 
+        [options]="adminLottie"
+        style="width:160px;height:160px;">
+      </ng-lottie>
+    </div>
+
+    <h2>Admin Girişi</h2>
+    <p class="subtitle">Yönetim paneline erişmek için giriş yapınız.</p>
+
+    <div class="form-group">
+      <label>Email</label>
+      <input type="text" [(ngModel)]="email" placeholder="admin@superairlines.com">
+    </div>
+
+    <div class="form-group">
+      <label>Şifre</label>
+      <input type="password" [(ngModel)]="password" placeholder="Şifre">
+    </div>
+
+    <button class="login-btn" (click)="login()">Giriş Yap</button>
+
+    <p *ngIf="errorMessage" class="error-msg">{{ errorMessage }}</p>
+
+
+</div>

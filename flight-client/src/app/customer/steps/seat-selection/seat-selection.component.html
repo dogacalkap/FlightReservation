@@ -1,0 +1,25 @@
+<h2>Koltuk Seçimi</h2>
+
+<div class="seat-grid">
+
+  <div *ngFor="let row of seatMap" class="row">
+    
+    <div *ngFor="let seat of row"
+         class="seat"
+         [class.taken]="takenSeats.includes(seat)"
+         [class.selected]="selectedSeat === seat"
+         (click)="selectSeat(seat)">
+
+      {{ seat }}
+    </div>
+
+  </div>
+
+</div>
+
+<div *ngIf="selectedSeat" class="continue-box">
+  <button class="continue-btn" (click)="continue()">
+    Devam Et →
+  </button>
+</div>
+

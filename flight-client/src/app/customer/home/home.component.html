@@ -1,0 +1,35 @@
+<div class="home-wrapper" [style.background-image]="'url(' + backgroundImage + ')'">
+
+  <!-- ===================== -->
+  <!--     STEPS BAR         -->
+  <!-- ===================== -->
+  <div class="steps-container">
+
+    <div 
+      *ngFor="let step of steps" 
+      class="step-item"
+      [class.active]="activeStepKey === step.key"
+      [class.completed]="stepService.steps[step.serviceKey]"
+      (click)="tryGoToStep(step)"
+    >
+      <div class="step-icon">
+        <i [class]="step.icon"></i>
+      </div>
+      <span class="step-label">{{ step.label }}</span>
+
+      <span *ngIf="stepService.steps[step.serviceKey]" class="step-check">
+        ✔
+      </span>
+    </div>
+
+  </div>
+
+
+  <!-- ===================== -->
+  <!--   ACTIVE STEP VIEW    -->
+  <!-- ===================== -->
+  <div class="active-step-container">
+    <ng-container *ngComponentOutlet="stepComponents[activeStepKey]"></ng-container>
+  </div>
+
+</div>

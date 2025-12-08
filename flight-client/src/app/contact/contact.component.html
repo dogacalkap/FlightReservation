@@ -1,0 +1,53 @@
+<div class="contact-page">
+
+  <h1>Bizimle İletişime Geçin</h1>
+  <p>Her türlü soru, görüş ve öneriniz için bize ulaşabilirsiniz.</p>
+
+  <div class="contact-info">
+
+    <div class="info-card">
+      <h3>Email</h3>
+      <p>superairlines@gmail.com</p>
+    </div>
+
+    <div class="info-card">
+      <h3>Telefon</h3>
+      <p>+90 555 000 0000</p>
+    </div>
+
+    <div class="info-card">
+      <h3>Adres</h3>
+      <p>İstanbul Havalimanı Terminal 2, İstanbul</p>
+    </div>
+
+    <div class="info-card">
+      <h3>Çalışma Saatleri</h3>
+      <p>7/24 Destek</p>
+    </div>
+
+  </div>
+
+  <h2>İletişim Formu</h2>
+
+  <form (ngSubmit)="send()">
+    
+    <input type="text" placeholder="Ad Soyad"
+      [(ngModel)]="form.fullName" name="fullName" required>
+
+    <input type="email" placeholder="Email"
+      [(ngModel)]="form.email" name="email" required>
+
+    <input type="text" placeholder="Konu"
+      [(ngModel)]="form.subject" name="subject" required>
+
+    <textarea placeholder="Mesajınız"
+      [(ngModel)]="form.message" name="message" required></textarea>
+
+    <button type="submit">Gönder</button>
+
+  </form>
+
+</div>
+<div class="back-container">
+  <button class="back-btn" routerLink="/landing">← Ana Sayfaya Dön</button>
+</div>

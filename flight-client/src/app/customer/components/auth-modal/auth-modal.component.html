@@ -1,0 +1,66 @@
+<div class="modal-backdrop" (click)="close()"></div>
+
+<div class="auth-modal">
+
+  <!-- LOGIN -->
+  <div *ngIf="mode === 'login'">
+    <h2>Login</h2>
+
+    <input class="form-control mb-2" type="email" placeholder="Email" [(ngModel)]="email">
+    <input class="form-control mb-3" type="password" placeholder="Password" [(ngModel)]="password">
+
+    <button class="btn btn-primary w-100 mb-2" (click)="login()">Login</button>
+
+    <div class="text-center">
+      <a (click)="changeMode('register')" class="link">Create account</a> ·
+      <a (click)="changeMode('forgot-step1')" class="link">Forgot password?</a>
+    </div>
+  </div>
+
+
+  <!-- REGISTER -->
+  <div *ngIf="mode === 'register'">
+    <h2>Register</h2>
+
+    <input class="form-control mb-2" placeholder="Full Name" [(ngModel)]="registerData.fullName">
+    <input class="form-control mb-2" placeholder="National ID" [(ngModel)]="registerData.nationalId">
+    <input class="form-control mb-2" placeholder="Email" [(ngModel)]="registerData.email">
+    <input class="form-control mb-3" type="password" placeholder="Password" [(ngModel)]="registerData.password">
+
+    <button class="btn btn-success w-100 mb-2" (click)="register()">Register</button>
+
+    <div class="text-center">
+      <a (click)="changeMode('login')" class="link">Back to login</a>
+    </div>
+  </div>
+
+
+  <!-- FORGOT PASSWORD — STEP 1 -->
+  <div *ngIf="mode === 'forgot-step1'">
+    <h2>Reset Password</h2>
+
+    <input class="form-control mb-2" type="email" placeholder="Email" [(ngModel)]="resetEmail">
+    <input class="form-control mb-3" type="text" placeholder="National ID (TCKN)" [(ngModel)]="resetTCKN">
+
+    <button class="btn btn-warning w-100 mb-2" (click)="forgotCheck()">Verify</button>
+
+    <div class="text-center">
+      <a (click)="changeMode('login')" class="link">Back to login</a>
+    </div>
+  </div>
+
+
+  <!-- FORGOT PASSWORD — STEP 2 -->
+  <div *ngIf="mode === 'forgot-step2'">
+    <h2>New Password</h2>
+
+    <input class="form-control mb-3" type="password" placeholder="New password" [(ngModel)]="newPassword">
+
+    <button class="btn btn-success w-100 mb-2" (click)="forgotSave()">Save Password</button>
+
+    <div class="text-center">
+      <a (click)="changeMode('login')" class="link">Back to login</a>
+    </div>
+  </div>
+
+</div>

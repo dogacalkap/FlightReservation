@@ -1,0 +1,80 @@
+.passenger-wrapper {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  padding-top: 60px;
+}
+
+/* Card */
+.passenger-card {
+  background: #fff;
+  width: 480px;
+  padding: 40px 36px;
+  border-radius: 28px;
+  box-shadow: 0 20px 40px rgba(0,0,0,0.08);
+  text-align: center;
+  animation: fadeIn 0.4s ease;
+}
+
+.passenger-card h2 {
+  font-size: 26px;
+  font-weight: 700;
+  margin-bottom: 20px;
+  color: #222;
+}
+
+/* Warning Box */
+.warning-box {
+  background: #fff5e6;
+  border: 1px solid #ffcf94;
+  color: #b05e00;
+  padding: 12px 16px;
+  border-radius: 12px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 22px;
+  font-size: 15px;
+}
+
+/* Login Button */
+.login-btn {
+  background: #7a21ff;
+  border: none;
+  color: white;
+  font-size: 16px;
+  font-weight: 600;
+  padding: 14px 32px;
+  border-radius: 14px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  transition: 0.25s ease;
+}
+
+.login-btn:hover {
+  background: #6317d1;
+  transform: translateY(-2px);
+}
+
+/* Success Message */
+.success-box {
+  background: #e8fff0;
+  border: 1px solid #a0e6c4;
+  padding: 12px 16px;
+  border-radius: 12px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  color: #0f8b45;
+  font-size: 15px;
+}
+
+/* Animation */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}

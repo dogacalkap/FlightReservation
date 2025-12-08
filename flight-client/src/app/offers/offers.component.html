@@ -1,0 +1,53 @@
+<!-- src/app/offers/offers.component.html -->
+<div class="offers-page">
+
+  <section class="hero">
+    <div class="hero-animation">
+      <ng-lottie [options]="planeAnimation" style="width:260px;height:260px;"></ng-lottie>
+    </div>
+
+    <h1>Fırsatlar</h1>
+    <p>En güncel kampanyalar, indirimler ve avantajlar şimdi SuperAirlines’ta.</p>
+  </section>
+
+  <section class="offers-grid">
+
+    <!-- Kış indirimi -->
+    <div class="offer-card">
+      <div class="animation-wrapper">
+        <ng-lottie [options]="discountAnimation"
+                   style="width:120px;height:120px;"></ng-lottie>
+      </div>
+      <h3>%10 Kış İndirimi</h3>
+      <p>Kış sezonuna özel tüm yurt içi uçuşlarda %10 indirim seni bekliyor!</p>
+      <button routerLink="/offers/winter-discount">Detayları Gör</button>
+    </div>
+
+    <!-- Business Class -->
+    <div class="offer-card">
+      <div class="animation-wrapper">
+        <ng-lottie [options]="businessAnimation"
+                   style="width:120px;height:120px;"></ng-lottie>
+      </div>
+      <h3>Business Class Fırsatı</h3>
+      <p>Seçili hatlarda Business Class’a avantajlı fiyatlarla geçiş yap.</p>
+      <button routerLink="/offers/business-class">İncele</button>
+    </div>
+
+    <!-- Öğrenci indirimi -->
+    <div class="offer-card">
+      <div class="animation-wrapper">
+        <ng-lottie [options]="studentAnimation"
+                   style="width:120px;height:120px;"></ng-lottie>
+      </div>
+      <h3>Öğrenci İndirimi</h3>
+      <p>Öğrencilere özel %15 indirim + 20 kg ek bagaj hakkı!</p>
+      <button routerLink="/offers/student-discount">Hemen Bak</button>
+    </div>
+      <div class="back-container">
+      <button class="back-btn" routerLink="/landing">← Ana Sayfaya Dön</button>
+    </div>
+
+  </section>
+
+</div>

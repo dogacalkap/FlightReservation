@@ -1,0 +1,37 @@
+<div class="passenger-wrapper">
+
+  <!-- CARD -->
+  <div class="passenger-card">
+
+    <h2>Passenger Information</h2>
+
+    <!-- NOT LOGGED IN -->
+    <div *ngIf="!loggedIn" class="not-logged">
+
+      <div class="warning-box">
+        <i class="bi bi-exclamation-triangle"></i>
+        You must log in to continue.
+      </div>
+
+      <button class="login-btn" (click)="openModal()">
+        <i class="bi bi-person-circle"></i>
+        Login / Register
+      </button>
+    </div>
+
+    <!-- LOGGED IN -->
+    <div *ngIf="loggedIn" class="success-box">
+      <i class="bi bi-check-circle-fill"></i>
+      Logged in successfully!
+    </div>
+
+  </div>
+
+  <!-- MODAL -->
+  <app-auth-modal
+    *ngIf="showModal"
+    (closed)="closeModal()"
+    (loggedIn)="modalLoggedIn($event)">
+  </app-auth-modal>
+
+</div>

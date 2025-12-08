@@ -1,0 +1,196 @@
+/* ----------------------------- */
+/*     PAGE SETUP (AJet tarzı)   */
+/* ----------------------------- */
+
+.search-wrapper {
+  margin: 0 auto;
+  padding: 20px;
+  width: 100%;
+  max-width: 1200px;
+}
+
+.search-card {
+  background: white;
+  border-radius: 24px;
+  padding: 26px 32px;
+  box-shadow: 0 6px 22px rgba(0,0,0,0.06);
+}
+
+/* HEADER */
+
+.search-header h2 {
+  font-size: 22px;
+  font-weight: 700;
+  color: #0b1e39;
+  margin-bottom: 18px;
+}
+
+/* GRID */
+
+.search-grid {
+  display: grid;
+  grid-template-columns: 1.4fr 70px 1.4fr 1fr 1fr;
+  gap: 18px;
+  align-items: end;
+}
+
+/* INPUT BOX */
+
+.input-box {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.input-box label {
+  font-size: 13px;
+  font-weight: 600;
+  color: #6b6b6b;
+}
+
+.input-inner {
+  background: #f5f7fa;
+  border: 1px solid #e3e7ed;
+  border-radius: 14px;
+  padding: 12px 14px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.input-inner select,
+.input-inner input {
+  background: transparent;
+  border: none;
+  outline: none;
+  width: 100%;
+  color: #0b1e39;
+  font-size: 15px;
+}
+
+/* Icons */
+
+.input-inner i {
+  font-size: 18px;
+  color: #407BFF;
+}
+
+/* SWAP BUTTON */
+
+.swap-btn {
+  width: 48px;
+  height: 48px;
+  border-radius: 14px;
+  border: 1px solid #e3e7ed;
+  background: white;
+  cursor: pointer;
+  font-size: 20px;
+  color: #407BFF;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transition: 0.2s;
+}
+
+.swap-btn:hover {
+  background: #eef4ff;
+}
+
+/* SEARCH BUTTON */
+
+.search-btn-wrapper {
+  grid-column: 1 / 6;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.search-btn {
+  background: #007BFF;
+  color: white;
+  height: 48px;
+  padding: 0 28px;
+  border-radius: 14px;
+  border: none;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+
+.search-btn:hover {
+  background: #005fcc;
+}
+
+/* WARNINGS */
+
+.warning-area {
+  margin-top: 20px;
+  display: flex;
+  justify-content: center;
+}
+
+.warning-box {
+  padding: 12px 16px;
+  border-radius: 12px;
+  background: #ffe1e1;
+  border: 1px solid #ffb1b1;
+  color: #d63c3c;
+  font-weight: 500;
+}
+
+.warning-box.noflights {
+  background: #fff3d6;
+  border-color: #ffd57d;
+  color: #b77400;
+}
+
+/* RESULTS */
+
+.results {
+  margin-top: 28px;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.flight-card {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 18px 22px;
+  background: white;
+  border-radius: 18px;
+  border: 1px solid #e8ebf0;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+}
+
+.route {
+  font-size: 18px;
+  font-weight: 600;
+  color: #0b1e39;
+}
+
+.time {
+  font-size: 14px;
+  color: #555;
+}
+
+.price {
+  font-size: 22px;
+  font-weight: 700;
+  color: #007BFF;
+}
+
+.select-btn {
+  background: #28b463;
+  color: white;
+  padding: 8px 16px;
+  border-radius: 10px;
+  border: none;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.select-btn:hover {
+  background: #1f974f;
+}

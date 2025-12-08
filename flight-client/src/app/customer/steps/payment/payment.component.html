@@ -1,0 +1,112 @@
+<h2 class="title">Ödeme</h2>
+
+<!-- ========================================= -->
+<!--             BİLET ÖZETİ KARTI             -->
+<!-- ========================================= -->
+<div class="ticket-card">
+
+  <div class="ticket-left">
+    <h3>Bilet Özeti</h3>
+
+    <div class="info-row">
+      <span class="label">Nereden:</span>
+      <span class="value">{{ stepService.selectedFlight?.fromAirportCity }}</span>
+    </div>
+
+    <div class="info-row">
+      <span class="label">Nereye:</span>
+      <span class="value">{{ stepService.selectedFlight?.toAirportCity }}</span>
+    </div>
+
+    <div class="info-row">
+      <span class="label">Tarih:</span>
+      <span class="value">
+        {{ stepService.selectedFlight?.departureTime | date:'dd MMM yyyy - HH:mm' }}
+      </span>
+    </div>
+
+    <div class="info-row">
+     <span class="label">Bilet Fiyatı:</span>
+     <span class="value">{{ stepService.selectedFlight?.basePrice }} ₺</span>
+    </div>
+
+    <!-- KOLTUK -->
+    <div class="info-row">
+      <span class="label">Koltuk:</span>
+      <span class="value">
+        {{ stepService.seatSelection?.seatNumber }} 
+        <span *ngIf="stepService.seatSelection?.price">(+{{stepService.seatSelection?.price}} ₺)</span>
+      </span>
+    </div>
+
+    <!-- BAGAJ -->
+    <div class="info-row">
+      <span class="label">Bagaj:</span>
+      <span class="value">
+        {{ stepService.baggage?.weight }} adet 
+        <span *ngIf="stepService.baggage?.price">(+{{ stepService.baggage?.price }} ₺)</span>
+      </span>
+    </div>
+
+    <!-- EKSTRALAR -->
+    <div class="info-row">
+      <span class="label">Ekstralar:</span>
+      <span class="value">
+        <div *ngIf="stepService.extras.length === 0">Yok</div>
+
+        <div *ngFor="let e of stepService.extras">
+          {{ e.name }}
+          <span *ngIf="e.price !== 0"> ({{ e.price }} ₺)</span>
+        </div>
+      </span>
+    </div>
+
+    <!-- TOPLAM -->
+    <div class="price-row">
+      <span>Ödenecek Tutar:</span>
+      <span class="price">{{ stepService.getTotalPrice() }} ₺</span>
+    </div>
+  </div>
+
+  <div class="ticket-right">
+    <img src="/assets/plane-ticket.svg" alt="ticket" class="ticket-img">
+  </div>
+
+</div>
+
+<!-- ========================================= -->
+<!--             KART BİLGİLERİ FORMU          -->
+<!-- ========================================= -->
+<div class="payment-card">
+
+  <h3>Kart Bilgileri</h3>
+
+  <label>Kart Üzerindeki İsim</label>
+  <input [(ngModel)]="cardHolder" type="text" placeholder="Ad Soyad">
+
+  <label>Kart Numarası</label>
+  <input [(ngModel)]="cardNumber" maxlength="16" placeholder="1234 5678 9012 3456">
+
+  <div class="row-2">
+    <div>
+      <label>Son Kullanma Tarihi</label>
+      <input [(ngModel)]="expiry" placeholder="MM/YY">
+    </div>
+    <div>
+      <label>CVV</label>
+      <input maxlength="3" placeholder="123">
+    </div>
+  </div>
+
+  <label class="checkbox-row">
+    <input type="checkbox" [(ngModel)]="saveCard">
+    Kartımı kaydet
+  </label>
+
+  <button class="pay-btn" (click)="pay()" [disabled]="loading">
+    {{ loading ? "Ödeme İşleniyor..." : "Ödemeyi Tamamla" }}
+  </button>
+
+  <p class="result">{{ message }}</p>
+
+</div>
