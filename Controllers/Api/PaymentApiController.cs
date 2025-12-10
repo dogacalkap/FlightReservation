@@ -2,6 +2,7 @@ using FlightReservation.Data;
 using FlightReservation.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Linq;
 
 namespace FlightReservation.Controllers.Api
 {
@@ -16,6 +17,9 @@ namespace FlightReservation.Controllers.Api
             _context = context;
         }
 
+        // ============================================
+        //                   PAY
+        // ============================================
         [HttpPost("pay")]
         public async Task<IActionResult> Pay([FromBody] PaymentDto dto)
         {
@@ -23,92 +27,117 @@ namespace FlightReservation.Controllers.Api
             if (flight == null)
                 return BadRequest("Flight not found.");
 
-            decimal finalPrice = flight.Price;
+            // -------------------------------------------------------
+            // 🔥 1) BASE PRICE (Flight price)
+            // -------------------------------------------------------
+            decimal finalPrice = flight.Price; 
 
-            // 🎁 EXTRA REWARD
-            if (!string.IsNullOrWhiteSpace(dto.ExtraReward))
+            // -------------------------------------------------------
+            // 🔥 2) SEAT PRICE & 3) BAGGAGE PRICE
+            // Angular'dan gelen ücretleri doğrudan ekliyoruz.
+            // -------------------------------------------------------
+            if (dto.SeatPrice > 0)
+                finalPrice += dto.SeatPrice;
+
+            if (dto.BaggagePrice > 0)
+                finalPrice += dto.BaggagePrice;
+
+            // -------------------------------------------------------
+            // 🔥 4) EXTRAS (Hizmetler ve Çark İndirimleri)
+            // -------------------------------------------------------
+            if (dto.Extras != null && dto.Extras.Any())
             {
-                switch (dto.ExtraReward)
+                foreach (var extra in dto.Extras)
                 {
-                    case "%5 Discount":
-                        finalPrice *= 0.95m;
-                        break;
-                    case "%10 Discount":
-                        finalPrice *= 0.90m;
-                        break;
-                    case "Free Flight":
-                        finalPrice = 0;
-                        break;
+                    // ExtraPrice pozitif (ücret) veya negatif (indirim) olabilir.
+                    finalPrice += extra.ExtraPrice; 
                 }
             }
 
-            // 🧳 BAGGAGE PRICE
-            if (dto.BaggageCount > 0)
-                finalPrice += dto.BaggageCount * 299;
-
-            // 💳 CARD SAVE (Optional)
+            // -------------------------------------------------------
+            // 💥 DİKKAT: C# API'sinde tekrar hesaplama/indirim yapmıyoruz.
+            // Zaten Angular'dan gelen ExtraPrice değerleri (çark dahil) 
+            // doğru hesaplanmıştır.
+            // -------------------------------------------------------
+            
+            // -------------------------------------------------------
+            // 🔥 5) KART KAYIT MANTIĞI
+            // -------------------------------------------------------
             if (dto.SaveCard)
             {
+                // ... (Kart maskeleme ve kaydetme mantığı aynı kalır)
                 var masked = MaskCardNumber(dto.CardNumber);
 
                 var card = new PaymentCard
                 {
                     UserId = dto.UserId,
                     CardHolderName = dto.NameOnCard,
-                    CardNumberMasked = masked,       // **** **** **** 1234
-                    ExpiryMonth = dto.ExpiryMonth,   // DTO’dan geliyor
+                    CardNumberMasked = masked,
+                    ExpiryMonth = dto.ExpiryMonth,
                     ExpiryYear = dto.ExpiryYear,
                     SavedAt = DateTime.UtcNow
                 };
 
+                
+
                 _context.PaymentCards.Add(card);
             }
-            // -------------------------------------------
-// ✔ KOLTUK REZERVASYONU (FlightSeat tablosuna kayıt)
-// -------------------------------------------
-        var seat = await _context.SeatOccupations
-        .FirstOrDefaultAsync(s => s.FlightId == dto.FlightId && s.SeatNumber == dto.SeatNumber);
+
+            // -------------------------------------------------------
+            // 🔥 6) KOLTUK REZERVASYONU
+            // -------------------------------------------------------
+            var seat = await _context.SeatOccupations
+                .FirstOrDefaultAsync(s =>
+                    s.FlightId == dto.FlightId &&
+                    s.SeatNumber == dto.SeatNumber);
 
             if (seat == null)
-        {
-            seat = new SeatOccupation
-        {
-            FlightId = dto.FlightId,
-            SeatNumber = dto.SeatNumber,
-            IsReserved = true,
-            UserId = dto.UserId
-            };
+            {
+                seat = new SeatOccupation
+                {
+                    FlightId = dto.FlightId,
+                    SeatNumber = dto.SeatNumber,
+                    IsReserved = true,
+                    UserId = dto.UserId
+                };
 
-        _context.SeatOccupations.Add(seat);
-        }
-        else
-        {
-            seat.IsReserved = true;
-            seat.UserId = dto.UserId;
-        }
+                _context.SeatOccupations.Add(seat);
+            }
+            else
+            {
+                seat.IsReserved = true;
+                seat.UserId = dto.UserId;
+            }
 
-
-
-            // 🎫 TICKET CREATE
+            // -------------------------------------------------------
+            // 🔥 7) TICKET CREATE
+            // -------------------------------------------------------
             var ticket = new Ticket
             {
                 UserId = dto.UserId,
                 FlightId = dto.FlightId,
                 SeatNumber = dto.SeatNumber,
-                ExtraReward = dto.ExtraReward,
+                // ExtraReward: İndirim adını alıyoruz
+                ExtraReward = dto.Extras.FirstOrDefault(e => e.ExtraPrice < 0)?.ExtraName ?? "", 
                 BaggageCount = dto.BaggageCount,
-                FinalPrice = finalPrice,
+                FinalPrice = finalPrice, // 🔥 Doğru hesaplanan fiyatı kaydet
                 CreatedAt = DateTime.UtcNow
             };
 
+                ticket.SeatPrice = dto.SeatPrice;
+                ticket.BaggagePrice = dto.BaggagePrice;
+                ticket.ExtrasTotal = dto.Extras.Sum(e => e.ExtraPrice);
+
             _context.Tickets.Add(ticket);
+
+            // KAYDET
             await _context.SaveChangesAsync();
 
             return Ok(new
             {
                 message = "Payment successful",
                 ticketId = ticket.Id,
-                finalPrice = finalPrice
+                finalPrice = finalPrice // API'den dönen fiyat da doğru olmalı
             });
         }
 
@@ -123,22 +152,38 @@ namespace FlightReservation.Controllers.Api
         }
     }
 
-    // ================= DTO =================
+    // =============================================================
+    //                         DTOs
+    // =============================================================
+
     public class PaymentDto
     {
         public int UserId { get; set; }
-        
         public int FlightId { get; set; }
-        public string SeatNumber { get; set; }
-        public int BaggageCount { get; set; }
-        public string ExtraReward { get; set; }
 
+        public string SeatNumber { get; set; }
+        public decimal SeatPrice { get; set; } // 💥 DÜZELTİLDİ: Decimal
+        public string Cvv { get; set; } // Eksik Cvv alanı
+        
+        public int BaggageCount { get; set; }
+        public decimal BaggagePrice { get; set; } // 💥 DÜZELTİLDİ: Decimal
+
+        public List<ExtraDto> Extras { get; set; } = new();
+
+        public string ExtraReward { get; set; } // Bu alanın varlığını koruyoruz, ancak kullanılmıyor.
+
+        // ... (Kart bilgileri aynı kalır)
         public string CardNumber { get; set; }
         public string NameOnCard { get; set; }
-
-        public string ExpiryMonth { get; set; }   // ÖRN: "06"
-        public string ExpiryYear { get; set; }     // ÖRN: "28"
-
+        public string ExpiryMonth { get; set; }
+        public string ExpiryYear { get; set; }
         public bool SaveCard { get; set; }
+    }
+
+    public class ExtraDto
+    {
+        public string ExtraCode { get; set; }
+        public string ExtraName { get; set; }
+        public decimal ExtraPrice { get; set; } // 💥 DÜZELTİLDİ: Decimal
     }
 }

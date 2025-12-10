@@ -20,7 +20,9 @@ export class AuthService {
   register(data: any) {
     return this.http.post<any>(`${this.apiUrl}/register`, {
       fullName: data.fullName,
-      tckn: data.tckn,
+      // 💥 DÜZELTME: Veri kaynağından gelen 'nationalId' alanını kullanıyoruz.
+      // API'ye gönderirken API'nin beklediği 'tckn' ismini kullanıyoruz.
+      tckn: data.nationalId, // <-- Veri kaynağını nationalId olarak değiştirdik
       email: data.email,
       password: data.password
     });
@@ -69,4 +71,9 @@ export class AuthService {
   resetPassword(body: { email: string; tckn: string; newPassword: string }) {
     return this.http.post<any>(`${this.apiUrl}/reset-password`, body);
   }
+  getUserId(): number | null {
+  const user = this.getCurrentUser();
+  return user ? user.id : null;
+}
+
 }

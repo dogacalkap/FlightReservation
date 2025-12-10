@@ -1,25 +1,59 @@
-<h2>Koltuk Seçimi</h2>
-
-<div class="seat-grid">
-
-  <div *ngFor="let row of seatMap" class="row">
+<div class="seat-selection-wrapper">
     
-    <div *ngFor="let seat of row"
-         class="seat"
-         [class.taken]="takenSeats.includes(seat)"
-         [class.selected]="selectedSeat === seat"
-         (click)="selectSeat(seat)">
-
-      {{ seat }}
+    <h2>Koltuk Seçimi</h2>
+    
+    <div class="aircraft-layout">
+        
+    <div class="seat-group left">
+        <div *ngFor="let row of seatMap" class="row" [class]="getRowType(row[0])">
+            <ng-container *ngFor="let seat of row; index as i">
+                <div *ngIf="i < 3"
+                     class="seat"
+                     [class.taken]="takenSeats.includes(seat)"
+                     [class.selected]="selectedSeat === seat"
+                     (click)="selectSeat(seat)">
+                     {{ seat }}
+                </div>
+            </ng-container>
+        </div>
+    </div>
+    
+    <div class="seat-group right">
+        <div *ngFor="let row of seatMap" class="row" [class]="getRowType(row[3])">
+            <ng-container *ngFor="let seat of row; index as i">
+                <div *ngIf="i >= 3"
+                     class="seat"
+                     [class.taken]="takenSeats.includes(seat)"
+                     [class.selected]="selectedSeat === seat"
+                     (click)="selectSeat(seat)">
+                     {{ seat }}
+                </div>
+            </ng-container>
+        </div>
     </div>
 
-  </div>
-
 </div>
 
-<div *ngIf="selectedSeat" class="continue-box">
-  <button class="continue-btn" (click)="continue()">
-    Devam Et →
-  </button>
+    <div class="bottom-summary-area">
+        
+        <div class="legend">
+            <div class="legend-item"><span class="legend-color" style="background: #b3e0ff;"></span>Standart Boş</div>
+            <div class="legend-item"><span class="legend-color" style="background: #2ecc71;"></span>Seçili</div>
+            <div class="legend-item"><span class="legend-color" style="background: #a9a9a9;"></span>Dolu</div>
+            <div class="legend-item"><span class="legend-color" style="background: #f1c40f;"></span>Premium (200₺)</div>
+            <div class="legend-item"><span class="legend-color" style="background: #9b59b6;"></span>Ekstra Diz Mesafesi (100₺)</div>
+        </div>
+        
+        <div class="total-and-action">
+            <div class="total-label">Seçili Koltuk: {{ selectedSeat || 'Yok' }}</div>
+            <div class="total-price">{{ selectedSeat ? (getSeatPrice(selectedSeat) + ' ₺') : '0 ₺' }}</div>
+            
+            <div class="continue-box">
+              <button class="continue-btn" (click)="continue()" [disabled]="!selectedSeat">
+                Onayla ve Devam Et →
+              </button>
+            </div>
+        </div>
+    </div>
+    
 </div>
-

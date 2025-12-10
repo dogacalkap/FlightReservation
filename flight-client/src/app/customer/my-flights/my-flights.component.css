@@ -1,3 +1,12 @@
+:host {
+  display: block !important;
+  position: relative !important;
+  z-index: 9999 !important;
+  background: white !important;
+  min-height: 100vh !important;
+  padding-top: 40px !important;
+}
+
 .title {
   font-size: 28px;
   font-weight: 700;

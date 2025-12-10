@@ -22,12 +22,11 @@
   <div *ngIf="mode === 'register'">
     <h2>Register</h2>
 
-    <input class="form-control mb-2" placeholder="Full Name" [(ngModel)]="registerData.fullName">
-    <input class="form-control mb-2" placeholder="National ID" [(ngModel)]="registerData.nationalId">
-    <input class="form-control mb-2" placeholder="Email" [(ngModel)]="registerData.email">
-    <input class="form-control mb-3" type="password" placeholder="Password" [(ngModel)]="registerData.password">
-
-    <button class="btn btn-success w-100 mb-2" (click)="register()">Register</button>
+    <input class="form-control mb-2" placeholder="Full Name" 
+           [(ngModel)]="registerData.fullName" name="regFullName"> <input class="form-control mb-2" placeholder="National ID" 
+           [(ngModel)]="registerData.nationalId" name="regNationalId"> <input class="form-control mb-2" placeholder="Email" 
+           [(ngModel)]="registerData.email" name="regEmail"> <input class="form-control mb-3" type="password" placeholder="Password" 
+           [(ngModel)]="registerData.password" name="regPassword"> <button class="btn btn-success w-100 mb-2" (click)="register()">Register</button>
 
     <div class="text-center">
       <a (click)="changeMode('login')" class="link">Back to login</a>
@@ -42,12 +41,16 @@
     <input class="form-control mb-2" type="email" placeholder="Email" [(ngModel)]="resetEmail">
     <input class="form-control mb-3" type="text" placeholder="National ID (TCKN)" [(ngModel)]="resetTCKN">
 
-    <button class="btn btn-warning w-100 mb-2" (click)="forgotCheck()">Verify</button>
+    <button class="btn btn-warning w-100 mb-2" 
+            (click)="forgotCheck()"
+            [disabled]="loadingStep1">
+        {{ loadingStep1 ? 'Doğrulanıyor...' : 'Verify' }}
+    </button>
 
     <div class="text-center">
       <a (click)="changeMode('login')" class="link">Back to login</a>
     </div>
-  </div>
+</div>
 
 
   <!-- FORGOT PASSWORD — STEP 2 -->

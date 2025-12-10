@@ -2,7 +2,7 @@ import { Component, EventEmitter, Output } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { AuthService } from '../../../services/auth.service';
-
+import { ChangeDetectorRef } from '@angular/core'; // <-- cdr import'u burada olmalı
 @Component({
   selector: 'app-auth-modal',
   standalone: true,
@@ -34,7 +34,9 @@ export class AuthModalComponent {
   resetTCKN = '';
   newPassword = '';
 
-  constructor(private authService: AuthService) {}
+  constructor(private authService: AuthService,
+    private cdr: ChangeDetectorRef
+  ) {}
 
   changeMode(m: any) {
     this.mode = m;
@@ -91,13 +93,12 @@ login() {
     });
   }
 
+  loadingStep1 = false;
   // RESET — STEP 1
   forgotCheck() {
-    if (!this.resetEmail || !this.resetTCKN) {
-      alert("Email and TCKN are required.");
-      return;
-    }
+    // ... (mevcut loading ve boş kontrolü)
 
+    this.loadingStep1 = true;
     this.authService.resetPasswordCheck({
       email: this.resetEmail,
       tckn: this.resetTCKN
@@ -105,9 +106,18 @@ login() {
       next: () => {
         alert("Identity verified. Please enter a new password.");
         this.mode = 'forgot-step2';
+        this.loadingStep1 = false;
+        
+        // 💥 KRİTİK: Değişiklikleri hemen uygula
+        this.cdr.detectChanges(); 
+
       },
       error: (err) => {
+        this.loadingStep1 = false;
         alert(err.error || "Email or TCKN is incorrect.");
+        
+        // 💥 Hata durumunda da butonu aktif etmek için güncelle
+        this.cdr.detectChanges(); 
       }
     });
   }

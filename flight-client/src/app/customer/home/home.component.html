@@ -1,35 +1,92 @@
-<div class="home-wrapper" [style.background-image]="'url(' + backgroundImage + ')'">
+<ng-container *ngIf="showSteps">
+  <div class="home-wrapper" [style.background-image]="'url(' + backgroundImage + ')'">
 
-  <!-- ===================== -->
-  <!--     STEPS BAR         -->
-  <!-- ===================== -->
-  <div class="steps-container">
+    <div *ngIf="showWelcomeScreen" class="landing-container full-screen-overlay">
+      <div class="landing-box">
 
-    <div 
-      *ngFor="let step of steps" 
-      class="step-item"
-      [class.active]="activeStepKey === step.key"
-      [class.completed]="stepService.steps[step.serviceKey]"
-      (click)="tryGoToStep(step)"
-    >
-      <div class="step-icon">
-        <i [class]="step.icon"></i>
+        <div class="landing-left">
+          <h1>🛫 Uçuş Rezervasyonuna Hoş Geldiniz</h1>
+          <p>
+            Bilet satın alma süreci, 6 ana adımdan oluşmaktadır. Her adım, 
+            işlemi **hızlı, güvenli ve sorunsuz** tamamlamanız için profesyonelce tasarlanmıştır.
+          </p>
+
+          <div class="landing-steps">
+            <div *ngFor="let step of steps; index as i" class="lstep">
+              <span class="step-number">{{ i + 1 }}</span>
+              <i [class]="step.icon"></i>
+              <span>{{ step.label }}</span>
+            </div>
+          </div>
+          
+          <button class="start-btn primary-action-btn" (click)="startProcess()">
+            Bilet Almaya Başla <i class="bi bi-arrow-right"></i>
+          </button>
+        </div>
+
+        <div class="landing-right">
+          <img src="assets/illustrations/plane-purple.png" alt="Yolculuk Başlıyor İllüstrasyonu">
+        </div>
       </div>
-      <span class="step-label">{{ step.label }}</span>
-
-      <span *ngIf="stepService.steps[step.serviceKey]" class="step-check">
-        ✔
-      </span>
     </div>
 
+
+    <div *ngIf="showTransition" class="transition-overlay full-screen-overlay">
+        <div class="transition-content">
+            <i class="bi bi-airplane-fill transition-icon"></i>
+            <h2>Akış Başlatılıyor...</h2>
+            <p>İlk adım olan Koltuk Durumu bilgileri yükleniyor.</p>
+        </div>
+    </div>
+    
+    
+    <ng-container *ngIf="!showWelcomeScreen && !showTransition">
+
+        <div class="steps-container">
+
+          <div 
+            *ngFor="let step of steps" 
+            class="step-item"
+            [class.active]="activeStepKey === step.key"
+            [class.completed]="stepService.steps[step.serviceKey]"
+            (click)="tryGoToStep(step)"
+          >
+            <div class="step-icon">
+              <ng-container *ngIf="stepService.steps[step.serviceKey]">
+                <i class="bi bi-check-lg completed-check"></i>
+              </ng-container>
+              <ng-container *ngIf="!stepService.steps[step.serviceKey]">
+                <i [class]="step.icon"></i>
+              </ng-container>
+            </div>
+            
+            <span class="step-label">{{ step.label }}</span>
+            
+            <div class="step-connector"></div>
+          </div>
+
+        </div>
+          
+
+        <div class="step-info-panel">
+          <div class="step-info-left">
+            <i [class]="stepInfo[activeStepKey].icon"></i>
+            <div>
+              <h2>{{ stepInfo[activeStepKey].title }}</h2>
+              <p>{{ stepInfo[activeStepKey].description }}</p>
+            </div>
+          </div>
+
+          <img class="step-info-image" 
+               *ngIf="stepInfo[activeStepKey].image"
+               [src]="stepInfo[activeStepKey].image" />
+        </div>
+
+        <div *ngIf="activeStepKey" class="active-step-container">
+          <ng-container *ngComponentOutlet="stepComponents[activeStepKey]"></ng-container>
+        </div>
+
+    </ng-container>
+
   </div>
-
-
-  <!-- ===================== -->
-  <!--   ACTIVE STEP VIEW    -->
-  <!-- ===================== -->
-  <div class="active-step-container">
-    <ng-container *ngComponentOutlet="stepComponents[activeStepKey]"></ng-container>
-  </div>
-
-</div>
+</ng-container>

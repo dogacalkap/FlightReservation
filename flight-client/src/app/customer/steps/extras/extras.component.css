@@ -1,8 +1,118 @@
-.wheel-title {
-  position: relative;
-  z-index: 5;   /* yazı her şeyin üstünde */
+/* ============================================== */
+/* ANA SAYFA VE KARTLAR (GÖRSEL DOLULUK)          */
+/* ============================================== */
+
+.extras-wrapper {
+  padding: 20px;
+  max-width: 1000px;
+  margin: 40px auto;
+  animation: fadeIn 0.5s ease-out;
 }
 
+.title {
+  font-size: 28px;
+  font-weight: 700;
+  color: #333;
+  margin-bottom: 30px;
+}
+
+/* Hizmet Kartları Düzeni */
+.services-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 30px;
+    margin-bottom: 40px;
+}
+
+.service-card {
+    background: #ffffff;
+    border-radius: 18px;
+    padding: 25px;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    border-left: 5px solid #4A90E2; /* Mavi vurgu */
+}
+
+.service-icon {
+    font-size: 32px;
+    color: #4A90E2;
+    background: #e9f0ff;
+    padding: 10px;
+    border-radius: 10px;
+    margin-bottom: 15px;
+}
+
+.service-details h3 {
+    font-size: 18px;
+    font-weight: 600;
+    margin-bottom: 5px;
+    color: #333;
+}
+
+.service-details p {
+    font-size: 14px;
+    color: #777;
+    margin-bottom: 20px;
+}
+
+.add-btn {
+    background: #6a0dfa;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: 0.2s;
+    margin-top: auto; /* Kartın alt kısmına hizala */
+}
+.add-btn:hover { background: #5807d1; }
+
+
+/* BONUS ÇARK ALANI */
+.bonus-wheel-area {
+    text-align: center;
+    padding: 30px 20px;
+    background: #f0f0f8;
+    border-radius: 15px;
+    border: 1px dashed #6a0dfa;
+    margin-top: 30px; /* Diğer kartlardan ayır */
+}
+.bonus-title {
+    font-size: 24px;
+    color: #6a0dfa;
+    margin-bottom: 10px;
+}
+.bonus-wheel-area p {
+    color: #555;
+    margin-bottom: 20px;
+}
+
+
+/* ========================= */
+/* MODAL WRAPPER        */
+/* ========================= */
+.wheel-modal {
+  position: fixed;
+  inset: 0; /* top:0 left:0 width:100 height:100 */
+  display: flex;
+  justify-content: center; /* Yatayda ortalama */
+  align-items: center;    /* Dikeyde ortalama */
+  z-index: 2000;
+}
+
+/* Arka Plan (Bulanıklaştırma) */
+.modal-backdrop {
+  position: absolute;
+  inset: 0;
+  backdrop-filter: blur(8px);
+  background: rgba(0,0,0,0.45);
+  z-index: 1999;
+}
+
+/* Spin Açma Butonu (Mevcut kodunuzdan alındı) */
 .spin-open-btn {
   background: linear-gradient(135deg, #ff0066, #ff8a00);
   color: white;
@@ -12,64 +122,61 @@
   border: none;
   cursor: pointer;
   margin-bottom: 30px;
+  box-shadow: 0 4px 15px rgba(255, 0, 102, 0.4);
 }
 
-/* ========================= */
-/*      MODAL WRAPPER        */
-/* ========================= */
-.wheel-modal {
-  position: fixed;
-  inset: 0; /* top:0 left:0 width:100 height:100 */
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 2000;
+.spin-open-btn:hover:not(:disabled) {
+    background: linear-gradient(135deg, #e6005c, #e67d00);
+    transform: translateY(-1px);
+}
+.spin-open-btn:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+    box-shadow: none;
 }
 
-/* ========================= */
-/*        BACKDROP           */
-/* ========================= */
-.modal-backdrop {
-  position: absolute;
-  inset: 0;
-  backdrop-filter: blur(8px);
-  background: rgba(0,0,0,0.45);
-  z-index: 1999;
-}
 
-/* ========================= */
-/*        WHEEL CARD         */
-/* ========================= */
+/* Modal Ana Kartı */
 .wheel-card {
   position: relative;
   padding: 30px;
   width: 380px;
   background: #fff;
   border-radius: 18px;
-  z-index: 2001; /* BACKDROP’TAN ÜSTTE OLMASI ŞART */
+  z-index: 2001; 
   text-align: center;
   box-shadow: 0 8px 35px rgba(0,0,0,0.35);
   animation: popup 0.25s ease-out;
+
+  /* 💥 YENİ/GÜNCEL: Dikey Uzamayı Engelleme */
+  max-height: 90vh; /* Ekran yüksekliğinin %90'ından fazla olmasın */
+  overflow-y: auto; /* İçerik taşarsa dikey kaydırma çubuğu çıksın */
 }
 
-/* Modal açılırken hoş bir pop efekti */
-@keyframes popup {
-  from { opacity: 0; transform: scale(0.75); }
-  to   { opacity: 1; transform: scale(1); }
+/* Modal Başlığı */
+.wheel-title {
+  position: relative;
+  z-index: 5;
+  font-size: 26px; /* Biraz büyüttük */
+  font-weight: 700;
+  color: #333;
 }
 
+/* Çark Konteyner */
 .wheel-container {
   position: relative;
   width: 260px;
-  margin: 0 auto;
+  margin: 20px auto 0; /* Boşluk ekledik */
 }
 
+/* Çark Görseli */
 .wheel {
   width: 260px;
   height: 260px;
   border-radius: 50%;
-  border: 6px solid #000;
+  border: 6px solid #f0f0f0; /* Sınırı yumuşattık */
   transition: transform 6s cubic-bezier(.15,.85,.25,1);
+  /* Mevcut Conic Gradient korundu */
   background-image: conic-gradient(
       #ff0066 0deg 60deg,
       #ffa600 60deg 120deg,
@@ -80,6 +187,7 @@
   );
 }
 
+/* İşaretçi */
 .pointer {
   position: absolute;
   top: -18px;
@@ -89,58 +197,43 @@
   height: 0; 
   border-left: 12px solid transparent;
   border-right: 12px solid transparent;
-  border-bottom: 18px solid #000;
+  border-bottom: 18px solid #333; /* Siyah yaptık */
 }
 
+/* Çevir Butonu */
 .spin-btn {
   background: #ff0066;
   color: white;
-  padding: 12px 25px;
-  margin-top: 25px;
+  padding: 14px 30px; /* Biraz büyüttük */
+  margin-top: 30px;
   border: none;
-  font-size: 20px;
+  font-size: 18px;
   border-radius: 12px;
   cursor: pointer;
+  box-shadow: 0 4px 15px rgba(255, 0, 102, 0.3);
 }
 
-.spin-btn:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-}
-
+/* Sonuç Kutusu */
 .result-box {
-  margin-top: 20px;
-  padding: 12px;
+  margin-top: 25px;
+  padding: 15px; /* Boşluk ekledik */
   background: #f0f8ff;
+  border: 1px solid #d4e8ff;
   border-radius: 10px;
+  z-index: 21; /* Konfetinin altında kalmasın */
 }
 
+/* Kapat Butonu */
 .close-btn {
   margin-top: 20px;
   background: transparent;
   border: none;
   font-size: 16px;
+  color: #666;
   cursor: pointer;
 }
 
-.confetti {
-  position: absolute;
-  top: -50px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 350px;
-  height: 350px;
-  z-index: 20;   /* HER ŞEYİN ÜSTÜNDE */
-  pointer-events: none;
-}
-
-
-.shine-animation {
-  position: absolute;
-  top: -40px;
-  width: 350px;
-  z-index: -1;
-}
+/* Devam Et Butonu */
 .continue-btn {
   margin-top: 20px;
   background: #6a00ff;
@@ -150,4 +243,11 @@
   border-radius: 12px;
   font-size: 18px;
   cursor: pointer;
+  box-shadow: 0 4px 15px rgba(106, 0, 255, 0.3);
+}
+
+/* Animasyonlar */
+@keyframes popup {
+  from { opacity: 0; transform: scale(0.75); }
+  to   { opacity: 1; transform: scale(1); }
 }

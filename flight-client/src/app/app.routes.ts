@@ -22,15 +22,19 @@ export const routes: Routes = [
   { path: 'customer/login', component: LoginComponent },
 
   // CUSTOMER
-  { path: 'customer', component: CustomerHomeComponent },
+{
+  path: 'customer',
+  children: [
+    { path: '', component: CustomerHomeComponent },
+    {
+      path: 'my-flights',
+      loadComponent: () =>
+        import('./customer/my-flights/my-flights.component')
+          .then(c => c.MyFlightsComponent)
+    }
+  ]
+},
 
-  // MY FLIGHTS
-  {
-    path: 'my-flights',
-    loadComponent: () =>
-      import('./customer/my-flights/my-flights.component')
-        .then(c => c.MyFlightsComponent)
-  },
 
   // ADMIN LOGIN
   { path: 'login', component: AdminLoginComponent },

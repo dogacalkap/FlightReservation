@@ -4,6 +4,15 @@ import { LottieComponent } from 'ngx-lottie';
 import { CommonModule } from '@angular/common';
 import { ReservationStepsService } from '../../../services/reservation-steps.service';
 
+interface ExtraService {
+  code: string;       
+  name: string;
+  price: number;
+  isSelected: boolean; 
+  description: string;
+  icon: string;
+}
+
 @Component({
   selector: 'app-extras',
   templateUrl: './extras.component.html',
@@ -18,9 +27,34 @@ export class ExtrasComponent {
   result: string | null = null;
 
   // Lottie paths
-  shineLottie = 'assets/lottie/shine.json';
   confettiLottie = 'assets/lottie/confetti.json';
 
+  services: ExtraService[] = [
+    {
+      code: 'INSURANCE',
+      name: 'Seyahat Sigortası',
+      price: 99,
+      isSelected: false,
+      description: 'Uçuşunuzu beklenmedik aksiliklere karşı güvence altına alın.',
+      icon: 'bi-shield-lock'
+    },
+    {
+      code: 'MEAL',
+      name: 'Özel İkram Seçeneği',
+      price: 49,
+      isSelected: false,
+      description: 'Uçuşunuz için gurme veya diyet yemek siparişi verin.',
+      icon: 'bi-egg-fried'
+    },
+    {
+      code: 'FAST_TRACK',
+      name: 'Hızlı Geçiş (Fast Track)',
+      price: 129,
+      isSelected: false,
+      description: 'Güvenlik ve pasaport kontrolünden hızlıca geçin.',
+      icon: 'bi-lightning-charge'
+    }
+  ];
   prizes = [
   { code: "DISC10", label: "%10 İndirim" },
   { code: "DISC15", label: "%15 İndirim" },
@@ -39,6 +73,37 @@ export class ExtrasComponent {
   public stepService: ReservationStepsService
  ) {}
 
+ ngOnInit(): void {
+    // Serviste daha önce seçilmiş olan hizmetleri geri yükle
+    this.services.forEach(service => {
+      const selected = this.stepService.extras.find(e => e.code === service.code);
+      if (selected) {
+        service.isSelected = true;
+      }
+    });
+    // Çark çevrildi mi kontrolü
+    this.hasSpun = this.stepService.extras.some(e => e.code.includes('DISC') || e.code === 'FREE_BAG' || e.code === 'BAG50' || e.code === 'FREE_TICKET');
+  }
+
+  // 💥 HİZMET EKLE/KALDIR METODU (Çark ödüllerini koruyan temiz yol)
+  toggleService(service: ExtraService) {
+    service.isSelected = !service.isSelected;
+
+    if (service.isSelected) {
+      // Eklenecekse, servise ekle
+      this.stepService.extras.push({
+        name: service.name,
+        price: service.price,
+        code: service.code
+      });
+    } else {
+      // Kaldırılacaksa, servisteki listeden çıkar (sadece hizmet kodlarını çıkar)
+      const index = this.stepService.extras.findIndex(e => e.code === service.code);
+      if (index !== -1) {
+        this.stepService.extras.splice(index, 1);
+      }
+    }
+  }
 
   // ===============================
   // MODAL AÇ / KAPAT

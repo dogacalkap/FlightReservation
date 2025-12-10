@@ -1,62 +1,76 @@
-<h2 class="title">Extras</h2>
+<div class="extras-wrapper">
 
-<button class="spin-open-btn" (click)="openWheel()" [disabled]="hasSpun">
-  Bonus Çark (Çevir ve Ödül Kazan!)
-</button>
+  <h2 class="title">Ek Hizmetler</h2>
+  
+  <div class="services-container">
 
-<!-- ========================= -->
-<!--      SPIN WHEEL MODAL     -->
-<!-- ========================= -->
-<div class="wheel-modal" *ngIf="showWheel">
-
-  <!-- BACKDROP (Blur + Kapatma) -->
-  <div class="modal-backdrop" (click)="closeWheel()"></div>
-
-  <!-- MODAL BOX -->
-  <div class="wheel-card" (click)="$event.stopPropagation()">
-
-    <h3 class="wheel-title">Bonus Çark</h3>
-
-    <!-- Lottie shine animation -->
-    <!-- Shine Effects -->
-    <ng-lottie 
-    *ngIf="spinning"
-    [options]="{ path: shineLottie, loop: true }"
-     class="shine shine-1">
-    </ng-lottie>
-
-    <!-- WHEEL -->
-    <div class="wheel-container">
-      <div class="wheel"
-        [style.transform]="'rotate(' + rotation + 'deg)'">
+    <div *ngFor="let service of services" 
+         class="service-card" 
+         [class.selected]="service.isSelected">
+         
+      <div class="service-icon">
+          <i class="bi" [class]="service.icon"></i>
       </div>
-      <div class="pointer"></div>
+      <div class="service-details">
+        <h3>{{ service.name }}</h3>
+        <p>{{ service.description }}</p>
+      </div>
+      
+      <button class="add-btn" (click)="toggleService(service)">
+          <i class="bi" [class]="service.isSelected ? 'bi-check-lg' : 'bi-plus-lg'"></i>
+          {{ service.isSelected ? 'Eklendi' : 'Ekle (' + service.price + ' ₺)' }}
+      </button>
     </div>
-
-    <!-- SPIN BUTTON -->
-    <button class="spin-btn"
-            (click)="spinWheel()"
-            [disabled]="spinning || hasSpun">
-      Çarkı Çevir!
-    </button>
-
-    <!-- RESULT -->
-    <div *ngIf="result" class="result-box">
-      <p>Kazandığın Ödül:</p>
-      <h2>{{ result }}</h2>
-
-      <ng-lottie
-     *ngIf="result"
-    [options]="{ path: confettiLottie, loop: false }"
-     class="confetti">
-    </ng-lottie>
-
-    </div>
-
-   <button *ngIf="hasSpun" class="continue-btn" (click)="continue()">
-      Devam Et
-    </button>
-
-    <button class="close-btn" (click)="closeWheel()">Kapat</button>
+    
   </div>
+  
+  <div class="bonus-wheel-area">
+      <h3 class="bonus-title">🎉 Şansınızı Deneyin!</h3>
+      <p>Bilet alımını tamamlamadan önce son bir şans! Harika indirimler kazanabilirsiniz.</p>
+      
+      <button class="spin-open-btn" (click)="openWheel()" [disabled]="hasSpun">
+          {{ hasSpun ? 'Çark Çevrildi' : 'Bonus Çarkı Aç' }}
+      </button>
+  </div>
+
+
+</div> 
+
+  <div class="wheel-modal" *ngIf="showWheel">   
+  
+    <div class="modal-backdrop" (click)="closeWheel()"></div>
+
+      <div class="wheel-card" (click)="$event.stopPropagation()">
+
+        <button class="close-x-btn" (click)="closeWheel()"><i class="bi bi-x-lg"></i></button>
+
+        <h3 class="wheel-title">Bonus Çark</h3>
+        
+        <div class="wheel-container">
+          <div class="wheel"
+            [style.transform]="'rotate(' + rotation + 'deg)'">
+             </div>
+          <div class="pointer"></div>
+        </div>
+
+        <button class="spin-btn"
+                (click)="spinWheel()"
+                [disabled]="spinning || hasSpun">
+          {{ spinning ? 'Dönüyor...' : 'Çarkı Çevir!' }}
+        </button>
+
+        <div *ngIf="result" class="result-box">
+          <p>Tebrikler, Kazandığın Ödül:</p>
+          <h2>{{ result }}</h2>
+
+          <ng-lottie
+             [options]="{ path: confettiLottie, loop: false }"
+             class="confetti">
+          </ng-lottie>
+        </div>
+        
+        <button *ngIf="hasSpun" class="continue-btn primary-action-btn" (click)="continue()">
+            Devam Et <i class="bi bi-arrow-right"></i>
+        </button>
+    </div>
 </div>

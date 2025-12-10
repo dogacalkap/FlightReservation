@@ -1,121 +1,218 @@
 /* ========================================= */
-/*                 GENEL                     */
+/* GENEL                     */
 /* ========================================= */
 .title {
   font-size: 28px;
   margin-bottom: 25px;
-  font-weight: 600;
+  font-weight: 700; /* Başlık ağırlığını artırdık */
+  color: #333;
 }
 
 /* ========================================= */
-/*              BİLET KARTI                  */
+/* BİLET ÖZETİ KARTI             */
 /* ========================================= */
 .ticket-card {
   width: 100%;
   max-width: 900px;
-  margin-bottom: 25px;
+  margin-bottom: 35px; 
   display: flex;
   justify-content: space-between;
-  padding: 25px;
-  border-radius: 20px;
+  padding: 30px; /* İç boşluğu artırdık */
+  border-radius: 24px; /* Daha yumuşak köşe */
   background: #ffffffd1;
-  backdrop-filter: blur(10px);
-  box-shadow: 0 10px 25px rgba(0,0,0,0.12);
-  border: 3px solid #b388ff; /* Mor premium çerçeve */
-  box-shadow: 0 10px 25px rgba(179, 136, 255, 0.3);
+  backdrop-filter: blur(15px); /* Blur'u artırdık */
+  /* Mor çerçeve ve güçlü gölge */
+  border: 3px solid #b388ff; 
+  box-shadow: 0 12px 30px rgba(179, 136, 255, 0.4); 
 }
 
 .ticket-left {
-  width: 60%;
+  width: 65%; /* Bilet bilgilerine biraz daha yer */
+}
+
+.ticket-left h3 {
+    font-size: 22px;
+    font-weight: 700;
+    margin-bottom: 15px;
+    color: #444;
 }
 
 .ticket-right {
-  width: 35%;
+  width: 30%;
   display: flex;
   justify-content: center;
-  align-items: center;
+  align-items: flex-end; /* İmajı sağ alt köşeye yakın hizala */
 }
 
 .ticket-img {
-  width: 90%;
-  opacity: 0.85;
+  width: 100%; 
+  max-width: 200px;
+  opacity: 0.95;
 }
 
 .info-row {
   display: flex;
-  margin: 8px 0;
+  margin: 10px 0;
+  font-size: 15px;
 }
 
 .label {
-  width: 120px;
-  color: #555;
+  width: 150px; /* Label genişliğini artırdık */
+  color: #666;
+  font-weight: 500;
 }
 
 .value {
-  font-weight: 600;
+  font-weight: 700;
+  color: #333;
+}
+.value span {
+    font-weight: 600;
+    color: #28a745; /* Ek ücretleri yeşil yaptık */
 }
 
+
+/* EKSTRALAR DETAY GÖSTERİMİ */
+.info-row:has(.label:contains("Ekstralar")) .value {
+    display: flex;
+    flex-direction: column;
+}
+.info-row:has(.label:contains("Ekstralar")) .value span {
+    color: #dc3545; /* İndirimleri kırmızı yaptık */
+    font-weight: 600;
+}
+
+
+/* Fiyat ve Toplam Vurgu */
 .price-row {
   display: flex;
   justify-content: space-between;
-  margin-top: 18px;
-  font-size: 20px;
+  border-top: 1px dashed #ddd; 
+  padding-top: 20px;
+  margin-top: 25px;
+  font-size: 22px;
+  font-weight: 700;
+  color: #333;
 }
-
 .price {
-  color: #d87f00;
-  font-weight: bold;
+  color: #e64a19; /* Canlı Turuncu/Kırmızı */
+  font-size: 30px;
+  font-weight: 800;
 }
 
 /* ========================================= */
-/*            KART BİLGİLERİ FORMU           */
+/* KART BİLGİLERİ FORMU           */
 /* ========================================= */
 .payment-card {
   width: 100%;
   max-width: 900px;
-  padding: 25px;
-  border-radius: 20px;
+  padding: 35px; /* İç boşluğu artırdık */
+  border-radius: 24px;
   background: #ffffff;
-  box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+  box-shadow: 0 10px 30px rgba(0,0,0,0.15);
   margin-bottom: 40px;
+}
+
+.payment-card h3 {
+    font-size: 22px;
+    font-weight: 700;
+    margin-bottom: 20px;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 10px;
+}
+
+/* Input Stil Revizyonu (Daha şık ve odaklı) */
+.input-group {
+    margin-bottom: 15px;
+    display: flex;
+    flex-direction: column;
+}
+.input-group label {
+    font-size: 13px;
+    font-weight: 600;
+    color: #6a0dfa; /* Mor vurgu */
+    margin-bottom: 5px;
 }
 
 .payment-card input {
   width: 100%;
-  padding: 12px;
-  margin-top: 5px;
-  margin-bottom: 15px;
+  padding: 14px;
+  margin-top: 0;
   border-radius: 12px;
-  border: 1px solid #ddd;
+  border: 2px solid #e0e0e0; /* Daha belirgin sınır */
   font-size: 16px;
+  transition: border-color 0.3s, box-shadow 0.3s;
+}
+
+.payment-card input:focus {
+    border-color: #b388ff; /* Mor odak */
+    box-shadow: 0 0 0 4px rgba(179, 136, 255, 0.2);
+    outline: none;
 }
 
 .row-2 {
   display: flex;
   gap: 20px;
 }
+.row-2 > div {
+    /* Tek tek input gruplarını ayırmak için */
+    flex: 1; 
+}
+.row-2 > div:first-child {
+    /* MM/YY alanına CVV'den daha fazla yer ver */
+    flex: 2; 
+}
+
 
 .checkbox-row {
   margin-top: 10px;
   display: flex;
   align-items: center;
   gap: 8px;
+  font-size: 14px;
+  color: #555;
+  cursor: pointer;
 }
 
 .pay-btn {
-  margin-top: 20px;
+  margin-top: 30px;
   width: 100%;
-  padding: 14px;
-  background: linear-gradient(135deg, #ff0066, #ff8a00);
+  padding: 18px; 
+  background: #2ecc71; /* Canlı yeşil, başarı rengi */
   color: white;
   border: none;
-  border-radius: 14px;
-  font-size: 18px;
-  font-weight: 600;
+  border-radius: 12px;
+  font-size: 20px;
+  font-weight: 700;
   cursor: pointer;
+  box-shadow: 0 6px 20px rgba(46, 204, 113, 0.4);
+  transition: 0.3s;
+}
+.pay-btn:hover:not(:disabled) {
+    background: #27ae60;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(46, 204, 113, 0.6);
+}
+.pay-btn:disabled {
+    background: #ccc;
+    cursor: not-allowed;
+    box-shadow: none;
 }
 
 .result {
   margin-top: 15px;
   font-size: 16px;
+  font-weight: 600;
+  padding: 10px;
+  border-radius: 8px;
+}
+.result.error {
+    color: #721c24;
+    background-color: #f8d7da;
+    border: 1px solid #f5c6cb;
+}
+.result.success {
+    color: #155724;
+    background-color: #d4edda;
+    border: 1px solid #c3e6cb;
 }

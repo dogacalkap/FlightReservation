@@ -16,6 +16,7 @@ namespace FlightReservation.Controllers.Api
             _context = context;
         }
 
+        // GET: api/TicketsApi/user/7 → kullanıcının biletleri
         [HttpGet("user/{userId}")]
         public async Task<IActionResult> GetUserTickets(int userId)
         {
@@ -27,6 +28,18 @@ namespace FlightReservation.Controllers.Api
             return Ok(tickets);
         }
 
+        // DELETE: api/TicketsApi/8 → bileti iptal et
+        [HttpDelete("{ticketId}")]
+        public async Task<IActionResult> CancelTicket(int ticketId)
+        {
+            var ticket = await _context.Tickets.FindAsync(ticketId);
+            if (ticket == null)
+                return NotFound();
 
+            _context.Tickets.Remove(ticket);
+            await _context.SaveChangesAsync();
+
+            return NoContent(); // 204
+        }
     }
 }

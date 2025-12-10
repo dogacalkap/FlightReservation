@@ -44,7 +44,7 @@ export class SeatAvailabilityComponent implements OnInit {
     public stepService: ReservationStepsService,
     private dataService: ReservationDataService
   ) {}
-
+  
   ngOnInit(): void {
     this.loadAirports();
     this.loadFlights();

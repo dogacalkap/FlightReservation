@@ -1,196 +1,243 @@
-/* ----------------------------- */
-/*     PAGE SETUP (AJet tarzı)   */
-/* ----------------------------- */
+/* ============================= */
+/*   SEARCH AREA GENERAL WRAP    */
+/* ============================= */
 
 .search-wrapper {
-  margin: 0 auto;
-  padding: 20px;
   width: 100%;
-  max-width: 1200px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 40px;
+  gap: 25px;
 }
 
+/* ============================= */
+/*       SEARCH MAIN CARD        */
+/* ============================= */
+
 .search-card {
-  background: white;
-  border-radius: 24px;
-  padding: 26px 32px;
-  box-shadow: 0 6px 22px rgba(0,0,0,0.06);
+  width: 90%;
+  max-width: 1100px;
+  background: rgba(255, 255, 255, 0.5);
+  backdrop-filter: blur(18px);
+  border-radius: 22px;
+  padding: 35px 45px;
+  box-shadow: 0 10px 40px rgba(0,0,0,0.08);
+  animation: fadeIn 0.6s ease;
 }
 
 /* HEADER */
-
 .search-header h2 {
-  font-size: 22px;
-  font-weight: 700;
-  color: #0b1e39;
-  margin-bottom: 18px;
+  font-size: 24px;
+  font-weight: 600;
+  margin-bottom: 25px;
 }
 
-/* GRID */
-
+/* ============================= */
+/*       GRID INPUT DESIGN       */
+/* ============================= */
 .search-grid {
   display: grid;
-  grid-template-columns: 1.4fr 70px 1.4fr 1fr 1fr;
-  gap: 18px;
-  align-items: end;
+  grid-template-columns: 1fr 50px 1fr 1fr 0.8fr; 
+  gap: 25px; 
+  /* 💥 Değişiklik: Tüm elemanları yatayda alta hizala */
+  align-items: end; 
 }
 
-/* INPUT BOX */
-
+/* ❗ input-box'ların label ve input arasındaki boşluğunu da kontrol edelim */
 .input-box {
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 8px; /* Sabit ve dengeli bir boşluk */
 }
 
 .input-box label {
-  font-size: 13px;
-  font-weight: 600;
-  color: #6b6b6b;
+  font-size: 14px;
+  color: #444;
+  font-weight: 500;
 }
 
 .input-inner {
-  background: #f5f7fa;
-  border: 1px solid #e3e7ed;
+  background: #fff;
   border-radius: 14px;
-  padding: 12px 14px;
+  border: 1px solid rgba(0,0,0,0.1);
+  padding: 10px 14px;
   display: flex;
   align-items: center;
   gap: 10px;
+  transition: 0.25s ease;
 }
 
-.input-inner select,
-.input-inner input {
-  background: transparent;
-  border: none;
-  outline: none;
-  width: 100%;
-  color: #0b1e39;
-  font-size: 15px;
+.input-inner:hover {
+  border-color: #4A90E2;
+  box-shadow: 0 0 0 3px rgba(74,144,226,0.15);
 }
-
-/* Icons */
 
 .input-inner i {
   font-size: 18px;
-  color: #407BFF;
+  color: #4A90E2;
 }
 
-/* SWAP BUTTON */
+select, input[type="date"] {
+  border: none;
+  outline: none;
+  font-size: 15px;
+  background: transparent;
+  width: 100%;
+}
+
+/* ============================= */
+/*        SWAP BUTTON            */
+/* ============================= */
 
 .swap-btn {
-  width: 48px;
+  margin-top: 25px;
   height: 48px;
-  border-radius: 14px;
-  border: 1px solid #e3e7ed;
-  background: white;
+  width: 48px;
+  border: none;
+  border-radius: 50%;
+  background: #4A90E2;
+  color: white;
+  font-size: 18px;
   cursor: pointer;
-  font-size: 20px;
-  color: #407BFF;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  transition: 0.2s;
+  transition: 0.25s;
 }
 
 .swap-btn:hover {
-  background: #eef4ff;
+  background: #357ac8;
+  transform: rotate(180deg);
 }
 
-/* SEARCH BUTTON */
+/* ============================= */
+/*      SEARCH BUTTON DESIGN     */
+/* ============================= */
 
 .search-btn-wrapper {
-  grid-column: 1 / 6;
+  grid-column: span 5;
   display: flex;
-  justify-content: flex-end;
+  justify-content: center;
+  margin-top: 10px;
 }
 
 .search-btn {
-  background: #007BFF;
+  background: #4A90E2;
   color: white;
-  height: 48px;
-  padding: 0 28px;
-  border-radius: 14px;
+  padding: 14px 45px;
   border: none;
+  border-radius: 14px;
   font-size: 16px;
   font-weight: 600;
   cursor: pointer;
-  transition: 0.2s ease;
+  transition: 0.25s ease;
+  box-shadow: 0 5px 18px rgba(74,144,226,0.3);
 }
 
 .search-btn:hover {
-  background: #005fcc;
+  background: #357AC8;
+  transform: translateY(-2px);
 }
 
-/* WARNINGS */
+/* ============================= */
+/*        WARNING BOXES          */
+/* ============================= */
 
 .warning-area {
-  margin-top: 20px;
+  width: 100%;
   display: flex;
   justify-content: center;
 }
 
 .warning-box {
-  padding: 12px 16px;
-  border-radius: 12px;
-  background: #ffe1e1;
-  border: 1px solid #ffb1b1;
-  color: #d63c3c;
-  font-weight: 500;
+  padding: 12px 25px;
+  background: #ffe5e5;
+  color: #b40000;
+  border-left: 5px solid #b40000;
+  border-radius: 8px;
+  animation: fadeIn 0.4s ease;
 }
 
 .warning-box.noflights {
-  background: #fff3d6;
-  border-color: #ffd57d;
-  color: #b77400;
+  background: #fff8d6;
+  color: #a67c00;
+  border-left: 5px solid #a67c00;
 }
 
-/* RESULTS */
+/* ============================= */
+/*         FLIGHT RESULTS        */
+/* ============================= */
 
 .results {
-  margin-top: 28px;
+  width: 90%;
+  max-width: 1100px;
   display: flex;
   flex-direction: column;
   gap: 18px;
+  margin-bottom: 70px;
 }
 
 .flight-card {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 18px 22px;
   background: white;
+  padding: 20px 25px;
   border-radius: 18px;
-  border: 1px solid #e8ebf0;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+  box-shadow: 0 8px 25px rgba(0,0,0,0.07);
+  transition: 0.25s ease;
 }
 
-.route {
+.flight-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 35px rgba(0,0,0,0.12);
+}
+
+/* LEFT */
+.flight-left {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.flight-left .route {
   font-size: 18px;
   font-weight: 600;
-  color: #0b1e39;
 }
 
 .time {
   font-size: 14px;
-  color: #555;
+  color: #777;
+}
+
+/* RIGHT */
+.flight-right {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 8px;
 }
 
 .price {
-  font-size: 22px;
+  font-size: 20px;
   font-weight: 700;
-  color: #007BFF;
+  color: #4A90E2;
 }
 
 .select-btn {
-  background: #28b463;
+  background: #4A90E2;
   color: white;
-  padding: 8px 16px;
-  border-radius: 10px;
+  padding: 8px 24px;
   border: none;
+  border-radius: 10px;
   cursor: pointer;
-  font-weight: 600;
+  transition: 0.25s ease;
 }
 
 .select-btn:hover {
-  background: #1f974f;
+  background: #357AC8;
+}
+
+/* Fade Animation */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
 }

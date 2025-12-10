@@ -1,149 +1,335 @@
+/* ============================================== */
+/* GENEL VE HOME WRAPPER                 */
+/* ============================================== */
+
 .home-wrapper {
   min-height: 100vh;
-  background: #f8f1ed; /* Landing sayfasındaki soft pembe/bej */
+  /* Arka planı Karşılama Ekranı hariç akışa göre ayarlayalım */
+  background: #f8f8f8; 
   padding: 40px;
   display: flex;
   flex-direction: column;
   gap: 30px;
 }
 
+/* ============================================== */
+/* GENEL BUTON VE EYLEM STİLLERİ (primary-action-btn) */
+/* ============================================== */
 
-/* STEPS BAR */
+/* Karşılama ekranındaki butonu daha belirgin yaptık */
+.primary-action-btn {
+    padding: 14px 30px;
+    border: none;
+    border-radius: 12px;
+    background: #6a0dfa; /* Mor renk */
+    color: white;
+    font-weight: 700;
+    font-size: 16px;
+    cursor: pointer;
+    transition: 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+    box-shadow: 0 4px 15px rgba(106, 13, 250, 0.4);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.primary-action-btn:hover {
+  background: #5807d1;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(106, 13, 250, 0.6);
+}
+
+/* Mevcut .start-btn stili kaldırıldı, yerine .primary-action-btn kullanılıyor. */
+
+
+/* ============================================== */
+/* STEPS BAR (GÖRSEL SIKLIK İÇİN)         */
+/* ============================================== */
+
 .steps-container {
   display: flex;
-  gap: 12px;
+  gap: 0; /* Adım aralıklarını 0 yaptık, connector ile ayıracağız */
   padding: 12px 20px;
   background: white;
   border-radius: 14px;
   box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-  justify-content: center;
+  justify-content: space-between; /* Eşit dağılım */
+  position: relative;
 }
 
 .step-item {
+  position: relative;
   text-align: center;
   cursor: pointer;
-  padding: 10px 12px;
+  padding: 10px 18px; /* Yatayda biraz genişlettik */
   border-radius: 10px;
-  transition: 0.2s;
+  transition: 0.3s ease-in-out;
+  flex-grow: 1;
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 .step-item.active {
   background: #6a0dfa;
   color: white;
+  transform: scale(1.05); /* Aktif adımı hafifçe büyüttük */
 }
 
 .step-item.completed {
-  background: #ece4ff;
+  /* Tamamlanan adımın arka planını daha yumuşak tuttuk */
+  background: #e6e6fa; 
   color: #6a0dfa;
 }
 
 .step-icon {
-  font-size: 18px;
-  margin-bottom: 3px;
+  font-size: 20px;
+  margin-bottom: 5px;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  transition: 0.3s;
+}
+
+.step-item.active .step-icon {
+    /* Aktif adımda ikonun etrafına hafif bir vurgu */
+    background: rgba(255, 255, 255, 0.2);
+}
+
+/* 💥 YENİ: Tamamlanmış adım tıkı */
+.completed-check {
+    font-size: 18px;
+    font-weight: 700;
+    color: #00bf00; /* Canlı yeşil tik */
+}
+.step-item.completed .step-icon {
+    /* Tamamlanmış adım ikonunun etrafındaki mor arka planı kaldırdık */
+    background: none; 
 }
 
 
 .step-label {
-  font-size: 14px;
-  color: white;
+  font-size: 13px;
+  font-weight: 500;
+  /* Tamamlanmış ve aktif olmayan adım etiketi rengi */
+  color: #444; 
 }
 
-.step-check {
-  font-size: 14px;
-  color: limegreen;
-  margin-top: 4px;
+.step-item.active .step-label {
+    color: white; /* Aktif adım etiketi beyaz */
 }
 
-/* SEARCH SECTION */
-.search-section {
-  background: white;
-  border-radius: 20px;
-  padding: 30px;
-  box-shadow: 0 6px 20px rgba(0,0,0,0.06);
+/* 💥 YENİ: ADIMLAR ARASI BAĞLAYICI ÇİZGİ (CONNECTOR) */
+.step-connector {
+    position: absolute;
+    top: 50%;
+    right: 0;
+    transform: translateY(-50%);
+    height: 2px;
+    width: calc(100% - 36px); /* Adım ikonlarının sağ ve sol boşluğunu düşüyoruz */
+    background: #e0e0e0;
+    z-index: 5;
+    transition: background 0.3s;
 }
 
-.search-grid {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 20px;
+/* Son adım hariç tüm adımlarda bağlayıcıyı göster */
+.step-item:last-child .step-connector {
+    display: none;
 }
 
-select, input {
-  width: 100%;
-  padding: 12px;
-  border-radius: 12px;
-  border: 1px solid #ddd;
-  background: #fafafa;
+/* Tamamlanmış adımın bağlayıcısını renklendir */
+.step-item.completed + .step-item .step-connector, 
+.step-item.completed .step-connector {
+    background: #6a0dfa; /* Tamamlanan adımlar arasındaki çizgiyi mor yap */
+}
+
+/* ============================================== */
+/* LANDING SCREEN (KARŞILAMA EKRANI)      */
+/* ============================================== */
+
+/* 💥 YENİ: Tam ekran kaplama stili (TS'den gelen değişken ile) */
+.full-screen-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000; 
+}
+
+.landing-container {
+  /* .full-screen-overlay ile birleştiği için margin-top ve width/justify değerlerini değiştirdik */
+  margin-top: 0;
+  background: #f8f1ed; /* Temiz arkaplan rengi */
+}
+
+.landing-box {
+  width: 90%;
+  max-width: 1200px;
+  /* Arkaplan gradientini daha dinamik tuttuk */
+  background: linear-gradient(135deg, #ffffff 0%, #f3e7ff 60%); 
+  border-radius: 26px;
+  padding: 60px 80px;
+  box-shadow: 0 18px 50px rgba(0,0,0,0.1); /* Daha belirgin gölge */
+  animation: fadeIn 0.6s ease;
+}
+
+/* Landing Sol kısım */
+.landing-left h1 {
+    font-size: 44px;
+    color: #5c00dd;
+    margin-bottom: 20px;
+}
+
+.landing-left p {
+    font-size: 18px;
+    margin-bottom: 40px;
+}
+
+/* Landing Steps listesi */
+.landing-steps {
+    display: flex;
+    flex-wrap: wrap; /* Küçük ekranlar için esneklik */
+    gap: 15px;
+    margin-bottom: 40px;
+}
+
+.lstep {
+    padding: 14px 18px;
+    background: #ffffff;
+    border: 1px solid #eee;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    width: auto;
+}
+
+.lstep .step-number {
+    font-weight: 800;
+    font-size: 18px;
+    color: #6a0dfa;
+}
+
+.lstep i {
+    font-size: 20px;
+    color: #7d00ff;
+}
+
+.lstep span {
+    margin-top: 0;
+    font-size: 15px;
+    color: #444;
+}
+
+/* ============================================== */
+/* GEÇİŞ EKRANI (TRANSITION)             */
+/* ============================================== */
+
+.transition-overlay {
+    background: #f8f1ed; /* Karşılama ekranı ile aynı soft zemin */
+    flex-direction: column;
+    color: #5c00dd;
+    /* Opaklık ve transform ile geçiş animasyonu için hazırlanıyoruz */
+    opacity: 1;
+    transition: opacity 0.5s ease-out; 
+}
+
+.transition-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+}
+
+.transition-icon {
+    font-size: 6rem; /* Büyük ve dikkat çekici ikon */
+    animation: flightAnimation 1.5s infinite ease-in-out;
+}
+
+.transition-content h2 {
+    font-size: 2.5rem;
+    margin-top: 20px;
+    font-weight: 700;
+    color: #6a0dfa;
+}
+
+.transition-content p {
+    font-size: 1.1rem;
+    color: #777;
+}
+
+/* Uçuş İkonu Animasyonu */
+@keyframes flightAnimation {
+    0% { transform: translate(0, 0) rotate(0deg); opacity: 0.8;}
+    50% { transform: translate(10px, -10px) rotate(5deg); opacity: 1;}
+    100% { transform: translate(0, 0) rotate(0deg); opacity: 0.8;}
+}
+
+/* ============================================== */
+/* STEP INFO PANEL (Estetik)             */
+/* ============================================== */
+
+.step-info-panel {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: linear-gradient(90deg, #ffffff, #f9f9ff);
+    padding: 20px 30px;
+    border-radius: 18px;
+    box-shadow: 0 4px 18px rgba(0,0,0,0.06);
+    margin-top: 10px;
+    border-left: 5px solid #6a0dfa; /* Mor vurgu */
+    animation: slideInFromTop 0.4s ease-out;
+}
+
+.step-info-left {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.step-info-left i {
+    font-size: 36px;
+    color: #6a0dfa;
+    background: #e6e6fa;
+    padding: 10px;
+    border-radius: 12px;
+}
+
+.step-info-left h2 {
+    font-size: 20px;
+    font-weight: 700;
+    color: #333;
+}
+
+.step-info-left p {
+    font-size: 14px;
+    color: #666;
+    margin: 0;
+}
+
+.step-info-image {
+    max-height: 80px;
+    border-radius: 10px;
+}
+
+/* Genel Animasyonlar */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(15px);}
+  to   { opacity: 1; transform: translateY(0);}
+}
+
+@keyframes slideInFromTop {
+    from { opacity: 0; transform: translateY(-10px);}
+    to   { opacity: 1; transform: translateY(0);}
 }
 
 
-label {
-  font-size: 14px;
-  font-weight: 600;
-}
-
-.search-btn {
-  margin-top: 20px;
-  padding: 12px 26px;
-  border: none;
-  border-radius: 12px;
-  background: #ff3b5c;      /* “Bilet Al” butonunun rengi */
-  color: white;
-  font-weight: 600;
-  cursor: pointer;
-  transition: 0.25s;
-}
-
-.search-btn:hover {
-  background: #e63252;
-}
-
-/* FLIGHT RESULTS */
-.results-section {
-  background: white;
-  padding: 25px;
-  border-radius: 20px;
-  box-shadow: 0 6px 20px rgba(0,0,0,0.06);
-}
-
-table {
-  width: 100%;
-  border-collapse: collapse;
-}
-
-th {
-  text-align: left;
-  padding: 14px;
-  background: #f3f0ff;
-  border-radius: 8px;
-}
-
-td {
-  padding: 12px;
-  border-bottom: 1px solid #eee;
-}
-
-.select-btn {
-  background: #6a0dfa;
-  color: white;
-  border: none;
-  border-radius: 8px;
-  padding: 8px 16px;
-  cursor: pointer;
-}
-
-
-.select-btn:hover {
-  background: #3bb055;
-}
-
-.no-results {
-  text-align: center;
-  padding: 20px;
-  color: white;
-}
-
-/* ACTIVE STEP COMPONENT */
-.active-step-container {
-  margin-top: 40px;
-}

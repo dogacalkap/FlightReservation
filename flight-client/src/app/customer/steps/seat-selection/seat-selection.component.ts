@@ -33,6 +33,7 @@ export class SeatSelectionComponent implements OnInit {
     }
   }
 
+
   // Basit fiyatlandırma örneği:  
   // 1–5 sıra: +200 TL  
   // 6–15 sıra: +100 TL  
@@ -45,10 +46,27 @@ export class SeatSelectionComponent implements OnInit {
     return 0;
   }
 
+  getRowType(seat: string): string {
+    const price = this.getSeatPrice(seat); // Mevcut kuralı kullan
+    
+    if (price === 200) {
+      // 1-5. sıralar (Premium/Yüksek Fiyatlı)
+      return 'row-yellow';
+    }
+    if (price === 100) {
+      // 6-15. sıralar (Ekstra Diz Mesafesi/Orta Fiyatlı)
+      return 'row-purple';
+    }
+    // 16-30. sıralar (Standart)
+    return 'row-standard';
+  }
+
   selectSeat(seat: string) {
     if (this.takenSeats.includes(seat)) return;
     this.selectedSeat = seat;
   }
+
+  
 
   continue() {
     if (!this.selectedSeat) return;

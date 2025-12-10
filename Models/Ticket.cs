@@ -22,7 +22,12 @@ namespace FlightReservation.Models
         // Baggage seçimi
         public int BaggageCount { get; set; } = 0;
 
-        // Final fiyat (discount + baggage sonrası)
+        // 🔥 Fiyat parçaları → DECIMAL OLMALI
+        public decimal SeatPrice { get; set; }
+        public decimal BaggagePrice { get; set; }
+        public decimal ExtrasTotal { get; set; }
+
+        // Final fiyat (discount + baggage + extras sonrası)
         public decimal FinalPrice { get; set; }
 
         // Oluşturulma tarihi
