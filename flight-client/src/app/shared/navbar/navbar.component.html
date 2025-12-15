@@ -1,0 +1,35 @@
+<nav class="navbar">
+  <a class="logo" routerLink="/landing">
+    <span class="logo-mark" aria-hidden="true">
+      <svg viewBox="0 0 64 64" focusable="false" role="img">
+        <defs>
+          <linearGradient id="sa-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stop-color="#6d22e0"/>
+            <stop offset="50%" stop-color="#8e5bff"/>
+            <stop offset="100%" stop-color="#f4f0ff"/>
+          </linearGradient>
+        </defs>
+        <rect x="4" y="4" width="56" height="56" rx="14" fill="url(#sa-grad)"/>
+        <path d="M16 32c10-3 18-5 32-6l-4 6 4 6c-14-1-22-3-32-6Z" fill="#ffffff" opacity="0.95"/>
+        <path d="M20 34c6 2 12 4 20 5l-2 3c-6-1-12-2-18-4l0-4Z" fill="#d9ceff"/>
+        <circle cx="22" cy="31" r="2" fill="#ffffff"/>
+        <circle cx="28" cy="30" r="2" fill="#ffffff"/>
+        <circle cx="34" cy="29" r="2" fill="#ffffff"/>
+      </svg>
+    </span>
+    <span class="logo-text">SuperAirlines</span>
+  </a>
+
+  <ul class="menu">
+    <li *ngFor="let link of links">
+      <a [routerLink]="link.path" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">
+        {{ link.label }}
+      </a>
+    </li>
+  </ul>
+
+  <div class="actions">
+    <a class="btn ghost" routerLink="/login">Giriş Yap</a>
+    <a class="btn primary" routerLink="/customer">Bilet Al</a>
+  </div>
+</nav>

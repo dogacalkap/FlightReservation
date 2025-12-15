@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 import { CommonModule, DatePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 
@@ -19,6 +19,7 @@ import { ReservationDataService } from '../../../services/reservation-data.servi
   styleUrls: ['./seat-availability.component.css']
 })
 export class SeatAvailabilityComponent implements OnInit {
+  @Input() redirectToCustomer = false; // Landing'de kullanırken otomatik müşteri akışına geç
 
   airports: Airport[] = [];
   allFlights: Flight[] = [];
@@ -131,6 +132,11 @@ export class SeatAvailabilityComponent implements OnInit {
 
   this.stepService.completeStep('seatAvailability');
   this.stepService.setActiveStep('passengerInfo');
+
+  if (this.redirectToCustomer) {
+    // Landing'den geldiğinde müşteri akışına yönlendir
+    this.router.navigate(['/customer']);
+  }
 }
 
   swapAirports() {

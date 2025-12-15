@@ -138,14 +138,26 @@
 /* ÖNCELİKLİ DURUMLAR (Bu renkler her zaman üste çıkmalı) */
 /* ============================================== */
 
-/* DOLU KOLTUK (GRİ) - İkinci en yüksek öncelik */
-/* !important ekleyerek satır rengini ezeriz */
+/* ============================================== */
+/* 🔒 DOLU KOLTUKLAR – KESİN KİLİT (SON DOKUNUŞ)  */
+/* ============================================== */
+
 .seat.taken {
-    background: #a9a9a9 !important; 
-    cursor: not-allowed;
-    color: #666;
-    border-color: #999;
+    pointer-events: none;      /* 🔥 TIKLAMAYI TAMAMEN KAPAT */
+    opacity: 0.9;              /* Hafif soluk görünüm */
+    transform: none !important;
+    box-shadow: none !important;
+    background: #a9a9a9 !important; /* Gri kilitli görünüm */
+    border-color: #8c8c8c !important;
+    color: #f5f5f5 !important;
 }
+
+/* Hover da tamamen iptal */
+.seat.taken:hover {
+    transform: none !important;
+    box-shadow: none !important;
+}
+
 
 /* SEÇİLİ KOLTUK (YEŞİL) - En yüksek öncelik */
 /* !important ekleyerek tüm diğer renkleri ezeriz */

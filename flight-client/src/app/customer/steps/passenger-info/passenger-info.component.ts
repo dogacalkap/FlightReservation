@@ -1,7 +1,8 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { AuthModalComponent } from '../../components/auth-modal/auth-modal.component';
 import { ReservationStepsService } from '../../../services/reservation-steps.service';
+import { AuthService } from '../../../services/auth.service';
 
 @Component({
   selector: 'app-passenger-info',
@@ -10,12 +11,22 @@ import { ReservationStepsService } from '../../../services/reservation-steps.ser
   templateUrl: './passenger-info.component.html',
   styleUrls: ['./passenger-info.component.css']
 })
-export class PassengerInfoComponent {
+export class PassengerInfoComponent implements OnInit {
 
   showModal = false;
   loggedIn = false;
 
-  constructor(public stepService: ReservationStepsService) {}
+  constructor(
+    public stepService: ReservationStepsService,
+    private auth: AuthService
+  ) {}
+
+  ngOnInit(): void {
+    const user = this.auth.getCurrentUser();
+    if (user) {
+      this.applyUser(user);
+    }
+  }
 
   openModal() {
     this.showModal = true;
@@ -25,19 +36,22 @@ export class PassengerInfoComponent {
     this.showModal = false;
   }
 
-modalLoggedIn(user: any) {
-  this.loggedIn = true;
-  this.showModal = false;
+  modalLoggedIn(user: any) {
+    this.applyUser(user);
+    this.showModal = false;
+  }
 
-  this.stepService.passengerInfo = {
-    userId: user.userId,     // 🔥 DÜZELTİLDİ
-    name: user.fullName,     // 🔥 DÜZELTİLDİ
-    email: user.email
-  };
+  private applyUser(user: any) {
+    this.loggedIn = true;
+    this.stepService.passengerInfo = {
+      userId: user.userId,
+      name: user.fullName,
+      email: user.email
+    };
 
-  this.stepService.completeStep('passengerInfo');
-  this.stepService.setActiveStep('seatSelection');
-}
+    this.stepService.completeStep('passengerInfo');
+    this.stepService.setActiveStep('seatSelection');
+  }
 
 
 }

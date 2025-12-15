@@ -1,24 +1,7 @@
 <div class="landing-container">
 
   <!-- NAVBAR -->
-  <nav class="navbar">
-    <div class="logo">SuperAirlines</div>
-
-    <ul class="menu">
-      <ul class="menu">
-      <li><a routerLink="/customer/my-flights" class="clickable">Uçuşlarım</a></li>
-      <li><a routerLink="/offers" class="clickable">Fırsatlar</a></li>
-      <li><a routerLink="/about" class="clickable">Hakkımızda</a></li>
-      <li><a routerLink="/contact" class="clickable">İletişim</a></li>
-    </ul>
-
-    </ul>
-
-    <div class="nav-buttons">
-      <button routerLink="/login" class="btn-outline">Giriş Yap</button>
-      <button routerLink="/customer" class="btn-primary">Bilet Al</button>
-    </div>
-  </nav>
+  <app-navbar></app-navbar>
 
   <!-- HERO SECTION -->
   <section class="hero">
@@ -40,6 +23,16 @@
     </div>
 
   </section>
+
+  <!-- FLIGHT SEARCH ON LANDING -->
+  <section class="landing-search">
+    <h3>Hemen Uçuşunu Bul</h3>
+    <p class="subtitle">Şehir ve tarih seç, anında uygun uçuşları gör. Seçtiğinde süreç otomatik devam etsin.</p>
+    <app-seat-availability [redirectToCustomer]="true"></app-seat-availability>
+  </section>
+
+  <!-- CONTACT SECTION -->
+  <app-contact-block></app-contact-block>
 
   <!-- WAVE BACKGROUND -->
   <div class="background-shape"></div>

@@ -5,6 +5,7 @@ import { Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { LottieComponent, provideLottieOptions } from 'ngx-lottie';
 import player from 'lottie-web';
+import { AuthService } from '../../services/auth.service';
 
 @Component({
   selector: 'app-admin-login',
@@ -21,12 +22,22 @@ export class AdminLoginComponent {
   email = "";
   password = "";
   errorMessage = "";
+  mode: 'admin' | 'customer' = 'admin';
 
   adminLottie = {
     path: "https://lottie.host/40f4975f-d0f9-4c3a-8412-72acb43dfb77/OguCzCvY9B.json"
   };
 
-  constructor(private http: HttpClient, private router: Router) {}
+  constructor(
+    private http: HttpClient,
+    private router: Router,
+    private auth: AuthService
+  ) {}
+
+  setMode(m: 'admin' | 'customer') {
+    this.mode = m;
+    this.errorMessage = "";
+  }
 
   login() {
     if (!this.email || !this.password) {
@@ -34,18 +45,36 @@ export class AdminLoginComponent {
       return;
     }
 
-    this.http.post<any>("http://localhost:5096/api/AdminAuth/login", {
-      email: this.email,
-      password: this.password
-    }).subscribe({
-      next: (res: any) => {
-      localStorage.setItem("admin_token", res.token);
-      this.router.navigate(['/admin/airports']);
-    },
-  error: () => {
-    this.errorMessage = "Hatalı admin bilgisi.";
-  }
-    });
+    if (this.mode === 'admin') {
+      this.http.post<any>("http://localhost:5096/api/AdminAuth/login", {
+        email: this.email,
+        password: this.password
+      }).subscribe({
+        next: (res: any) => {
+          localStorage.setItem("admin_token", res.token);
+          this.router.navigate(['/admin/airports']);
+        },
+        error: () => {
+          this.errorMessage = "Hatalı admin bilgisi.";
+        }
+      });
+    } else {
+      this.auth.login(this.email, this.password).subscribe({
+        next: (res) => {
+          const user = {
+            userId: res.userId,
+            fullName: res.fullName,
+            email: res.email
+          };
+          this.auth.setCurrentUser(user);
+          // Yolcu akışına yönlendir
+          this.router.navigate(['/customer']);
+        },
+        error: () => {
+          this.errorMessage = "Hatalı müşteri bilgisi.";
+        }
+      });
+    }
   }
 
   goHome() {

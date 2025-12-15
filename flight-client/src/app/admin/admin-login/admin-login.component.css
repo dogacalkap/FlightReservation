@@ -6,16 +6,20 @@
   justify-content: center;
   align-items: center;
   padding: 20px;
+  position: relative;
+  overflow: hidden;
 }
 
 .login-card {
-  width: 380px;
-  background: #fff;
-  border-radius: 20px;
-  padding: 35px 30px;
-  box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+  position: relative;
+  width: 420px;
+  background: rgba(255,255,255,0.95);
+  border-radius: 24px;
+  padding: 40px 36px 32px;
+  box-shadow: 0 18px 40px rgba(0,0,0,0.18);
   text-align: center;
   animation: fadeIn 0.6s ease;
+  backdrop-filter: blur(8px);
 }
 
 .animation-box {
@@ -37,6 +41,33 @@ h2 {
   margin-bottom: 25px;
 }
 
+.toggle {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 12px;
+  background: #f3f0ff;
+  padding: 4px;
+  border-radius: 14px;
+}
+
+.toggle button {
+  flex: 1;
+  padding: 10px 12px;
+  border-radius: 12px;
+  border: 1px solid #ddd;
+  background: #f8f8f8;
+  font-weight: 700;
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+
+.toggle button.active {
+  background: linear-gradient(135deg, #6d22e0, #8e5bff);
+  color: #fff;
+  border-color: transparent;
+  box-shadow: 0 8px 18px rgba(109,34,224,0.18);
+}
+
 .form-group {
   text-align: left;
   margin-bottom: 15px;
@@ -53,8 +84,8 @@ label {
 input {
   width: 100%;
   padding: 12px;
-  border-radius: 10px;
-  border: 1px solid #ccc;
+  border-radius: 12px;
+  border: 1px solid #d8d8d8;
   outline: none;
   font-size: 14px;
   transition: 0.2s;
@@ -69,10 +100,10 @@ input:focus {
   width: 100%;
   margin-top: 10px;
   padding: 12px;
-  background: #6a5af9;
+  background: linear-gradient(135deg, #6d22e0, #8e5bff);
   color: #fff;
   border: none;
-  border-radius: 12px;
+  border-radius: 14px;
   cursor: pointer;
   font-size: 16px;
   font-weight: 600;
@@ -101,20 +132,42 @@ input:focus {
 
 .back-icon {
   position: absolute;
-  top: 20px;
-  left: 20px;
-  background: white;
+  top: 16px;
+  left: 16px;
+  background: #fff;
   color: #444;
   border: none;
-  font-size: 20px;
+  font-size: 18px;
   padding: 8px 10px;
-  border-radius: 50%;
-  box-shadow: 0 4px 14px rgba(0,0,0,0.15);
+  border-radius: 12px;
+  box-shadow: 0 6px 16px rgba(0,0,0,0.12);
   cursor: pointer;
   transition: all 0.2s ease;
+  z-index: 2;
 }
 
 .back-icon:hover {
   background: #f1f1f1;
   transform: scale(1.07);
+}
+
+.admin-login-container::before,
+.admin-login-container::after {
+  content: '';
+  position: absolute;
+  width: 420px;
+  height: 420px;
+  background: rgba(255,255,255,0.08);
+  border-radius: 50%;
+  filter: blur(60px);
+}
+
+.admin-login-container::before {
+  top: -120px;
+  left: -160px;
+}
+
+.admin-login-container::after {
+  bottom: -140px;
+  right: -120px;
 }

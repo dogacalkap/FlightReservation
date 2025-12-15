@@ -52,6 +52,20 @@ export class CustomerHomeComponent implements OnInit {
     this.showWelcomeScreen = true;
     this.showTransition = false;
 
+    // Eğer landing'de arama yapılıp uçuş seçilmişse karşılama ekranını atla
+    if (this.stepService.steps.seatAvailability || this.stepService.selectedFlight) {
+      this.showWelcomeScreen = false;
+      this.showTransition = false;
+
+      // İlk adım zaten tamamlandı, bir sonraki adıma geç
+      if (this.stepService.activeStep === 'seatAvailability') {
+        this.stepService.setActiveStep('passengerInfo');
+      }
+
+      // Anında UI'yı güncelle
+      this.cdr.detectChanges();
+    }
+
     // Customer route içindeyken steps görünsün
     this.router.events.subscribe(event => {
       if (event instanceof NavigationEnd) {

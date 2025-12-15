@@ -31,6 +31,7 @@ namespace FlightReservation.Controllers.Api
             if (await _context.Users.AnyAsync(u => u.Email == user.Email))
                 return BadRequest("This email is already registered.");
 
+            user.IsAdmin = false; // kayıt olan herkes müşteri
             _context.Users.Add(user);
             await _context.SaveChangesAsync();
 
@@ -49,10 +50,9 @@ namespace FlightReservation.Controllers.Api
             if (string.IsNullOrWhiteSpace(dto.Password))
                 return BadRequest("Password cannot be empty.");
 
-            var user = await _context.Users
-                .FirstOrDefaultAsync(u => u.Email == dto.Email);
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == dto.Email);
 
-            if (user == null)
+            if (user == null || user.IsAdmin)
                 return Unauthorized("Email not found.");
 
             if (user.Password != dto.Password)

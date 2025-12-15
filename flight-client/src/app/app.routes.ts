@@ -50,6 +50,13 @@ export const routes: Routes = [
       { path: 'airports', component: AirportsComponent },
       { path: 'flights', component: FlightsComponent },
       {
+        path: 'users',
+        loadComponent: () =>
+        import('./admin/users/admin-users.component')
+        .then(m => m.AdminUsersComponent)
+    },
+
+      {
         path: 'messages',
         loadComponent: () =>
           import('./admin/messages/messages.component')

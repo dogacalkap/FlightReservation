@@ -1,0 +1,106 @@
+<!-- admin-users.component.html (GÜNCEL + ÇALIŞIR) -->
+
+<h2>Users</h2>
+
+<!-- ================= CREATE USER ================= -->
+<div class="card">
+  <h4>Create User</h4>
+
+  <form (ngSubmit)="createUser()" #createForm="ngForm">
+    <div class="form-row">
+      <input
+        type="text"
+        name="fullName"
+        [(ngModel)]="newUser.fullName"
+        placeholder="Full Name"
+        required />
+
+      <input
+        type="email"
+        name="email"
+        [(ngModel)]="newUser.email"
+        placeholder="Email"
+        required />
+
+      <button
+        type="submit"
+        class="primary-btn"
+        [disabled]="createForm.invalid">
+        Add User
+      </button>
+    </div>
+  </form>
+</div>
+
+<!-- ================= USERS LIST ================= -->
+<div class="card">
+  <h4>Users List</h4>
+
+  <table>
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Full Name</th>
+        <th>Email</th>
+        <th>Created</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+
+    <tbody>
+      <tr *ngFor="let u of users; trackBy: trackByUserId">
+        <td>{{ u.id }}</td>
+        <td>{{ u.fullName }}</td>
+        <td>{{ u.email }}</td>
+        <td>{{ u.createdAt | date:'short' }}</td>
+
+        <td class="actions">
+          <!-- EDIT -->
+          <button
+            type="button"
+            class="edit-btn"
+            (click)="startEdit(u)">
+            Edit
+          </button>
+
+          <!-- DELETE -->
+          <button
+            type="button"
+            class="delete-btn"
+            [disabled]="deletingId === u.id"
+            (click)="deleteUser(u.id)">
+            {{ deletingId === u.id ? 'Deleting...' : 'Delete' }}
+          </button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- ================= EDIT MODAL ================= -->
+<div class="modal-backdrop" *ngIf="editingUser">
+  <div class="custom-modal">
+    <h4>Edit User</h4>
+
+    <form (ngSubmit)="updateUser()">
+      <input
+        type="text"
+        [(ngModel)]="editingUser.fullName"
+        name="editFullName"
+        placeholder="Full Name"
+        required />
+
+      <input
+        type="email"
+        [(ngModel)]="editingUser.email"
+        name="editEmail"
+        placeholder="Email"
+        required />
+
+      <div class="modal-actions">
+        <button type="submit" class="primary-btn">Save</button>
+        <button type="button" class="delete-btn" (click)="cancelEdit()">Cancel</button>
+      </div>
+    </form>
+  </div>
+</div>

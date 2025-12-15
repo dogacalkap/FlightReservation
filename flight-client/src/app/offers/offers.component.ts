@@ -2,6 +2,8 @@ import { Component } from '@angular/core';
 import { LottieComponent, provideLottieOptions } from 'ngx-lottie';
 import player from 'lottie-web';
 import { Router, RouterLink } from '@angular/router';
+import { NavbarComponent } from '../shared/navbar/navbar.component';
+import { ContactBlockComponent } from '../shared/contact-block/contact-block.component';
 // JSON animasyon importları
 import planeAnim from '../../assets/lottie/plane.json';
 import discountAnim from '../../assets/lottie/discount.json';
@@ -11,7 +13,7 @@ import studentAnim from '../../assets/lottie/student.json';
 @Component({
   selector: 'app-offers',
   standalone: true,
-  imports: [LottieComponent, RouterLink],
+  imports: [LottieComponent, RouterLink, NavbarComponent, ContactBlockComponent],
   providers: [
     provideLottieOptions({
       player: () => player

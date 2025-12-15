@@ -2,11 +2,13 @@ import { Component, OnInit } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { CommonModule } from '@angular/common';
 import { ChangeDetectorRef } from '@angular/core';
+import { NavbarComponent } from '../../shared/navbar/navbar.component';
+import { ContactBlockComponent } from '../../shared/contact-block/contact-block.component';
 
 @Component({
   selector: 'app-my-flights',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, NavbarComponent, ContactBlockComponent],
   templateUrl: './my-flights.component.html',
   styleUrls: ['./my-flights.component.css']
 })

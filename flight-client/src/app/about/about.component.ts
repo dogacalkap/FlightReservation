@@ -3,10 +3,12 @@ import { CommonModule } from '@angular/common';
 import { LottieComponent, provideLottieOptions } from 'ngx-lottie';
 import player from 'lottie-web';
 import { RouterModule } from '@angular/router'; 
+import { NavbarComponent } from '../shared/navbar/navbar.component';
+import { ContactBlockComponent } from '../shared/contact-block/contact-block.component';
 @Component({
   selector: 'app-about',
   standalone: true,
-  imports: [CommonModule, LottieComponent, RouterModule],
+  imports: [CommonModule, LottieComponent, RouterModule, NavbarComponent, ContactBlockComponent],
   providers: [
     provideLottieOptions({
       player: () => player

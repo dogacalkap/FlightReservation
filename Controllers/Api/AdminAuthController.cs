@@ -22,7 +22,7 @@ namespace FlightReservation.Controllers.Api
             var admin = await _context.Users
                 .FirstOrDefaultAsync(u => u.Email == dto.Email && u.Password == dto.Password);
 
-            if (admin == null)
+            if (admin == null || !admin.IsAdmin)
                 return Unauthorized("Admin bilgileri yanlış.");
 
             return Ok(new

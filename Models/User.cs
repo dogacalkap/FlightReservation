@@ -20,6 +20,9 @@ namespace FlightReservation.Models
         [MinLength(6, ErrorMessage = "Şifre en az 6 karakter olmalıdır.")]
         public string Password { get; set; } = "";
 
+        // Rol bayrağı: admin girişleri ile müşteri girişlerini ayırmak için
+        public bool IsAdmin { get; set; } = false;
+
         public DateTime CreatedAt { get; set; } = DateTime.Now;
     }
 }
