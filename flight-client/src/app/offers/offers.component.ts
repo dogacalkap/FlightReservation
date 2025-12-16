@@ -10,10 +10,12 @@ import discountAnim from '../../assets/lottie/discount.json';
 import businessAnim from '../../assets/lottie/business.json';
 import studentAnim from '../../assets/lottie/student.json';
 
+import { TranslatePipe } from '../shared/translate.pipe';
+
 @Component({
   selector: 'app-offers',
   standalone: true,
-  imports: [LottieComponent, RouterLink, NavbarComponent, ContactBlockComponent],
+  imports: [LottieComponent, RouterLink, NavbarComponent, ContactBlockComponent, TranslatePipe],
   providers: [
     provideLottieOptions({
       player: () => player

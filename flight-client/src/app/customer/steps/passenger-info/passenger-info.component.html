@@ -3,26 +3,28 @@
   <!-- CARD -->
   <div class="passenger-card">
 
-    <h2>Passenger Information</h2>
+    <h2>{{ 'passenger.title' | t }}</h2>
 
     <!-- NOT LOGGED IN -->
     <div *ngIf="!loggedIn" class="not-logged">
 
       <div class="warning-box">
         <i class="bi bi-exclamation-triangle"></i>
-        You must log in to continue.
+        {{ 'passenger.warning' | t }}
       </div>
 
       <button class="login-btn" (click)="openModal()">
         <i class="bi bi-person-circle"></i>
-        Login / Register
+        {{ 'passenger.loginBtn' | t }}
       </button>
     </div>
 
     <!-- LOGGED IN -->
-    <div *ngIf="loggedIn" class="success-box">
-      <i class="bi bi-check-circle-fill"></i>
-      Logged in successfully!
+    <div *ngIf="loggedIn" class="success-box user-row">
+      <div class="user-name">
+        <i class="bi bi-check-circle-fill"></i>
+        {{ stepService.passengerInfo?.name || ('passenger.loggedSuccess' | t) }}
+      </div>
     </div>
 
   </div>

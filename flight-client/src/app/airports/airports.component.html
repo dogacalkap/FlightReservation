@@ -1,99 +1,102 @@
-<div class="container">
+<div class="admin-page">
 
-  <!-- SAYFA BAŞLIĞI -->
-  <h2 class="mb-4">Airports</h2>
+  <div class="header-row">
+    <div>
+      <p class="eyebrow">{{ 'adminAirports.eyebrow' | t }}</p>
+      <h2>{{ 'adminAirports.title' | t }}</h2>
+      <p class="lede">{{ 'adminAirports.lede' | t }}</p>
+    </div>
+  </div>
 
-  <!-- FORM CARD -->
-  <div class="card shadow-sm mb-4">
-    <div class="card-body">
-      <h5 class="card-title mb-3">
-        {{ editId ? 'Update Airport' : 'Create Airport' }}
-      </h5>
+  <div class="grid">
 
-      <form [formGroup]="form" (ngSubmit)="saveAirport()" class="row g-3">
+    <div class="card">
+      <div class="card-head">
+    <div>
+      <p class="eyebrow">{{ editId ? ('adminAirports.form.eyebrow.update' | t) : ('adminAirports.form.eyebrow.create' | t) }}</p>
+      <h3>{{ editId ? ('adminAirports.form.title.update' | t) : ('adminAirports.form.title.create' | t) }}</h3>
+    </div>
+        <span class="badge">{{ editId ? ('adminAirports.form.badge.update' | t) : ('adminAirports.form.badge.create' | t) }}</span>
+      </div>
 
-        <div class="col-md-3">
-          <label class="form-label">Code</label>
-          <input type="text" class="form-control" formControlName="code">
+      <form [formGroup]="form" (ngSubmit)="saveAirport()" class="form-grid">
+
+        <label>
+          <span>{{ 'adminAirports.form.code' | t }}</span>
+          <input type="text" formControlName="code" [placeholder]="'adminAirports.form.codePlaceholder' | t">
+        </label>
+
+        <label>
+          <span>{{ 'adminAirports.form.name' | t }}</span>
+          <input type="text" formControlName="name" [placeholder]="'adminAirports.form.namePlaceholder' | t">
+        </label>
+
+        <label>
+          <span>{{ 'adminAirports.form.city' | t }}</span>
+          <input type="text" formControlName="city" [placeholder]="'adminAirports.form.cityPlaceholder' | t">
+        </label>
+
+        <label>
+          <span>{{ 'adminAirports.form.country' | t }}</span>
+          <input type="text" formControlName="country" [placeholder]="'adminAirports.form.countryPlaceholder' | t">
+        </label>
+
+        <div class="full-row" *ngIf="error">
+          <div class="alert">{{ error }}</div>
         </div>
 
-        <div class="col-md-3">
-          <label class="form-label">Name</label>
-          <input type="text" class="form-control" formControlName="name">
-        </div>
-
-        <div class="col-md-3">
-          <label class="form-label">City</label>
-          <input type="text" class="form-control" formControlName="city">
-        </div>
-
-        <div class="col-md-3">
-          <label class="form-label">Country</label>
-          <input type="text" class="form-control" formControlName="country">
-        </div>
-
-        <!-- Hata mesajı -->
-        <div class="col-12" *ngIf="error">
-          <div class="alert alert-danger mt-2">{{ error }}</div>
-        </div>
-
-        <div class="col-12 d-flex gap-2 mt-3">
-          <button class="btn btn-primary" type="submit">
-            {{ editId ? 'Update' : 'Create' }}
+        <div class="actions full-row">
+          <button class="primary" type="submit">
+            {{ editId ? ('adminAirports.form.button.update' | t) : ('adminAirports.form.button.create' | t) }}
           </button>
-          <button type="button" class="btn btn-secondary" (click)="clearForm()">
-            Clear
+          <button type="button" class="secondary" (click)="clearForm()">
+            {{ 'adminAirports.form.clear' | t }}
           </button>
         </div>
 
       </form>
     </div>
-  </div>
 
-  <!-- LİSTE CARD -->
-  <div class="card shadow-sm">
-    <div class="card-body">
+    <div class="card">
+      <div class="card-head">
+        <div>
+          <p class="eyebrow">{{ 'adminAirports.list.eyebrow' | t }}</p>
+          <h3>{{ 'adminAirports.list.title' | t }}</h3>
+        </div>
+      </div>
 
-      <h5 class="card-title mb-3">Airports List</h5>
+      <div *ngIf="loading" class="muted">{{ 'adminAirports.list.loading' | t }}</div>
+      <div *ngIf="error && !loading" class="alert">{{ error }}</div>
 
-      <div *ngIf="loading">Loading...</div>
-      <div *ngIf="error && !loading" class="text-danger">{{ error }}</div>
-
-      <table class="table table-hover align-middle" *ngIf="!loading">
-        <thead class="table-dark">
-          <tr>
-            <th>ID</th>
-            <th>Code</th>
-            <th>Name</th>
-            <th>City</th>
-            <th>Country</th>
-            <th>Actions</th>
-          </tr>
-        </thead>
-
-        <tbody>
-          <tr *ngFor="let a of airports">
-            <td>{{ a.id }}</td>
-            <td>{{ a.code }}</td>
-            <td>{{ a.name }}</td>
-            <td>{{ a.city }}</td>
-            <td>{{ a.country }}</td>
-
-            <td>
-              <button class="btn btn-sm btn-warning me-2"
-                      (click)="editAirport(a)">
-                Edit
-              </button>
-
-              <button class="btn btn-sm btn-danger" (click)="onDeleteClick(a.id)">
-                 Delete
-              </button>
-            </td>
-          </tr>
-        </tbody>
-      </table>
-
+      <div class="table-wrapper" *ngIf="!loading">
+        <table>
+          <thead>
+            <tr>
+              <th>{{ 'adminAirports.list.id' | t }}</th>
+              <th>{{ 'adminAirports.list.code' | t }}</th>
+              <th>{{ 'adminAirports.list.name' | t }}</th>
+              <th>{{ 'adminAirports.list.city' | t }}</th>
+              <th>{{ 'adminAirports.list.country' | t }}</th>
+              <th>{{ 'adminAirports.list.actions' | t }}</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let a of airports">
+              <td>{{ a.id }}</td>
+              <td>{{ a.code }}</td>
+              <td>{{ a.name }}</td>
+              <td>{{ a.city }}</td>
+              <td>{{ a.country }}</td>
+              <td class="table-actions">
+                <button class="ghost" (click)="editAirport(a)">{{ 'adminAirports.list.edit' | t }}</button>
+                <button class="danger" (click)="onDeleteClick(a.id)">{{ 'adminAirports.list.delete' | t }}</button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
     </div>
+
   </div>
 
 </div>

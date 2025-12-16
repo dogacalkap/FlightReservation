@@ -6,11 +6,13 @@ import { FormsModule } from '@angular/forms';
 import { LottieComponent, provideLottieOptions } from 'ngx-lottie';
 import player from 'lottie-web';
 import { AuthService } from '../../services/auth.service';
+import { TranslatePipe } from '../../shared/translate.pipe';
+import { TranslationService } from '../../services/translation.service';
 
 @Component({
   selector: 'app-admin-login',
   standalone: true,
-  imports: [CommonModule, FormsModule, LottieComponent],
+  imports: [CommonModule, FormsModule, LottieComponent, TranslatePipe],
   providers: [
     provideLottieOptions({ player: () => player })
   ],
@@ -31,7 +33,8 @@ export class AdminLoginComponent {
   constructor(
     private http: HttpClient,
     private router: Router,
-    private auth: AuthService
+    private auth: AuthService,
+    private i18n: TranslationService
   ) {}
 
   setMode(m: 'admin' | 'customer') {
@@ -41,7 +44,7 @@ export class AdminLoginComponent {
 
   login() {
     if (!this.email || !this.password) {
-      this.errorMessage = "Lütfen tüm alanları doldurunuz.";
+      this.errorMessage = this.i18n.translate('adminLogin.error');
       return;
     }
 
@@ -55,7 +58,7 @@ export class AdminLoginComponent {
           this.router.navigate(['/admin/airports']);
         },
         error: () => {
-          this.errorMessage = "Hatalı admin bilgisi.";
+          this.errorMessage = this.i18n.translate('adminLogin.errorAdmin');
         }
       });
     } else {
@@ -71,7 +74,7 @@ export class AdminLoginComponent {
           this.router.navigate(['/customer']);
         },
         error: () => {
-          this.errorMessage = "Hatalı müşteri bilgisi.";
+          this.errorMessage = this.i18n.translate('adminLogin.errorCustomer');
         }
       });
     }

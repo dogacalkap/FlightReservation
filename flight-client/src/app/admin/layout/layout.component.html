@@ -3,7 +3,7 @@
   <!-- SIDEBAR -->
   <aside class="sidebar">
     <div class="sidebar-header">
-      <h3>Admin Panel</h3>
+      <h3>{{ 'admin.sidebar.title' | t }}</h3>
     </div>
 
     <nav class="menu">
@@ -11,39 +11,39 @@
       <!-- Airports -->
       <a routerLink="/admin/airports" routerLinkActive="active">
         <i class="bi bi-building"></i>
-        Airports
+        {{ 'admin.sidebar.airports' | t }}
       </a>
 
       <!-- Flights -->
       <a routerLink="/admin/flights" routerLinkActive="active">
         <i class="bi bi-airplane"></i>
-        Flights
+        {{ 'admin.sidebar.flights' | t }}
       </a>
-      
+
       <!-- Users -->
        <a routerLink="/admin/users" routerLinkActive="active">
         <i class="bi bi-people"></i>
-        Users
+        {{ 'admin.sidebar.users' | t }}
       </a>
 
       <!-- Messages (YENİ EKLEDİK) -->
       <a routerLink="/admin/messages" routerLinkActive="active">
         <i class="bi bi-envelope"></i>
-        Messages
+        {{ 'admin.sidebar.messages' | t }}
       </a>
 
     </nav>
 
     <button class="logout-btn" (click)="logout()">
       <i class="bi bi-box-arrow-right"></i>
-      Logout
+      {{ 'admin.sidebar.logout' | t }}
     </button>
   </aside>
 
   <!-- CONTENT -->
   <main class="content">
     <nav class="topbar">
-      <span>Admin Dashboard</span>
+      <span>{{ 'admin.topbar.title' | t }}</span>
     </nav>
 
     <section class="page">

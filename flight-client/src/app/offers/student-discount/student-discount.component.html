@@ -2,42 +2,42 @@
 
   <!-- HERO -->
   <section class="hero-header">
-    <h1>🎓 Öğrenci İndirimi</h1>
-    <p>Üniversite ve lise öğrencilerine özel %15 indirim + 20 kg ek bagaj hakkı!</p>
+    <h1>{{ 'studentDiscount.hero.title' | t }}</h1>
+    <p>{{ 'studentDiscount.hero.desc' | t }}</p>
   </section>
 
   <!-- CONTENT CARD -->
   <div class="content-card">
 
-    <h2>Kimler Faydalanabilir?</h2>
+    <h2>{{ 'studentDiscount.eligible.title' | t }}</h2>
     <ul>
-      <li>Türkiye’de veya yurt dışında örgün eğitim gören lise / üniversite öğrencileri</li>
-      <li>Geçerli öğrenci belgesi veya öğrenci kartı ibraz eden yolcular</li>
+      <li>{{ 'studentDiscount.eligible.item1' | t }}</li>
+      <li>{{ 'studentDiscount.eligible.item2' | t }}</li>
     </ul>
 
-    <h2>Avantajlar</h2>
+    <h2>{{ 'studentDiscount.advantages.title' | t }}</h2>
     <ul>
-      <li>Tüm yurt içi uçuşlarda net %15 indirim</li>
-      <li>+20 kg ek bagaj hakkı</li>
-      <li>Ücretsiz standart koltuk seçimi</li>
+      <li>{{ 'studentDiscount.advantages.item1' | t }}</li>
+      <li>{{ 'studentDiscount.advantages.item2' | t }}</li>
+      <li>{{ 'studentDiscount.advantages.item3' | t }}</li>
     </ul>
 
-    <h2>Koşullar</h2>
+    <h2>{{ 'studentDiscount.conditions.title' | t }}</h2>
     <ul>
-      <li>Check-in sırasında öğrenci belgesi ibraz edilmelidir.</li>
-      <li>İndirim yalnızca öğrencinin kendi bileti için geçerlidir.</li>
-      <li>Diğer kampanyalarla birleştirilemez.</li>
+      <li>{{ 'studentDiscount.conditions.item1' | t }}</li>
+      <li>{{ 'studentDiscount.conditions.item2' | t }}</li>
+      <li>{{ 'studentDiscount.conditions.item3' | t }}</li>
     </ul>
 
-    <h2>Nasıl Kullanılır?</h2>
+    <h2>{{ 'studentDiscount.howTo.title' | t }}</h2>
     <ol>
-      <li>Bilet alımında “Öğrenci” yolcu tipini seç.</li>
-      <li>Ödeme adımında indirim otomatik olarak uygulanır.</li>
-      <li>Havalimanında öğrenci belgeni göstererek check-in yap.</li>
+      <li>{{ 'studentDiscount.howTo.item1' | t }}</li>
+      <li>{{ 'studentDiscount.howTo.item2' | t }}</li>
+      <li>{{ 'studentDiscount.howTo.item3' | t }}</li>
     </ol>
 
    <button class="back-btn" routerLink="/offers">
-    ← Tüm Fırsatlara Dön
+    {{ 'studentDiscount.backBtn' | t }}
   </button>
 
 

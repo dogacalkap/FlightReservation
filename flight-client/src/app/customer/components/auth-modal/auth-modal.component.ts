@@ -59,7 +59,7 @@ login() {
         email: res.email
       };
 
-      localStorage.setItem("customerUser", JSON.stringify(user));
+      this.authService.setCurrentUser(user);
       this.loggedIn.emit(user);
 
       this.close();

@@ -1,5 +1,8 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
+import { BehaviorSubject } from 'rxjs';
+import { ReservationStepsService } from './reservation-steps.service';
+import { Router } from '@angular/router';
 
 @Injectable({
   providedIn: 'root'
@@ -8,8 +11,13 @@ export class AuthService {
 
   private apiUrl = 'http://localhost:5096/api/AuthApi';
   private currentUser: any = null;
+  user$ = new BehaviorSubject<any>(null);
 
-  constructor(private http: HttpClient) {}
+  constructor(
+    private http: HttpClient,
+    private steps: ReservationStepsService,
+    private router: Router
+  ) {}
 
   // LOGIN → backend email + password bekliyor
   login(email: string, password: string) {
@@ -39,6 +47,8 @@ export class AuthService {
 
     // Genel kullanım için de tutalım
     localStorage.setItem("currentUser", JSON.stringify(user));
+
+    this.user$.next(user);
   }
 
   // Customer verisini doğru şekilde oku
@@ -59,6 +69,11 @@ export class AuthService {
     localStorage.removeItem("currentUser");
     localStorage.removeItem("customerUser"); // ❗ Eksikti, eklendi
     this.currentUser = null;
+    this.user$.next(null);
+
+    // Rezervasyon akışını sıfırla ve landing sayfasına dön
+    this.steps.resetAll();
+    this.router.navigate(['/landing']);
   }
 
   // ======================================

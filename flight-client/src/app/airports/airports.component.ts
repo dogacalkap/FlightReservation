@@ -3,13 +3,16 @@ import { CommonModule } from '@angular/common';
 import { AirportService } from '../services/airport.service';
 import { Airport } from '../models/airport';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { ChangeDetectorRef } from '@angular/core';
+import { TranslatePipe } from '../shared/translate.pipe';
+import { TranslationService } from '../services/translation.service';
 
 @Component({
   selector: 'app-airports',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [CommonModule, ReactiveFormsModule, TranslatePipe],
   templateUrl: './airports.component.html',
-  styleUrl: './airports.component.css'
+  styleUrls: ['./airports.component.css']
 })
 export class AirportsComponent implements OnInit {
 
@@ -21,7 +24,9 @@ export class AirportsComponent implements OnInit {
 
   constructor(
     private airportService: AirportService,
-    private fb: FormBuilder
+    private fb: FormBuilder,
+    private cdr: ChangeDetectorRef,
+    private i18n: TranslationService
   ) {}
 
   ngOnInit(): void {
@@ -45,10 +50,12 @@ export class AirportsComponent implements OnInit {
       next: (data) => {
         this.airports = data;
         this.loading = false;
+        this.cdr.detectChanges();
       },
       error: () => {
-        this.error = 'Airport listesi yüklenirken hata oluştu.';
+        this.error = this.i18n.translate('adminAirports.error.load');
         this.loading = false;
+        this.cdr.detectChanges();
       }
     });
   }
@@ -81,7 +88,7 @@ export class AirportsComponent implements OnInit {
   // ---------------------------
   saveAirport(): void {
     if (!this.form.valid) {
-      this.error = 'Tüm alanları doldurmalısın.';
+      this.error = this.i18n.translate('adminAirports.error.required');
       return;
     }
 
@@ -97,7 +104,7 @@ export class AirportsComponent implements OnInit {
           this.airports.push(created);
           this.clearForm();
         },
-        error: () => this.error = 'Ekleme sırasında hata oluştu.'
+        error: () => this.error = this.i18n.translate('adminAirports.error.create')
       });
 
     } else {
@@ -109,7 +116,7 @@ export class AirportsComponent implements OnInit {
 
           this.clearForm();
         },
-        error: () => this.error = 'Güncelleme sırasında hata oluştu.'
+        error: () => this.error = this.i18n.translate('adminAirports.error.update')
       });
     }
   }
@@ -118,11 +125,11 @@ export class AirportsComponent implements OnInit {
   // DELETE → DOM attribute üzerinden güvenli ID
   // ---------------------------
   onDeleteClick(id: number): void {
-  if (!confirm("Bu havalimanını silmek istediğine emin misin?")) return;
+  if (!confirm(this.i18n.translate('adminAirports.confirm.delete'))) return;
 
   this.airportService.deleteAirport(id).subscribe({
     next: () => this.loadAirports(),
-    error: () => this.error = "Silme sırasında hata oluştu."
+    error: () => this.error = this.i18n.translate('adminAirports.error.delete')
   });
 }
 

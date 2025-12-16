@@ -4,18 +4,18 @@
   <div class="search-card">
 
     <div class="search-header">
-      <h2>Uçuş Ara</h2>
+      <h2>{{ 'search.title' | t }}</h2>
     </div>
 
     <div class="search-grid">
 
       <!-- FROM -->
       <div class="input-box">
-        <label>Nereden</label>
+        <label>{{ 'form.from' | t }}</label>
         <div class="input-inner">
           <i class="bi bi-airplane"></i>
           <select [(ngModel)]="fromAirportId">
-            <option value="">Seçiniz</option>
+            <option value="">{{ 'search.select' | t }}</option>
             <option *ngFor="let a of airports" [value]="a.id">
               {{ a.city }} ({{ a.code }})
             </option>
@@ -30,11 +30,11 @@
 
       <!-- TO -->
       <div class="input-box">
-        <label>Nereye</label>
+        <label>{{ 'form.to' | t }}</label>
         <div class="input-inner">
           <i class="bi bi-geo-alt"></i>
           <select [(ngModel)]="toAirportId">
-            <option value="">Seçiniz</option>
+            <option value="">{{ 'search.select' | t }}</option>
             <option *ngFor="let a of airports" [value]="a.id">
               {{ a.city }} ({{ a.code }})
             </option>
@@ -44,7 +44,7 @@
 
       <!-- DATE -->
       <div class="input-box">
-        <label>Gidiş</label>
+        <label>{{ 'form.departure' | t }}</label>
         <div class="input-inner">
           <i class="bi bi-calendar"></i>
           <input type="date" [(ngModel)]="selectedDate">
@@ -53,10 +53,10 @@
 
       <!-- CLASS -->
       <div class="input-box">
-        <label>Sınıf</label>
+        <label>{{ 'form.class' | t }}</label>
         <div class="input-inner">
           <i class="bi bi-person"></i>
-          <select [(ngModel)]="travelClass">
+          <select [(ngModel)]="travelClass" (ngModelChange)="onClassChange()">
             <option value="economy">Economy</option>
             <option value="business">Business</option>
           </select>
@@ -66,7 +66,7 @@
       <!-- SEARCH BUTTON -->
       <div class="search-btn-wrapper">
         <button class="search-btn" (click)="searchFlights()">
-          Uçuş Ara
+          {{ 'form.search' | t }}
         </button>
       </div>
 
@@ -76,33 +76,61 @@
 
   <!-- WARNINGS -->
   <div class="warning-area">
-    <div class="warning-box" *ngIf="showFillWarning">Lütfen tüm alanları doldurun.</div>
+    <div class="warning-box" *ngIf="showFillWarning">{{ 'form.warning.fill' | t }}</div>
     <div class="warning-box noflights" *ngIf="showNoFlightsWarning">
-      Seçilen kriterlerde uçuş bulunamadı.
+      {{ 'form.warning.noflights' | t }}
     </div>
   </div>
 
   <!-- RESULTS -->
-  <div class="results">
+  <div class="results" id="flightResults" *ngIf="filteredFlights.length > 0">
+    <div class="results-title">{{ 'results.title' | t }}</div>
     <div class="flight-card" *ngFor="let f of filteredFlights">
+      <div class="card-top">
+        <div class="timeline">
+          <div class="airport">
+            <div class="code">{{ f.fromAirportCode }}</div>
+            <div class="city">{{ f.fromAirportCity }}</div>
+            <div class="time">{{ f.departureTime | date:'HH:mm' }}</div>
+          </div>
+          <div class="line">
+            <span class="dot"></span>
+            <span class="bar"></span>
+            <span class="dot"></span>
+          </div>
+          <div class="airport">
+            <div class="code">{{ f.toAirportCode }}</div>
+            <div class="city">{{ f.toAirportCity }}</div>
+            <div class="time">{{ f.arrivalTime | date:'HH:mm' }}</div>
+          </div>
+        </div>
 
-      <div class="flight-left">
-        <div class="route">
-          {{ f.fromAirportCity }} → {{ f.toAirportCity }}
-        </div>
-        <div class="time">
-          Kalkış: {{ f.departureTime | date:'short' }}
-        </div>
-        <div class="time">
-          Varış: {{ f.arrivalTime | date:'short' }}
+        <div class="chip-row">
+          <span class="chip">{{ 'search.flightNum' | t }} #{{ f.flightNumber }}</span>
+          <span class="chip secondary">{{ 'label.class' | t }}: {{ travelClass === 'business' ? ('label.business' | t) : ('label.economy' | t) }}</span>
         </div>
       </div>
 
-      <div class="flight-right">
-        <div class="price">{{ f.finalPrice }} ₺</div>
-        <button class="select-btn" (click)="selectFlight(f)">Seç</button>
+      <div class="card-bottom">
+        <div class="detail">
+          <i class="bi bi-calendar3"></i>
+          {{ f.departureTime | date:'dd MMM yyyy' }}
+        </div>
+        <div class="detail">
+          <i class="bi bi-geo-alt"></i>
+          {{ f.fromAirportName }} - {{ f.toAirportName }}
+        </div>
+        <div class="price-area" [class.disabled]="isFlightPast(f)">
+          <div class="price">{{ f.finalPrice }} ₺</div>
+          <small *ngIf="!isFlightPast(f)">{{ 'results.taxIncluded' | t }}</small>
+          <small *ngIf="isFlightPast(f)" class="past-text">{{ 'results.past' | t }}</small>
+        </div>
+        <button class="select-btn"
+                (click)="selectFlight(f)"
+                [disabled]="isFlightPast(f)">
+          {{ isFlightPast(f) ? ('search.notSelectable' | t) : ('form.select' | t) }}
+        </button>
       </div>
-
     </div>
   </div>
 

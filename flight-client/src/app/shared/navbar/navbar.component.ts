@@ -1,18 +1,36 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
+import { AuthService } from '../../services/auth.service';
+import { TranslatePipe } from '../translate.pipe';
+import { TranslationService } from '../../services/translation.service';
 
 @Component({
   selector: 'app-navbar',
   standalone: true,
-  imports: [CommonModule, RouterModule],
+  imports: [CommonModule, RouterModule, TranslatePipe],
   templateUrl: './navbar.component.html',
   styleUrls: ['./navbar.component.css']
 })
 export class NavbarComponent {
+  currentUser: any = null;
   links = [
-    { label: 'Uçuşlarım', path: '/customer/my-flights' },
-    { label: 'Fırsatlar', path: '/offers' },
-    { label: 'Hakkımızda', path: '/about' }
+    { label: 'nav.flights', path: '/customer/my-flights' },
+    { label: 'nav.offers', path: '/offers' },
+    { label: 'nav.about', path: '/about' }
   ];
+
+  constructor(private auth: AuthService, private i18n: TranslationService) {
+    this.currentUser = this.auth.getCurrentUser();
+    this.auth.user$.subscribe(u => this.currentUser = u);
+  }
+
+  logout() {
+    this.auth.logout();
+    this.currentUser = null;
+  }
+
+  setLang(lang: 'tr' | 'en') {
+    this.i18n.setLang(lang);
+  }
 }

@@ -1,14 +1,16 @@
+<app-navbar></app-navbar>
+
 <ng-container *ngIf="showSteps">
   <div class="home-wrapper" [style.background-image]="'url(' + backgroundImage + ')'">
 
-    <div *ngIf="showWelcomeScreen" class="landing-container full-screen-overlay">
+    <div *ngIf="showWelcomeScreen" class="landing-container">
       <div class="landing-box">
 
         <div class="landing-left">
-          <h1>🛫 Uçuş Rezervasyonuna Hoş Geldiniz</h1>
+          <p class="eyebrow">{{ 'home.eyebrow' | t }}</p>
+          <h1>{{ 'home.welcome.title' | t }}</h1>
           <p>
-            Bilet satın alma süreci, 6 ana adımdan oluşmaktadır. Her adım, 
-            işlemi **hızlı, güvenli ve sorunsuz** tamamlamanız için profesyonelce tasarlanmıştır.
+            {{ 'home.welcome.description' | t }}
           </p>
 
           <div class="landing-steps">
@@ -18,15 +20,12 @@
               <span>{{ step.label }}</span>
             </div>
           </div>
-          
+
           <button class="start-btn primary-action-btn" (click)="startProcess()">
-            Bilet Almaya Başla <i class="bi bi-arrow-right"></i>
+            {{ 'home.welcome.startBtn' | t }} <i class="bi bi-arrow-right"></i>
           </button>
         </div>
 
-        <div class="landing-right">
-          <img src="assets/illustrations/plane-purple.png" alt="Yolculuk Başlıyor İllüstrasyonu">
-        </div>
       </div>
     </div>
 
@@ -34,13 +33,40 @@
     <div *ngIf="showTransition" class="transition-overlay full-screen-overlay">
         <div class="transition-content">
             <i class="bi bi-airplane-fill transition-icon"></i>
-            <h2>Akış Başlatılıyor...</h2>
-            <p>İlk adım olan Koltuk Durumu bilgileri yükleniyor.</p>
+            <h2>{{ 'home.transition.title' | t }}</h2>
+            <p>{{ 'home.transition.description' | t }}</p>
         </div>
     </div>
-    
-    
     <ng-container *ngIf="!showWelcomeScreen && !showTransition">
+
+        <div class="hero-card">
+          <div>
+            <p class="eyebrow">{{ 'home.process.eyebrow' | t }}</p>
+            <h1>{{ 'home.process.title' | t }}</h1>
+            <p class="lede">
+              {{ 'home.process.description' | t }}
+            </p>
+            <div class="hero-badges">
+              <span><i class="bi bi-shield-check"></i> {{ 'home.badge.secure' | t }}</span>
+              <span><i class="bi bi-clock-history"></i> {{ 'home.badge.registered' | t }}</span>
+              <span><i class="bi bi-headset"></i> {{ 'home.badge.support' | t }}</span>
+            </div>
+          </div>
+          <div class="hero-stats">
+            <div class="stat">
+              <div class="stat-value">6</div>
+              <div class="stat-label">{{ 'home.stats.steps' | t }}</div>
+            </div>
+            <div class="stat">
+              <div class="stat-value">3 dk</div>
+              <div class="stat-label">{{ 'home.stats.duration' | t }}</div>
+            </div>
+            <div class="stat">
+              <div class="stat-value">%99</div>
+              <div class="stat-label">{{ 'home.stats.success' | t }}</div>
+            </div>
+          </div>
+        </div>
 
         <div class="steps-container">
 
@@ -90,3 +116,5 @@
 
   </div>
 </ng-container>
+
+<app-contact-block></app-contact-block>

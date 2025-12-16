@@ -1,6 +1,6 @@
 <div class="seat-selection-wrapper">
 
-  <h2>Koltuk Seçimi</h2>
+  <h2>{{ 'seat.title' | t }}</h2>
 
   <div class="aircraft-layout">
 
@@ -55,25 +55,25 @@
 
     <div class="legend">
       <div class="legend-item">
-        <span class="legend-color" style="background:#b3e0ff;"></span>Standart Boş
+        <span class="legend-color" style="background:#b3e0ff;"></span>{{ 'seat.legend.standard' | t }}
       </div>
       <div class="legend-item">
-        <span class="legend-color" style="background:#2ecc71;"></span>Seçili
+        <span class="legend-color" style="background:#2ecc71;"></span>{{ 'seat.legend.selected' | t }}
       </div>
       <div class="legend-item">
-        <span class="legend-color" style="background:#a9a9a9;"></span>Dolu
+        <span class="legend-color" style="background:#a9a9a9;"></span>{{ 'seat.legend.occupied' | t }}
       </div>
       <div class="legend-item">
-        <span class="legend-color" style="background:#f1c40f;"></span>Premium (200₺)
+        <span class="legend-color" style="background:#f1c40f;"></span>{{ 'seat.legend.premium' | t }}
       </div>
       <div class="legend-item">
-        <span class="legend-color" style="background:#9b59b6;"></span>Ekstra Diz Mesafesi (100₺)
+        <span class="legend-color" style="background:#9b59b6;"></span>{{ 'seat.legend.extraLeg' | t }}
       </div>
     </div>
 
     <div class="total-and-action">
       <div class="total-label">
-        Seçili Koltuk: {{ selectedSeat || 'Yok' }}
+        {{ 'seat.selectedLabel' | t }} {{ selectedSeat || ('seat.none' | t) }}
       </div>
 
       <div class="total-price">
@@ -85,7 +85,7 @@
           class="continue-btn"
           (click)="continue()"
           [disabled]="!selectedSeat">
-          Onayla ve Devam Et →
+          {{ 'seat.continue' | t }}
         </button>
       </div>
     </div>

@@ -8,12 +8,18 @@ import { SeatSelectionComponent } from '../steps/seat-selection/seat-selection.c
 import { BaggageComponent } from '../steps/baggage/baggage.component';
 import { ExtrasComponent } from '../steps/extras/extras.component';
 import { PaymentComponent } from '../steps/payment/payment.component';
+import { NavbarComponent } from '../../shared/navbar/navbar.component';
+import { ContactBlockComponent } from '../../shared/contact-block/contact-block.component';
 
 import { ReservationStepsService } from '../../services/reservation-steps.service';
 import { StepKey } from '../../types/step-key';
-import { Router, NavigationEnd } from '@angular/router';
+import { Router, NavigationEnd, ActivatedRoute } from '@angular/router';
 
-import { ChangeDetectorRef } from '@angular/core'; 
+import { ChangeDetectorRef } from '@angular/core';
+import { AuthService } from '../../services/auth.service';
+import { TranslatePipe } from '../../shared/translate.pipe';
+import { TranslationService } from '../../services/translation.service';
+
 @Component({
   selector: 'app-customer-home',
   standalone: true,
@@ -25,7 +31,10 @@ import { ChangeDetectorRef } from '@angular/core';
     SeatSelectionComponent,
     BaggageComponent,
     ExtrasComponent,
-    PaymentComponent
+    PaymentComponent,
+    NavbarComponent,
+    ContactBlockComponent,
+    TranslatePipe
   ],
   templateUrl: './home.component.html',
   styleUrl: './home.component.css'
@@ -38,14 +47,32 @@ export class CustomerHomeComponent implements OnInit {
   // Karşılama + geçiş ekranları
   showWelcomeScreen: boolean = true;
   showTransition: boolean = false;
+  currentUser: any = null;
 
   constructor(
     public stepService: ReservationStepsService,
     private router: Router,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+    private auth: AuthService,
+    private route: ActivatedRoute,
+    public i18n: TranslationService
   ) {}
 
   ngOnInit(): void {
+    this.currentUser = this.auth.getCurrentUser();
+
+    this.auth.user$.subscribe(user => {
+      this.currentUser = user;
+      this.cdr.detectChanges();
+    });
+
+    const routeStep = this.route.snapshot.data?.['step'] as StepKey | undefined;
+    if (routeStep) {
+      this.showWelcomeScreen = false;
+      this.showTransition = false;
+      this.stepService.setActiveStep(routeStep);
+    }
+
     this.setBackgroundBasedOnTime();
 
     // Sayfa her açıldığında karşılama ekranı görünsün
@@ -59,7 +86,7 @@ export class CustomerHomeComponent implements OnInit {
 
       // İlk adım zaten tamamlandı, bir sonraki adıma geç
       if (this.stepService.activeStep === 'seatAvailability') {
-        this.stepService.setActiveStep('passengerInfo');
+        this.navigateToStep('passengerInfo');
       }
 
       // Anında UI'yı güncelle
@@ -72,6 +99,11 @@ export class CustomerHomeComponent implements OnInit {
         this.showSteps = event.urlAfterRedirects.startsWith('/customer');
       }
     });
+  }
+
+  logoutPassenger(): void {
+    this.auth.logout();
+    this.currentUser = null;
   }
 
   setBackgroundBasedOnTime(): void {
@@ -103,7 +135,7 @@ export class CustomerHomeComponent implements OnInit {
       this.showTransition = false;
       
       // İlk adımı (seatAvailability) aktif et
-      this.stepService.setActiveStep('seatAvailability');
+      this.navigateToStep('seatAvailability');
       
       // 💥 KRİTİK ADIM: Angular'ı hemen güncellemeye zorla
       this.cdr.detectChanges(); 
@@ -133,14 +165,14 @@ export class CustomerHomeComponent implements OnInit {
     // ----------------------------------------------------
     // Geriye dönülmeye çalışılıyorsa
     if (targetIndex < activeIndex) {
-        
-        const confirmReset = confirm('Geri dönme işlemi tüm rezervasyonu sıfırlayacaktır. Emin misiniz?');
-        
+
+        const confirmReset = confirm(this.i18n.translate('home.alert.reset'));
+
         if (confirmReset) {
             // Rezervasyonu sıfırla (tüm veriler silinir)
-            this.stepService.resetAll(); 
+            this.stepService.resetAll();
             // İlk adıma dön (UI key: 'seat-status', Service key: 'seatAvailability')
-            this.stepService.setActiveStep(this.steps[0].serviceKey); 
+            this.navigateToStep(this.steps[0].serviceKey);
             this.cdr.detectChanges();
             return;
         } else {
@@ -161,7 +193,7 @@ export class CustomerHomeComponent implements OnInit {
 
     // Aktif adımdan daha ileri bir adıma (bir sonraki adım değil) atlanmaya çalışılıyorsa:
     if (targetIndex > activeIndex + 1) {
-        alert('Lütfen adımları sırayla tamamlayınız. İleriye atlama yapılamaz!');
+        alert(this.i18n.translate('home.alert.noSkip'));
         return;
     }
 
@@ -169,7 +201,7 @@ export class CustomerHomeComponent implements OnInit {
     // Not: Bu kontrol, step içeriğindeki 'continue' butonu ile completion bayrağı tetiklenmediyse önemlidir.
     if (targetIndex === activeIndex + 1) {
         if (!this.stepService.steps[currentStepService.serviceKey]) {
-            alert('Lütfen önce mevcut adımı tamamlayınız.');
+            alert(this.i18n.translate('home.alert.completeFirst'));
             return;
         }
     }
@@ -189,7 +221,7 @@ export class CustomerHomeComponent implements OnInit {
         this.showTransition = false;
         
         // Yeni adımı service key ile aktif et
-        this.stepService.setActiveStep(targetServiceKey);
+        this.navigateToStep(targetServiceKey);
         
         this.cdr.detectChanges(); 
         
@@ -197,15 +229,23 @@ export class CustomerHomeComponent implements OnInit {
     }, 1200);
   }
 
-  // UI'da kullanılan step listesi (Aynen Kalacak)
-  steps = [
-    { key: 'seat-status',     serviceKey: 'seatAvailability' as StepKey, label: 'Koltuk Durumu',   icon: 'bi bi-check-circle' },
-    { key: 'passenger-info',  serviceKey: 'passengerInfo'   as StepKey, label: 'Yolcu Bilgisi',   icon: 'bi bi-person-vcard' },
-    { key: 'seat-selection',  serviceKey: 'seatSelection'   as StepKey, label: 'Koltuk Seçimi',   icon: 'bi bi-grid-3x3-gap' },
-    { key: 'baggage',         serviceKey: 'baggage'         as StepKey, label: 'Bagaj',           icon: 'bi bi-bag' },
-    { key: 'extras',          serviceKey: 'extras'          as StepKey, label: 'Ek Hizmetler',    icon: 'bi bi-plus-circle' },
-    { key: 'payment',         serviceKey: 'payment'         as StepKey, label: 'Ödeme',           icon: 'bi bi-credit-card' }
-  ];
+  navigateToStep(step: StepKey) {
+    this.stepService.setActiveStep(step);
+    const route = this.stepService.getStepRoute(step);
+    this.router.navigate(['/customer', route]);
+  }
+
+  // UI'da kullanılan step listesi
+  get steps() {
+    return [
+      { key: 'seat-status',     serviceKey: 'seatAvailability' as StepKey, label: this.i18n.translate('home.step.seatStatus'),      icon: 'bi bi-check-circle' },
+      { key: 'passenger-info',  serviceKey: 'passengerInfo'   as StepKey, label: this.i18n.translate('home.step.passengerInfo'),   icon: 'bi bi-person-vcard' },
+      { key: 'seat-selection',  serviceKey: 'seatSelection'   as StepKey, label: this.i18n.translate('home.step.seatSelection'),   icon: 'bi bi-grid-3x3-gap' },
+      { key: 'baggage',         serviceKey: 'baggage'         as StepKey, label: this.i18n.translate('home.step.baggage'),         icon: 'bi bi-bag' },
+      { key: 'extras',          serviceKey: 'extras'          as StepKey, label: this.i18n.translate('home.step.extras'),          icon: 'bi bi-plus-circle' },
+      { key: 'payment',         serviceKey: 'payment'         as StepKey, label: this.i18n.translate('home.step.payment'),         icon: 'bi bi-credit-card' }
+    ];
+  }
 
   // Her UI key için hangi component yüklenecek (Aynen Kalacak)
   stepComponents: Record<string, any> = {
@@ -217,44 +257,46 @@ export class CustomerHomeComponent implements OnInit {
     'payment':        PaymentComponent
   };
 
-  // Her step için info panel verisi (Aynen Kalacak)
-  stepInfo: Record<string, { title: string; description: string; icon: string; image?: string }> = {
-    'seat-status': {
-      title: 'Koltuk Durumu',
-      description: 'Bu adımda uçuşun doluluk oranını ve boş koltukları görüntülersiniz.',
-      icon: 'bi bi-check2-circle',
-      image: 'assets/info/seat.png'
-    },
-    'passenger-info': {
-      title: 'Yolcu Bilgisi',
-      description: 'Kimlik ve iletişim bilgilerinizi girerek rezervasyonu kişiselleştirin.',
-      icon: 'bi bi-person-badge',
-      image: 'assets/info/passenger.png'
-    },
-    'seat-selection': {
-      title: 'Koltuk Seçimi',
-      description: 'Uçakta oturmak istediğiniz koltuğu seçebilirsiniz.',
-      icon: 'bi bi-grid-3x3-gap',
-      image: 'assets/info/seat-select.png'
-    },
-    'baggage': {
-      title: 'Bagaj',
-      description: 'Ek bagaj hakkı satın alabilir veya mevcut limitinizi düzenleyebilirsiniz.',
-      icon: 'bi bi-bag',
-      image: 'assets/info/baggage.png'
-    },
-    'extras': {
-      title: 'Ek Hizmetler',
-      description: 'Yemek, sigorta, hızlı geçiş gibi ek hizmetleri bu adımda ekleyebilirsiniz.',
-      icon: 'bi bi-plus-circle',
-      image: 'assets/info/extras.png'
-    },
-    'payment': {
-      title: 'Ödeme',
-      description: 'Rezervasyonunuzu tamamlamak için ödeme bilgilerinizi girin.',
-      icon: 'bi bi-credit-card',
-      image: 'assets/info/payment.png'
-    }
-  };
+  // Her step için info panel verisi
+  get stepInfo(): Record<string, { title: string; description: string; icon: string; image?: string }> {
+    return {
+      'seat-status': {
+        title: this.i18n.translate('home.stepInfo.seatStatus.title'),
+        description: this.i18n.translate('home.stepInfo.seatStatus.description'),
+        icon: 'bi bi-check2-circle',
+        image: 'assets/info/seat.png'
+      },
+      'passenger-info': {
+        title: this.i18n.translate('home.stepInfo.passengerInfo.title'),
+        description: this.i18n.translate('home.stepInfo.passengerInfo.description'),
+        icon: 'bi bi-person-badge',
+        image: 'assets/info/passenger.png'
+      },
+      'seat-selection': {
+        title: this.i18n.translate('home.stepInfo.seatSelection.title'),
+        description: this.i18n.translate('home.stepInfo.seatSelection.description'),
+        icon: 'bi bi-grid-3x3-gap',
+        image: 'assets/info/seat-select.png'
+      },
+      'baggage': {
+        title: this.i18n.translate('home.stepInfo.baggage.title'),
+        description: this.i18n.translate('home.stepInfo.baggage.description'),
+        icon: 'bi bi-bag',
+        image: 'assets/info/baggage.png'
+      },
+      'extras': {
+        title: this.i18n.translate('home.stepInfo.extras.title'),
+        description: this.i18n.translate('home.stepInfo.extras.description'),
+        icon: 'bi bi-plus-circle',
+        image: 'assets/info/extras.png'
+      },
+      'payment': {
+        title: this.i18n.translate('home.stepInfo.payment.title'),
+        description: this.i18n.translate('home.stepInfo.payment.description'),
+        icon: 'bi bi-credit-card',
+        image: 'assets/info/payment.png'
+      }
+    };
+  }
 
 }

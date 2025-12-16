@@ -20,12 +20,25 @@ export class ReservationStepsService {
     payment: false
   };
 
+  stepRoutes: Record<StepKey, string> = {
+    seatAvailability: 'seat-availability',
+    passengerInfo: 'passenger-info',
+    seatSelection: 'seat-selection',
+    baggage: 'baggage',
+    extras: 'extras',
+    payment: 'payment'
+  };
+
   setActiveStep(step: StepKey) {
     this.activeStep = step;
   }
 
   completeStep(step: StepKey) {
     this.steps[step] = true;
+  }
+
+  getStepRoute(step: StepKey): string {
+    return this.stepRoutes[step];
   }
 
   resetSteps() {

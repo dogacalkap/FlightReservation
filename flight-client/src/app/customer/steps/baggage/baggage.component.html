@@ -1,10 +1,9 @@
-<h2 class="title">Bagaj Seçimi</h2>
+<h2 class="title">{{ 'baggage.title' | t }}</h2>
 
 <div class="banner">
-  <h3>Bagaj İhtiyacınız İçin Teklifimizi Kaçırmayın!</h3>
+  <h3>{{ 'baggage.banner.title' | t }}</h3>
   <p>
-    Seyahatinizde size eşlik edecek ihtiyaçlarınız için havalimanında daha fazla ücret ödemeyin.
-    Bagajınızı şimdi ekleyin, %20 indirim avantajını kaçırmayın!
+    {{ 'baggage.banner.desc' | t }}
   </p>
 </div>
 
@@ -12,46 +11,46 @@
 
   <!-- Card 1 -->
   <div class="card">
-    <ng-lottie 
-      [options]="{ path: bagUnderSeat, loop: true }" 
+    <ng-lottie
+      [options]="{ path: bagUnderSeat, loop: true }"
       class="lottie">
     </ng-lottie>
 
-    <h4>El Çantası</h4>
+    <h4>{{ 'baggage.hand.title' | t }}</h4>
     <ul>
-      <li>40×30×15 cm boyutlarında</li>
-      <li>En fazla 4 kg</li>
-      <li>Yalnızca 1 adet</li>
+      <li>{{ 'baggage.hand.size' | t }}</li>
+      <li>{{ 'baggage.hand.weight' | t }}</li>
+      <li>{{ 'baggage.hand.qty' | t }}</li>
     </ul>
   </div>
 
   <!-- Card 2 -->
   <div class="card">
-    <ng-lottie 
-      [options]="{ path: cabinBag, loop: true }" 
+    <ng-lottie
+      [options]="{ path: cabinBag, loop: true }"
       class="lottie">
     </ng-lottie>
 
-    <h4>Kabin Bagajı</h4>
+    <h4>{{ 'baggage.cabin.title' | t }}</h4>
     <ul>
-      <li>55×40×23 cm boyutlarında</li>
-      <li>En fazla 8 kg</li>
-      <li>1 adet</li>
+      <li>{{ 'baggage.cabin.size' | t }}</li>
+      <li>{{ 'baggage.cabin.weight' | t }}</li>
+      <li>{{ 'baggage.cabin.qty' | t }}</li>
     </ul>
   </div>
 
   <!-- Card 3 -->
   <div class="card">
-    <ng-lottie 
+    <ng-lottie
       [options]="{ path: largeBag, loop: true }"
       class="lottie">
     </ng-lottie>
 
-    <h4>Uçak Altı Bagaj</h4>
+    <h4>{{ 'baggage.checked.title' | t }}</h4>
     <ul>
-      <li>Parça başı 32 kg'a kadar</li>
-      <li>Birden fazla parça alabilirsiniz</li>
-      <li>Bagaj teslim alanında alınır</li>
+      <li>{{ 'baggage.checked.weight' | t }}</li>
+      <li>{{ 'baggage.checked.multi' | t }}</li>
+      <li>{{ 'baggage.checked.pickup' | t }}</li>
     </ul>
   </div>
 
@@ -63,7 +62,7 @@
 
 <div class="checked-baggage-box">
 
-  <h3>Uçak Altı Bagaj Seçimi</h3>
+  <h3>{{ 'baggage.selection.title' | t }}</h3>
 
   <div class="baggage-select-row">
 
@@ -78,11 +77,11 @@
   </div>
 
   <div class="info">
-    Ekstra her bir bagaj için 32 kg'a kadar taşıma hakkı tanımlanır.
+    {{ 'baggage.selection.info' | t }}
   </div>
 
 </div>
 
 <div class="continue-wrapper">
-  <button class="continue-btn" (click)="continue()">Devam Et</button>
+  <button class="continue-btn" (click)="continue()">{{ 'baggage.continue' | t }}</button>
 </div>

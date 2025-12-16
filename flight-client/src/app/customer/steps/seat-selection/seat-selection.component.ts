@@ -2,11 +2,13 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { ReservationStepsService } from '../../../services/reservation-steps.service';
+import { Router } from '@angular/router';
+import { TranslatePipe } from '../../../shared/translate.pipe';
 
 @Component({
   selector: 'app-seat-selection',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, TranslatePipe],
   templateUrl: './seat-selection.component.html',
   styleUrls: ['./seat-selection.component.css']
 })
@@ -24,7 +26,8 @@ export class SeatSelectionComponent implements OnInit {
 
   constructor(
     private stepService: ReservationStepsService,
-    private http: HttpClient
+    private http: HttpClient,
+    private router: Router
   ) {}
 
   ngOnInit(): void {
@@ -124,5 +127,7 @@ export class SeatSelectionComponent implements OnInit {
 
     this.stepService.completeStep('seatSelection');
     this.stepService.setActiveStep('baggage');
+    const route = this.stepService.getStepRoute('baggage');
+    this.router.navigate(['/customer', route]);
   }
 }

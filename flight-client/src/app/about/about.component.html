@@ -5,14 +5,13 @@
   <!-- HERO -->
   <section class="hero">
     <div class="hero-left">
-      <h1>SuperAirlines’a Hoş Geldiniz</h1>
+      <h1>{{ 'about.hero.title' | t }}</h1>
       <p>
-        Modern, güvenli ve yenilikçi uçuş deneyimi sunan SuperAirlines olarak
-        yolculuğunuzu konforlu, hızlı ve keyifli bir hale getirmek için çalışıyoruz.
+        {{ 'about.hero.desc' | t }}
       </p>
 
       <button routerLink="/about-details" class="primary-btn">
-        Bizi Yakından Tanıyın
+        {{ 'about.hero.btn' | t }}
       </button>
     </div>
 
@@ -26,38 +25,38 @@
 
     <div class="card">
       <img src="assets/icons/mission.svg" alt="">
-      <h3>Misyonumuz</h3>
+      <h3>{{ 'about.mission.title' | t }}</h3>
       <p>
-        Her yolcumuza hızlı, güvenli ve ekonomik bir uçuş deneyimi sunmak.
+        {{ 'about.mission.desc' | t }}
       </p>
     </div>
 
     <div class="card">
       <img src="assets/icons/vision.svg" alt="">
-      <h3>Vizyonumuz</h3>
+      <h3>{{ 'about.vision.title' | t }}</h3>
       <p>
-        Avrupa’nın en teknolojik ve en ulaşılabilir havayolu olmak.
+        {{ 'about.vision.desc' | t }}
       </p>
     </div>
 
     <div class="card">
       <img src="assets/icons/security.svg" alt="">
-      <h3>Güvenlik</h3>
+      <h3>{{ 'about.security.title' | t }}</h3>
       <p>
-        Filomuz uluslararası standartlarda denetlenir ve en yüksek güvenlik protokolleri uygulanır.
+        {{ 'about.security.desc' | t }}
       </p>
     </div>
 
     <div class="card">
       <img src="assets/icons/fleet.svg" alt="">
-      <h3>Filomuz</h3>
+      <h3>{{ 'about.fleet.title' | t }}</h3>
       <p>
-        Modern uçaklardan oluşan geniş filomuz ile her gün yüzlerce rotada hizmet veriyoruz.
+        {{ 'about.fleet.desc' | t }}
       </p>
     </div>
-    
+
     <div class="back-container">
-     <button class="back-btn" routerLink="/landing">← Ana Sayfaya Dön</button>
+     <button class="back-btn" routerLink="/landing">{{ 'about.backBtn' | t }}</button>
     </div>
 
 

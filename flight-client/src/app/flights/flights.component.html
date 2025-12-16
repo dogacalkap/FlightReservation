@@ -1,97 +1,116 @@
-<div style="color: black;">
-<div>
-  <h2>Flights</h2>
-
-  <div *ngIf="error" style="color:red; margin-bottom:10px;">
-    {{ error }}
+<div class="flight-container">
+  <div class="header-row">
+    <div>
+      <p class="eyebrow">{{ 'adminFlights.eyebrow' | t }}</p>
+      <h2>{{ 'adminFlights.title' | t }}</h2>
+      <p class="lede">{{ 'adminFlights.lede' | t }}</p>
+    </div>
   </div>
 
-  <form [formGroup]="form" (ngSubmit)="saveFlight()" style="margin-bottom:20px;">
-    <div style="margin-bottom:8px;">
-      <label>Flight Number:</label>
-      <input type="text" formControlName="flightNumber">
+  <div class="card">
+    <div class="card-head">
+      <div>
+        <p class="eyebrow">{{ editId === null ? ('adminFlights.form.eyebrow.create' | t) : ('adminFlights.form.eyebrow.update' | t) }}</p>
+        <h3>{{ editId === null ? ('adminFlights.form.title.create' | t) : ('adminFlights.form.title.update' | t) }}</h3>
+      </div>
+      <span class="badge">{{ editId === null ? ('adminFlights.form.badge.create' | t) : ('adminFlights.form.badge.update' | t) }}</span>
     </div>
 
-    <div style="margin-bottom:8px;">
-      <label>From Airport:</label>
-      <select formControlName="fromAirportId">
-        <option [ngValue]="null">-- Select --</option>
-        <option *ngFor="let a of airports" [ngValue]="a.id">
-          {{ a.code }} - {{ a.city }}
-        </option>
-      </select>
+    <form [formGroup]="form" (ngSubmit)="saveFlight()" class="flight-form">
+      <div class="form-row">
+        <label>{{ 'adminFlights.form.flightNumber' | t }}</label>
+        <input type="text" formControlName="flightNumber" [placeholder]="'adminFlights.form.flightNumberPlaceholder' | t">
+      </div>
+
+      <div class="form-row">
+        <label>{{ 'adminFlights.form.from' | t }}</label>
+        <select formControlName="fromAirportId">
+          <option [ngValue]="null">{{ 'adminFlights.form.select' | t }}</option>
+          <option *ngFor="let a of airports" [ngValue]="a.id">
+            {{ a.code }} - {{ a.city }}
+          </option>
+        </select>
+      </div>
+
+      <div class="form-row">
+        <label>{{ 'adminFlights.form.to' | t }}</label>
+        <select formControlName="toAirportId">
+          <option [ngValue]="null">{{ 'adminFlights.form.select' | t }}</option>
+          <option *ngFor="let a of airports" [ngValue]="a.id">
+            {{ a.code }} - {{ a.city }}
+          </option>
+        </select>
+      </div>
+
+      <div class="form-row">
+        <label>{{ 'adminFlights.form.departureTime' | t }}</label>
+        <input type="datetime-local" formControlName="departureTime">
+      </div>
+
+      <div class="form-row">
+        <label>{{ 'adminFlights.form.arrivalTime' | t }}</label>
+        <input type="datetime-local" formControlName="arrivalTime">
+      </div>
+
+      <div class="form-row">
+        <label>{{ 'adminFlights.form.price' | t }}</label>
+        <input type="number" formControlName="price" [placeholder]="'adminFlights.form.pricePlaceholder' | t">
+      </div>
+
+      <div class="action-buttons">
+        <button class="btn-primary" type="submit">
+          {{ editId === null ? ('adminFlights.form.button.create' | t) : ('adminFlights.form.button.update' | t) }}
+        </button>
+        <button class="btn-secondary" type="button" (click)="clearForm()">
+          {{ 'adminFlights.form.clear' | t }}
+        </button>
+      </div>
+    </form>
+  </div>
+
+  <div class="card">
+    <div class="card-head">
+      <div>
+        <p class="eyebrow">{{ 'adminFlights.list.eyebrow' | t }}</p>
+        <h3>{{ 'adminFlights.list.title' | t }}</h3>
+      </div>
     </div>
 
-    <div style="margin-bottom:8px;">
-      <label>To Airport:</label>
-      <select formControlName="toAirportId">
-        <option [ngValue]="null">-- Select --</option>
-        <option *ngFor="let a of airports" [ngValue]="a.id">
-          {{ a.code }} - {{ a.city }}
-        </option>
-      </select>
+    <div *ngIf="loading" class="muted">{{ 'adminFlights.list.loading' | t }}</div>
+    <div *ngIf="error && !loading" class="alert">{{ error }}</div>
+
+    <div class="table-wrapper" *ngIf="!loading">
+      <table>
+        <thead>
+          <tr>
+            <th>{{ 'adminFlights.list.id' | t }}</th>
+            <th>{{ 'adminFlights.list.flightNumber' | t }}</th>
+            <th>{{ 'adminFlights.list.from' | t }}</th>
+            <th>{{ 'adminFlights.list.to' | t }}</th>
+            <th>{{ 'adminFlights.list.departure' | t }}</th>
+            <th>{{ 'adminFlights.list.arrival' | t }}</th>
+            <th>{{ 'adminFlights.list.price' | t }}</th>
+            <th>{{ 'adminFlights.list.actions' | t }}</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let f of flights">
+            <td>{{ f.id }}</td>
+            <td>{{ f.flightNumber }}</td>
+            <td>{{ f.fromAirportCode || f.fromAirportId }}</td>
+            <td>{{ f.toAirportCode || f.toAirportId }}</td>
+            <td>{{ f.departureTime | date:'short' }}</td>
+            <td>{{ f.arrivalTime | date:'short' }}</td>
+            <td>{{ f.price }}</td>
+            <td class="table-actions">
+              <button class="ghost" (click)="editFlight(f)">{{ 'adminFlights.list.edit' | t }}</button>
+              <button class="danger" (click)="onDeleteClick($event)" [attr.data-id]="f.id">
+                {{ 'adminFlights.list.delete' | t }}
+              </button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
     </div>
-
-    <div style="margin-bottom:8px;">
-      <label>Departure Time:</label>
-      <input type="datetime-local" formControlName="departureTime">
-    </div>
-
-    <div style="margin-bottom:8px;">
-      <label>Arrival Time:</label>
-      <input type="datetime-local" formControlName="arrivalTime">
-    </div>
-
-    <div style="margin-bottom:8px;">
-      <label>Price:</label>
-      <input type="number" formControlName="price">
-    </div>
-
-    <button type="submit">
-      {{ editId === null ? 'Create Flight' : 'Update Flight' }}
-    </button>
-
-    <button type="button" (click)="clearForm()" style="margin-left:10px;">
-      Clear
-    </button>
-  </form>
-
-  <div *ngIf="loading">Loading...</div>
-
-  <table *ngIf="!loading" border="1" cellpadding="8">
-    <thead>
-      <tr>
-        <th>ID</th>
-        <th>Flight No</th>
-        <th>From</th>
-        <th>To</th>
-        <th>Departure</th>
-        <th>Arrival</th>
-        <th>Price</th>
-        <th>Actions</th>
-      </tr>
-    </thead>
-
-    <tbody>
-      <tr *ngFor="let f of flights">
-        <td>{{ f.id }}</td>
-        <td>{{ f.flightNumber }}</td>
-        <td>
-          {{ f.fromAirportCode || f.fromAirportId }}
-        </td>
-        <td>
-          {{ f.toAirportCode || f.toAirportId }}
-        </td>
-        <td>{{ f.departureTime | date:'short' }}</td>
-        <td>{{ f.arrivalTime | date:'short' }}</td>
-        <td>{{ f.price }}</td>
-        <td>
-          <button (click)="editFlight(f)">Edit</button>
-          <button (click)="onDeleteClick($event)" [attr.data-id]="f.id">
-            Delete
-          </button>
-        </td>
-      </tr>
-    </tbody>
-  </table>
+  </div>
 </div>

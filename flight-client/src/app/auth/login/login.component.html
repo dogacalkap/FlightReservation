@@ -1,59 +1,75 @@
-<div class="modal-overlay">
-  <div class="modal-card">
-
-    <h2 class="modal-title">Login</h2>
-
-    <!-- ERROR -->
-    <div *ngIf="error" class="error-box">
-      <i class="bi bi-exclamation-circle"></i>
-      {{ error }}
-    </div>
-
-    <!-- FORM -->
-    <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
-
-      <div class="input-group">
-      <label>Username</label>
-      <input formControlName="username" type="text" placeholder="Kullanıcı adı giriniz" />
-    </div>
-
-    <div
-    *ngIf="loginForm.get('username')?.touched && loginForm.get('username')?.errors?.['required']"
-    class="error-box"
-    >
-   <i class="bi bi-exclamation-circle"></i>
-    Kullanıcı adı zorunludur.
-    </div>
-
-
-      <div class="input-group">
-        <label>Password</label>
-        <input formControlName="password" type="password" placeholder="Enter password" />
+<div class="auth-page">
+  <div class="hero">
+    <div>
+      <p class="eyebrow">{{ 'customerLogin.hero.eyebrow' | t }}</p>
+      <h1>{{ 'customerLogin.hero.title' | t }}</h1>
+      <p class="lede">{{ 'customerLogin.hero.desc' | t }}</p>
+      <div class="hero-tags">
+        <span class="tag"><i class="bi bi-shield-lock"></i> {{ 'customerLogin.hero.tag1' | t }}</span>
+        <span class="tag"><i class="bi bi-ticket-perforated"></i> {{ 'customerLogin.hero.tag2' | t }}</span>
       </div>
-      <!-- Şifre minimum 6 karakter uyarısı -->
-      <div
-      *ngIf="
-      loginForm.get('password')?.touched &&
-      loginForm.get('password')?.errors?.['minlength']
-        "
-      class="error-box"
-      >
-      <i class="bi bi-exclamation-circle"></i>
-      Şifre en az 6 karakter olmalıdır.
+    </div>
+    <img src="assets/bg/eve.jpg" alt="Login Illustration" class="hero-img">
+  </div>
+
+  <div class="card">
+    <div class="tab-row">
+      <button class="tab-btn" [class.active]="mode === 'login'" (click)="switchMode('login')">{{ 'customerLogin.tab.login' | t }}</button>
+      <button class="tab-btn" [class.active]="mode === 'register'" (click)="switchMode('register')">{{ 'customerLogin.tab.register' | t }}</button>
+    </div>
+
+    <div class="card-body" *ngIf="mode === 'login'">
+      <h2>{{ 'customerLogin.login.title' | t }}</h2>
+      <p class="muted">{{ 'customerLogin.login.subtitle' | t }}</p>
+
+      <div *ngIf="error" class="error-box">
+        <i class="bi bi-exclamation-circle"></i>
+        {{ error }}
       </div>
 
+      <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+        <label>{{ 'customerLogin.login.email' | t }}
+          <input formControlName="username" type="email" [placeholder]="'customerLogin.login.emailPlaceholder' | t" />
+        </label>
+        <label>{{ 'customerLogin.login.password' | t }}
+          <input formControlName="password" type="password" [placeholder]="'customerLogin.login.passwordPlaceholder' | t" />
+        </label>
 
+        <button class="primary-btn" type="submit" [disabled]="loading">
+          <span *ngIf="!loading">{{ 'customerLogin.login.button' | t }}</span>
+          <span *ngIf="loading" class="spinner"></span>
+        </button>
+      </form>
+    </div>
 
+    <div class="card-body" *ngIf="mode === 'register'">
+      <h2>{{ 'customerLogin.register.title' | t }}</h2>
+      <p class="muted">{{ 'customerLogin.register.subtitle' | t }}</p>
 
-      <button class="primary-btn" type="submit" [disabled]="loading">
-        <span *ngIf="!loading">Login</span>
-        <span *ngIf="loading" class="spinner"></span>
-      </button>
-    </form>
+      <div *ngIf="error" class="error-box">
+        <i class="bi bi-exclamation-circle"></i>
+        {{ error }}
+      </div>
 
-    <button class="close-btn" (click)="onCloseClick()">
-      <i class="bi bi-x-lg"></i>
-    </button>
+      <form [formGroup]="registerForm" (ngSubmit)="onRegisterSubmit()">
+        <label>{{ 'customerLogin.register.fullName' | t }}
+          <input formControlName="fullName" type="text" [placeholder]="'customerLogin.register.fullNamePlaceholder' | t" />
+        </label>
+        <label>{{ 'customerLogin.register.nationalId' | t }}
+          <input formControlName="nationalId" type="text" [placeholder]="'customerLogin.register.nationalIdPlaceholder' | t" />
+        </label>
+        <label>{{ 'customerLogin.register.email' | t }}
+          <input formControlName="email" type="email" [placeholder]="'customerLogin.register.emailPlaceholder' | t" />
+        </label>
+        <label>{{ 'customerLogin.register.password' | t }}
+          <input formControlName="password" type="password" [placeholder]="'customerLogin.register.passwordPlaceholder' | t" />
+        </label>
 
+        <button class="primary-btn" type="submit" [disabled]="loading">
+          <span *ngIf="!loading">{{ 'customerLogin.register.button' | t }}</span>
+          <span *ngIf="loading" class="spinner"></span>
+        </button>
+      </form>
+    </div>
   </div>
 </div>

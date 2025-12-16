@@ -1,69 +1,83 @@
 <div class="modal-backdrop" (click)="close()"></div>
 
 <div class="auth-modal">
+  <div class="header">
+    <div>
+      <p class="eyebrow">Yolcu hesabı</p>
+      <h3>Giriş yap veya kayıt ol</h3>
+    </div>
+    <button class="close-btn" (click)="close()"><i class="bi bi-x-lg"></i></button>
+  </div>
+
+  <div class="tab-row">
+    <button class="tab-btn" [class.active]="mode === 'login'" (click)="changeMode('login')">Giriş Yap</button>
+    <button class="tab-btn" [class.active]="mode === 'register'" (click)="changeMode('register')">Kayıt Ol</button>
+  </div>
 
   <!-- LOGIN -->
-  <div *ngIf="mode === 'login'">
-    <h2>Login</h2>
+  <div *ngIf="mode === 'login'" class="body">
+    <label>Email
+      <input type="email" placeholder="ornek@mail.com" [(ngModel)]="email">
+    </label>
+    <label>Şifre
+      <input type="password" placeholder="••••••••" [(ngModel)]="password">
+    </label>
 
-    <input class="form-control mb-2" type="email" placeholder="Email" [(ngModel)]="email">
-    <input class="form-control mb-3" type="password" placeholder="Password" [(ngModel)]="password">
+    <button class="primary-btn" (click)="login()">Giriş Yap</button>
 
-    <button class="btn btn-primary w-100 mb-2" (click)="login()">Login</button>
-
-    <div class="text-center">
-      <a (click)="changeMode('register')" class="link">Create account</a> ·
-      <a (click)="changeMode('forgot-step1')" class="link">Forgot password?</a>
+    <div class="footer-links">
+      <a (click)="changeMode('register')">Hesabın yok mu? Kayıt ol</a>
+      <a (click)="changeMode('forgot-step1')">Şifremi unuttum</a>
     </div>
   </div>
-
 
   <!-- REGISTER -->
-  <div *ngIf="mode === 'register'">
-    <h2>Register</h2>
+  <div *ngIf="mode === 'register'" class="body">
+    <label>Ad Soyad
+      <input placeholder="Ad Soyad" [(ngModel)]="registerData.fullName" name="regFullName">
+    </label>
+    <label>TCKN
+      <input placeholder="11 haneli TCKN" [(ngModel)]="registerData.nationalId" name="regNationalId">
+    </label>
+    <label>Email
+      <input placeholder="ornek@mail.com" [(ngModel)]="registerData.email" name="regEmail">
+    </label>
+    <label>Şifre
+      <input type="password" placeholder="En az 6 karakter" [(ngModel)]="registerData.password" name="regPassword">
+    </label>
 
-    <input class="form-control mb-2" placeholder="Full Name" 
-           [(ngModel)]="registerData.fullName" name="regFullName"> <input class="form-control mb-2" placeholder="National ID" 
-           [(ngModel)]="registerData.nationalId" name="regNationalId"> <input class="form-control mb-2" placeholder="Email" 
-           [(ngModel)]="registerData.email" name="regEmail"> <input class="form-control mb-3" type="password" placeholder="Password" 
-           [(ngModel)]="registerData.password" name="regPassword"> <button class="btn btn-success w-100 mb-2" (click)="register()">Register</button>
-
-    <div class="text-center">
-      <a (click)="changeMode('login')" class="link">Back to login</a>
+    <button class="primary-btn" (click)="register()">Kayıt Ol</button>
+    <div class="footer-links">
+      <a (click)="changeMode('login')">Giriş ekranına dön</a>
     </div>
   </div>
-
 
   <!-- FORGOT PASSWORD — STEP 1 -->
-  <div *ngIf="mode === 'forgot-step1'">
-    <h2>Reset Password</h2>
+  <div *ngIf="mode === 'forgot-step1'" class="body">
+    <label>Email
+      <input type="email" placeholder="ornek@mail.com" [(ngModel)]="resetEmail">
+    </label>
+    <label>TCKN
+      <input type="text" placeholder="11 haneli TCKN" [(ngModel)]="resetTCKN">
+    </label>
 
-    <input class="form-control mb-2" type="email" placeholder="Email" [(ngModel)]="resetEmail">
-    <input class="form-control mb-3" type="text" placeholder="National ID (TCKN)" [(ngModel)]="resetTCKN">
-
-    <button class="btn btn-warning w-100 mb-2" 
-            (click)="forgotCheck()"
-            [disabled]="loadingStep1">
-        {{ loadingStep1 ? 'Doğrulanıyor...' : 'Verify' }}
+    <button class="primary-btn" (click)="forgotCheck()" [disabled]="loadingStep1">
+      {{ loadingStep1 ? 'Doğrulanıyor...' : 'Doğrula' }}
     </button>
-
-    <div class="text-center">
-      <a (click)="changeMode('login')" class="link">Back to login</a>
-    </div>
-</div>
-
-
-  <!-- FORGOT PASSWORD — STEP 2 -->
-  <div *ngIf="mode === 'forgot-step2'">
-    <h2>New Password</h2>
-
-    <input class="form-control mb-3" type="password" placeholder="New password" [(ngModel)]="newPassword">
-
-    <button class="btn btn-success w-100 mb-2" (click)="forgotSave()">Save Password</button>
-
-    <div class="text-center">
-      <a (click)="changeMode('login')" class="link">Back to login</a>
+    <div class="footer-links">
+      <a (click)="changeMode('login')">Girişe dön</a>
     </div>
   </div>
 
+  <!-- FORGOT PASSWORD — STEP 2 -->
+  <div *ngIf="mode === 'forgot-step2'" class="body">
+    <label>Yeni Şifre
+      <input type="password" placeholder="Yeni şifre" [(ngModel)]="newPassword">
+    </label>
+
+    <button class="primary-btn" (click)="forgotSave()">Şifreyi Kaydet</button>
+    <div class="footer-links">
+      <a (click)="changeMode('login')">Girişe dön</a>
+    </div>
+  </div>
 </div>

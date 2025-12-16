@@ -1,13 +1,13 @@
-<h2 class="title">İletişim Mesajları</h2>
+<h2 class="title">{{ 'adminMessages.title' | t }}</h2>
 
-<div *ngIf="loading" class="loading">Mesajlar yükleniyor...</div>
+<div *ngIf="loading" class="loading">{{ 'adminMessages.loading' | t }}</div>
 
 <div *ngIf="!loading && messages.length === 0" class="no-data">
-  Henüz mesaj bulunmuyor.
+  {{ 'adminMessages.noData' | t }}
 </div>
 
 <div class="messages-grid">
-  
+
   <div *ngFor="let m of messages" class="message-card">
 
     <div class="card-header">
@@ -18,7 +18,7 @@
     <p class="email"><i class="bi bi-envelope"></i> {{ m.email }}</p>
 
     <p class="subject">
-      <strong>Konu:</strong> {{ m.subject }}
+      <strong>{{ 'adminMessages.subject' | t }}</strong> {{ m.subject }}
     </p>
 
     <p class="text">

@@ -21,8 +21,40 @@ namespace FlightReservation.Controllers.Api
         public async Task<IActionResult> GetUserTickets(int userId)
         {
             var tickets = await _context.Tickets
-                .Include(t => t.Flight)
                 .Where(t => t.UserId == userId)
+                .Include(t => t.Flight)
+                    .ThenInclude(f => f.FromAirport)
+                .Include(t => t.Flight)
+                    .ThenInclude(f => f.ToAirport)
+                .OrderByDescending(t => t.CreatedAt)
+                .Select(t => new
+                {
+                    t.Id,
+                    t.SeatNumber,
+                    t.BaggageCount,
+                    t.SeatPrice,
+                    t.BaggagePrice,
+                    t.ExtrasTotal,
+                    t.FinalPrice,
+                    t.ExtraReward,
+                    t.CreatedAt,
+                    Flight = new
+                    {
+                        t.Flight.Id,
+                        t.Flight.FlightNumber,
+                        t.Flight.DepartureTime,
+                        t.Flight.ArrivalTime,
+                        t.Flight.Price,
+                        t.Flight.FromAirportId,
+                        t.Flight.ToAirportId,
+                        FromAirportCode = t.Flight.FromAirport!.Code,
+                        ToAirportCode = t.Flight.ToAirport!.Code,
+                        FromAirportName = t.Flight.FromAirport.Name,
+                        ToAirportName = t.Flight.ToAirport.Name,
+                        FromAirportCity = t.Flight.FromAirport.City,
+                        ToAirportCity = t.Flight.ToAirport.City
+                    }
+                })
                 .ToListAsync();
 
             return Ok(tickets);
@@ -35,6 +67,18 @@ namespace FlightReservation.Controllers.Api
             var ticket = await _context.Tickets.FindAsync(ticketId);
             if (ticket == null)
                 return NotFound();
+
+            // İlgili koltuk rezervasyonunu da serbest bırak
+            var seat = await _context.SeatOccupations
+                .FirstOrDefaultAsync(s =>
+                    s.FlightId == ticket.FlightId &&
+                    s.SeatNumber == ticket.SeatNumber &&
+                    (s.UserId == null || s.UserId == ticket.UserId));
+
+            if (seat != null)
+            {
+                _context.SeatOccupations.Remove(seat);
+            }
 
             _context.Tickets.Remove(ticket);
             await _context.SaveChangesAsync();

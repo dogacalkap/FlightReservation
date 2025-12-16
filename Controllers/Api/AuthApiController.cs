@@ -2,6 +2,8 @@ using FlightReservation.Data;
 using FlightReservation.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Security.Cryptography;
+using System.Text;
 
 namespace FlightReservation.Controllers.Api
 {
@@ -26,10 +28,16 @@ namespace FlightReservation.Controllers.Api
                 return BadRequest("Email and password cannot be empty.");
 
             if (user.Password.Length < 6)
-            return BadRequest(new { error = "Şifre en az 6 karakter olmalıdır." });
+                return BadRequest(new { error = "Şifre en az 6 karakter olmalıdır." });
+
+            if (string.IsNullOrWhiteSpace(user.TCKN) || user.TCKN.Length != 11)
+                return BadRequest(new { error = "TCKN 11 haneli olmalıdır." });
 
             if (await _context.Users.AnyAsync(u => u.Email == user.Email))
                 return BadRequest("This email is already registered.");
+
+            // Şifreyi hashle
+            user.Password = HashPassword(user.Password);
 
             user.IsAdmin = false; // kayıt olan herkes müşteri
             _context.Users.Add(user);
@@ -55,7 +63,9 @@ namespace FlightReservation.Controllers.Api
             if (user == null || user.IsAdmin)
                 return Unauthorized("Email not found.");
 
-            if (user.Password != dto.Password)
+            var hashedInput = HashPassword(dto.Password);
+
+            if (user.Password != hashedInput)
                 return Unauthorized("Incorrect password.");
 
             return Ok(new { 
@@ -105,12 +115,19 @@ namespace FlightReservation.Controllers.Api
             if (user == null)
                 return Unauthorized("Email or TCKN is incorrect.");
 
-            user.Password = dto.NewPassword;
+            user.Password = HashPassword(dto.NewPassword);
             await _context.SaveChangesAsync();
 
             return Ok(new { message = "Password has been updated successfully." });
         }
 
+        private static string HashPassword(string password)
+        {
+            using var sha = SHA256.Create();
+            var bytes = Encoding.UTF8.GetBytes(password);
+            var hash = sha.ComputeHash(bytes);
+            return Convert.ToBase64String(hash);
+        }
 
     }
 

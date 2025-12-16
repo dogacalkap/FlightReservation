@@ -175,65 +175,165 @@ select, input[type="date"] {
   margin-bottom: 70px;
 }
 
+.results-title {
+  font-weight: 700;
+  color: #0f172a;
+}
+
 .flight-card {
+  background: linear-gradient(135deg, #ffffff, #f8fbff);
+  border-radius: 16px;
+  padding: 16px;
+  border: 1px solid #e7edf7;
+  box-shadow: 0 10px 30px rgba(15, 23, 42, 0.08);
   display: flex;
-  justify-content: space-between;
-  align-items: center;
-  background: white;
-  padding: 20px 25px;
-  border-radius: 18px;
-  box-shadow: 0 8px 25px rgba(0,0,0,0.07);
-  transition: 0.25s ease;
+  flex-direction: column;
+  gap: 14px;
+  transition: 0.2s ease;
 }
 
 .flight-card:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 10px 35px rgba(0,0,0,0.12);
+  transform: translateY(-3px);
+  box-shadow: 0 12px 36px rgba(15, 23, 42, 0.12);
 }
 
-/* LEFT */
-.flight-left {
+.card-top {
   display: flex;
   flex-direction: column;
-  gap: 5px;
+  gap: 12px;
 }
 
-.flight-left .route {
+.timeline {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  gap: 12px;
+}
+
+.airport {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.code {
   font-size: 18px;
-  font-weight: 600;
+  font-weight: 800;
+  color: #111827;
+}
+
+.city {
+  color: #4b5563;
+  font-size: 14px;
 }
 
 .time {
-  font-size: 14px;
-  color: #777;
+  color: #6b7280;
+  font-size: 13px;
 }
 
-/* RIGHT */
-.flight-right {
+.line {
   display: flex;
-  flex-direction: column;
-  align-items: flex-end;
+  align-items: center;
   gap: 8px;
 }
 
+.dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #16a34a;
+  box-shadow: 0 0 0 4px rgba(22, 163, 74, 0.15);
+}
+
+.bar {
+  width: 70px;
+  height: 3px;
+  border-radius: 99px;
+  background: linear-gradient(90deg, #16a34a, #0ea5e9);
+}
+
+.chip-row {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.chip {
+  background: #eef2ff;
+  color: #312e81;
+  border-radius: 10px;
+  padding: 6px 10px;
+  font-weight: 600;
+  font-size: 13px;
+}
+
+.chip.secondary {
+  background: #f0fdfa;
+  color: #0f766e;
+}
+
+.card-bottom {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 12px;
+  align-items: center;
+}
+
+.detail {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: #4b5563;
+  font-weight: 600;
+}
+
+.price-area {
+  text-align: right;
+  margin-left: auto;
+}
+
+.price-area.disabled {
+  opacity: 0.5;
+}
+
+.past-text {
+  color: #b42318;
+}
+
 .price {
-  font-size: 20px;
-  font-weight: 700;
-  color: #7b2cff;
+  font-size: 24px;
+  font-weight: 800;
+  color: #111827;
+}
+
+.price-area small {
+  color: #6b7280;
 }
 
 .select-btn {
-  background: #7b2cff;
+  background: linear-gradient(90deg, #111827, #1f2937);
   color: white;
-  padding: 8px 24px;
+  padding: 10px 16px;
   border: none;
-  border-radius: 10px;
+  border-radius: 12px;
   cursor: pointer;
-  transition: 0.25s ease;
+  transition: 0.2s ease;
+  font-weight: 700;
+  width: fit-content;
+  justify-self: end;
 }
 
 .select-btn:hover {
-  background: #5f1cc9;
+  transform: translateY(-1px);
+  box-shadow: 0 10px 24px rgba(17, 24, 39, 0.25);
+}
+
+.select-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  box-shadow: none;
+  transform: none;
 }
 
 /* Fade Animation */

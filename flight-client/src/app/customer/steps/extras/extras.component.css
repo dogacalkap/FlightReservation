@@ -16,6 +16,49 @@
   margin-bottom: 30px;
 }
 
+.extras-header {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.eyebrow {
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  font-size: 12px;
+  color: #7c3aed;
+  margin: 0;
+}
+
+.lede {
+  color: #4b5563;
+  margin: 6px 0 0;
+}
+
+.totals-pill {
+  background: #f1e9ff;
+  color: #4c1d95;
+  border: 1px solid rgba(76, 29, 149, 0.2);
+  padding: 10px 14px;
+  border-radius: 12px;
+  text-align: center;
+  min-width: 110px;
+}
+
+.pill-label {
+  display: block;
+  font-size: 12px;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.pill-value {
+  font-size: 22px;
+  font-weight: 800;
+}
+
 /* Hizmet Kartları Düzeni */
 .services-container {
     display: grid;
@@ -28,17 +71,17 @@
     background: #ffffff;
     border-radius: 18px;
     padding: 25px;
-    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
+    box-shadow: 0 12px 32px rgba(91, 33, 182, 0.08);
     display: flex;
     flex-direction: column;
     align-items: flex-start;
-    border-left: 5px solid #4A90E2; /* Mavi vurgu */
+    border-left: 5px solid #6a0dfa; /* Mor vurgu */
 }
 
 .service-icon {
     font-size: 32px;
-    color: #4A90E2;
-    background: #e9f0ff;
+    color: #6a0dfa;
+    background: #f1e9ff;
     padding: 10px;
     border-radius: 10px;
     margin-bottom: 15px;
@@ -75,18 +118,20 @@
 .bonus-wheel-area {
     text-align: center;
     padding: 30px 20px;
-    background: #f0f0f8;
-    border-radius: 15px;
-    border: 1px dashed #6a0dfa;
+    background: linear-gradient(135deg, #0f172a, #1f2a44);
+    color: #e5e7eb;
+    border-radius: 18px;
+    border: 1px solid rgba(255,255,255,0.08);
     margin-top: 30px; /* Diğer kartlardan ayır */
+    box-shadow: 0 16px 38px rgba(15, 23, 42, 0.25);
 }
 .bonus-title {
     font-size: 24px;
-    color: #6a0dfa;
+    color: #c4c8ff;
     margin-bottom: 10px;
 }
 .bonus-wheel-area p {
-    color: #555;
+    color: #cbd5e1;
     margin-bottom: 20px;
 }
 
@@ -114,7 +159,7 @@
 
 /* Spin Açma Butonu (Mevcut kodunuzdan alındı) */
 .spin-open-btn {
-  background: linear-gradient(135deg, #ff0066, #ff8a00);
+  background: linear-gradient(135deg, #6a0dfa, #4f46e5);
   color: white;
   padding: 14px 28px;
   border-radius: 14px;
@@ -122,11 +167,11 @@
   border: none;
   cursor: pointer;
   margin-bottom: 30px;
-  box-shadow: 0 4px 15px rgba(255, 0, 102, 0.4);
+  box-shadow: 0 10px 26px rgba(79, 70, 229, 0.35);
 }
 
 .spin-open-btn:hover:not(:disabled) {
-    background: linear-gradient(135deg, #e6005c, #e67d00);
+    background: linear-gradient(135deg, #5b21b6, #4338ca);
     transform: translateY(-1px);
 }
 .spin-open-btn:disabled {
@@ -140,13 +185,15 @@
 .wheel-card {
   position: relative;
   padding: 30px;
-  width: 380px;
-  background: #fff;
-  border-radius: 18px;
+  width: 420px;
+  background: #0f172a;
+  color: #e5e7eb;
+  border-radius: 20px;
   z-index: 2001; 
   text-align: center;
-  box-shadow: 0 8px 35px rgba(0,0,0,0.35);
+  box-shadow: 0 18px 45px rgba(15, 23, 42, 0.45);
   animation: popup 0.25s ease-out;
+  border: 1px solid rgba(255,255,255,0.06);
 
   /* 💥 YENİ/GÜNCEL: Dikey Uzamayı Engelleme */
   max-height: 90vh; /* Ekran yüksekliğinin %90'ından fazla olmasın */
@@ -159,7 +206,7 @@
   z-index: 5;
   font-size: 26px; /* Biraz büyüttük */
   font-weight: 700;
-  color: #333;
+  color: #e5e7eb;
 }
 
 /* Çark Konteyner */
@@ -174,16 +221,16 @@
   width: 260px;
   height: 260px;
   border-radius: 50%;
-  border: 6px solid #f0f0f0; /* Sınırı yumuşattık */
+  border: 6px solid rgba(255,255,255,0.08); /* Sınırı yumuşattık */
   transition: transform 6s cubic-bezier(.15,.85,.25,1);
   /* Mevcut Conic Gradient korundu */
   background-image: conic-gradient(
-      #ff0066 0deg 60deg,
-      #ffa600 60deg 120deg,
-      #00d0ff 120deg 180deg,
-      #4caf50 180deg 240deg,
-      #673ab7 240deg 300deg,
-      #ff3d00 300deg 360deg
+      #6a0dfa 0deg 60deg,
+      #8b5cf6 60deg 120deg,
+      #f59e0b 120deg 180deg,
+      #10b981 180deg 240deg,
+      #4338ca 240deg 300deg,
+      #ef4444 300deg 360deg
   );
 }
 
@@ -197,12 +244,12 @@
   height: 0; 
   border-left: 12px solid transparent;
   border-right: 12px solid transparent;
-  border-bottom: 18px solid #333; /* Siyah yaptık */
+  border-bottom: 18px solid #c4c8ff; /* Daha sofistike ok */
 }
 
 /* Çevir Butonu */
 .spin-btn {
-  background: #ff0066;
+  background: linear-gradient(135deg, #6a0dfa, #4f46e5);
   color: white;
   padding: 14px 30px; /* Biraz büyüttük */
   margin-top: 30px;
@@ -210,15 +257,16 @@
   font-size: 18px;
   border-radius: 12px;
   cursor: pointer;
-  box-shadow: 0 4px 15px rgba(255, 0, 102, 0.3);
+  box-shadow: 0 10px 24px rgba(79, 70, 229, 0.35);
 }
 
 /* Sonuç Kutusu */
 .result-box {
   margin-top: 25px;
   padding: 15px; /* Boşluk ekledik */
-  background: #f0f8ff;
-  border: 1px solid #d4e8ff;
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.12);
+  color: #e5e7eb;
   border-radius: 10px;
   z-index: 21; /* Konfetinin altında kalmasın */
 }
@@ -229,7 +277,7 @@
   background: transparent;
   border: none;
   font-size: 16px;
-  color: #666;
+  color: #cbd5e1;
   cursor: pointer;
 }
 

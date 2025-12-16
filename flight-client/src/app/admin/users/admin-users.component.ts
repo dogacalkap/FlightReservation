@@ -4,12 +4,14 @@ import { CommonModule } from '@angular/common';
 import { finalize } from 'rxjs';
 import { FormsModule } from '@angular/forms';
 import { DatePipe } from '@angular/common';
+import { TranslatePipe } from '../../shared/translate.pipe';
+import { TranslationService } from '../../services/translation.service';
 
 
 @Component({
   selector: 'app-admin-users',
   standalone: true,
-  imports: [CommonModule, FormsModule, DatePipe],
+  imports: [CommonModule, FormsModule, DatePipe, TranslatePipe],
   templateUrl: './admin-users.component.html',
   styleUrls: ['./admin-users.component.css']
 })
@@ -30,7 +32,8 @@ export class AdminUsersComponent implements OnInit {
 
   constructor(
     private http: HttpClient,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+    private i18n: TranslationService
   ) {}
 
   // ================= INIT =================
@@ -46,7 +49,7 @@ export class AdminUsersComponent implements OnInit {
         this.cdr.detectChanges(); // zoneless fix
       },
       error: (err) => {
-        console.error('Kullanıcıları Yükleme Hatası', err);
+        console.error('Load Users Error', err);
       }
     });
   }
@@ -102,7 +105,7 @@ export class AdminUsersComponent implements OnInit {
 
   // ================= DELETE USER =================
   deleteUser(id: number) {
-    if (!confirm('Bu kullanıcı silinsin mi?')) return;
+    if (!confirm(this.i18n.translate('adminUsers.delete.confirm'))) return;
 
     this.deletingId = id;
 

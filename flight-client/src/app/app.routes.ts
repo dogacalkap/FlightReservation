@@ -25,7 +25,13 @@ export const routes: Routes = [
 {
   path: 'customer',
   children: [
-    { path: '', component: CustomerHomeComponent },
+    { path: '', redirectTo: 'seat-availability', pathMatch: 'full' },
+    { path: 'seat-availability', component: CustomerHomeComponent, data: { step: 'seatAvailability' } },
+    { path: 'passenger-info', component: CustomerHomeComponent, data: { step: 'passengerInfo' } },
+    { path: 'seat-selection', component: CustomerHomeComponent, data: { step: 'seatSelection' } },
+    { path: 'baggage', component: CustomerHomeComponent, data: { step: 'baggage' } },
+    { path: 'extras', component: CustomerHomeComponent, data: { step: 'extras' } },
+    { path: 'payment', component: CustomerHomeComponent, data: { step: 'payment' } },
     {
       path: 'my-flights',
       loadComponent: () =>

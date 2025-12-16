@@ -6,11 +6,14 @@ import { AirportService } from '../services/airport.service';
 import { Airport } from '../models/airport';
 import { FlightCreateDto } from '../models/flight-create-dto';
 import { Flight } from '../models/flight';
+import { ChangeDetectorRef } from '@angular/core';
+import { TranslatePipe } from '../shared/translate.pipe';
+import { TranslationService } from '../services/translation.service';
 
 @Component({
   selector: 'app-flights',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [CommonModule, ReactiveFormsModule, TranslatePipe],
   templateUrl: './flights.component.html',
   styleUrl: './flights.component.css'
 })
@@ -27,7 +30,9 @@ export class FlightsComponent implements OnInit {
   constructor(
     private fb: FormBuilder,
     private flightService: FlightService,
-    private airportService: AirportService
+    private airportService: AirportService,
+    private cdr: ChangeDetectorRef,
+    private i18n: TranslationService
   ) {}
 
   ngOnInit(): void {
@@ -46,8 +51,14 @@ export class FlightsComponent implements OnInit {
 
   loadAirports(): void {
     this.airportService.getAirports().subscribe({
-      next: (data) => this.airports = data,
-      error: () => this.error = 'Airport listesi yüklenirken hata oluştu.'
+      next: (data) => {
+        this.airports = data;
+        this.cdr.detectChanges();
+      },
+      error: () => {
+        this.error = this.i18n.translate('adminFlights.error.loadAirports');
+        this.cdr.detectChanges();
+      }
     });
   }
 
@@ -59,10 +70,12 @@ export class FlightsComponent implements OnInit {
       next: (data) => {
         this.flights = data;
         this.loading = false;
+        this.cdr.detectChanges();
       },
       error: () => {
-        this.error = 'Flight listesi yüklenirken hata oluştu.';
+        this.error = this.i18n.translate('adminFlights.error.load');
         this.loading = false;
+        this.cdr.detectChanges();
       }
     });
   }
@@ -88,7 +101,7 @@ export class FlightsComponent implements OnInit {
 
   saveFlight(): void {
     if (!this.form.valid) {
-      this.error = 'Tüm alanları doldurmalısın.';
+      this.error = this.i18n.translate('adminFlights.error.required');
       return;
     }
 
@@ -112,7 +125,7 @@ export class FlightsComponent implements OnInit {
           this.loadFlights();
           this.clearForm();
         },
-        error: () => this.error = 'Flight eklenirken hata oluştu.'
+        error: () => this.error = this.i18n.translate('adminFlights.error.create')
       });
 
     } else {
@@ -122,7 +135,7 @@ export class FlightsComponent implements OnInit {
           this.loadFlights();
           this.clearForm();
         },
-        error: () => this.error = 'Flight güncellenirken hata oluştu.'
+        error: () => this.error = this.i18n.translate('adminFlights.error.update')
       });
     }
   }
@@ -131,11 +144,11 @@ export class FlightsComponent implements OnInit {
     const id = Number((event.target as HTMLElement).getAttribute('data-id'));
     if (!id) return;
 
-    if (!confirm('Bu uçuşu silmek istediğine emin misin?')) return;
+    if (!confirm(this.i18n.translate('adminFlights.confirm.delete'))) return;
 
     this.flightService.deleteFlight(id).subscribe({
       next: () => this.loadFlights(),
-      error: () => this.error = 'Flight silinirken hata oluştu.'
+      error: () => this.error = this.i18n.translate('adminFlights.error.delete')
     });
   }
 }

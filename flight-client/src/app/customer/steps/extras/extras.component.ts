@@ -1,15 +1,17 @@
 import { Component } from '@angular/core';
-import { ReservationDataService } from '../../../services/reservation-data.service';
 import { LottieComponent } from 'ngx-lottie';
 import { CommonModule } from '@angular/common';
 import { ReservationStepsService } from '../../../services/reservation-steps.service';
+import { Router } from '@angular/router';
+import { TranslatePipe } from '../../../shared/translate.pipe';
+import { TranslationService } from '../../../services/translation.service';
 
 interface ExtraService {
-  code: string;       
-  name: string;
+  code: string;
+  nameKey: string;
   price: number;
-  isSelected: boolean; 
-  description: string;
+  isSelected: boolean;
+  descKey: string;
   icon: string;
 }
 
@@ -17,7 +19,7 @@ interface ExtraService {
   selector: 'app-extras',
   templateUrl: './extras.component.html',
   styleUrls: ['./extras.component.css'],
-  imports: [CommonModule, LottieComponent]
+  imports: [CommonModule, LottieComponent, TranslatePipe]
 })
 export class ExtrasComponent {
 
@@ -25,6 +27,9 @@ export class ExtrasComponent {
   spinning = false;
   rotation: number = 0;
   result: string | null = null;
+  get selectedCount(): number {
+    return this.services.filter(s => s.isSelected).length;
+  }
 
   // Lottie paths
   confettiLottie = 'assets/lottie/confetti.json';
@@ -32,26 +37,26 @@ export class ExtrasComponent {
   services: ExtraService[] = [
     {
       code: 'INSURANCE',
-      name: 'Seyahat Sigortası',
+      nameKey: 'extras.insurance.name',
       price: 99,
       isSelected: false,
-      description: 'Uçuşunuzu beklenmedik aksiliklere karşı güvence altına alın.',
+      descKey: 'extras.insurance.desc',
       icon: 'bi-shield-lock'
     },
     {
       code: 'MEAL',
-      name: 'Özel İkram Seçeneği',
+      nameKey: 'extras.meal.name',
       price: 49,
       isSelected: false,
-      description: 'Uçuşunuz için gurme veya diyet yemek siparişi verin.',
+      descKey: 'extras.meal.desc',
       icon: 'bi-egg-fried'
     },
     {
       code: 'FAST_TRACK',
-      name: 'Hızlı Geçiş (Fast Track)',
+      nameKey: 'extras.fastTrack.name',
       price: 129,
       isSelected: false,
-      description: 'Güvenlik ve pasaport kontrolünden hızlıca geçin.',
+      descKey: 'extras.fastTrack.desc',
       icon: 'bi-lightning-charge'
     }
   ];
@@ -69,8 +74,9 @@ export class ExtrasComponent {
   clickSound = new Audio('assets/sounds/tick.mp3');
 
   constructor(
-  private dataService: ReservationDataService,
-  public stepService: ReservationStepsService
+  public stepService: ReservationStepsService,
+  private router: Router,
+  private translationService: TranslationService
  ) {}
 
  ngOnInit(): void {
@@ -92,7 +98,7 @@ export class ExtrasComponent {
     if (service.isSelected) {
       // Eklenecekse, servise ekle
       this.stepService.extras.push({
-        name: service.name,
+        name: this.translationService.translate(service.nameKey),
         price: service.price,
         code: service.code
       });
@@ -214,9 +220,9 @@ continue() {
 
   this.stepService.completeStep('extras');
   this.stepService.setActiveStep('payment');
+  const route = this.stepService.getStepRoute('payment');
+  this.router.navigate(['/customer', route]);
   this.showWheel = false;
 }
 
 } 
-
-

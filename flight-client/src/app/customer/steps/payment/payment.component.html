@@ -1,35 +1,35 @@
 <div class="payment-wrapper">
-    <h2 class="title">Ödeme</h2>
+    <h2 class="title">{{ 'payment.title' | t }}</h2>
 
     <div class="ticket-card">
 
       <div class="ticket-left">
-        <h3>Bilet Özeti</h3>
+        <h3>{{ 'payment.ticketSummary' | t }}</h3>
 
         <div class="info-row">
-          <span class="label">Nereden:</span>
+          <span class="label">{{ 'payment.from' | t }}</span>
           <span class="value">{{ stepService.selectedFlight?.fromAirportCity }}</span>
         </div>
         <div class="info-row">
-          <span class="label">Nereye:</span>
+          <span class="label">{{ 'payment.to' | t }}</span>
           <span class="value">{{ stepService.selectedFlight?.toAirportCity }}</span>
         </div>
         <div class="info-row">
-          <span class="label">Tarih:</span>
+          <span class="label">{{ 'payment.date' | t }}</span>
           <span class="value">
             {{ stepService.selectedFlight?.departureTime | date:'dd MMM yyyy - HH:mm' }}
           </span>
         </div>
 
         <div class="info-row">
-         <span class="label">Bilet Fiyatı:</span>
+         <span class="label">{{ 'payment.ticketPrice' | t }}</span>
          <span class="value">{{ stepService.selectedFlight?.basePrice }} ₺</span>
         </div>
 
         <div class="info-row">
-          <span class="label">Koltuk:</span>
+          <span class="label">{{ 'payment.seat' | t }}</span>
           <span class="value">
-            {{ stepService.seatSelection?.seatNumber }} 
+            {{ stepService.seatSelection?.seatNumber }}
             <ng-container *ngIf="stepService.seatSelection as s">
                 <span *ngIf="s.price && s.price > 0" class="text-success">
                     (+{{ s.price }} ₺)
@@ -39,9 +39,9 @@
         </div>
 
         <div class="info-row">
-          <span class="label">Bagaj:</span>
+          <span class="label">{{ 'payment.baggage' | t }}</span>
           <span class="value">
-            {{ stepService.baggage?.weight }} adet 
+            {{ stepService.baggage?.weight }} {{ 'payment.pieces' | t }}
             <ng-container *ngIf="stepService.baggage as b">
                 <span *ngIf="b.price && b.price > 0" class="text-success">
                     (+{{ b.price }} ₺)
@@ -51,13 +51,13 @@
         </div>
 
         <div class="info-row">
-          <span class="label">Ekstralar:</span>
+          <span class="label">{{ 'payment.extras' | t }}</span>
           <span class="value">
-            <div *ngIf="stepService.extras.length === 0">Yok</div>
+            <div *ngIf="stepService.extras.length === 0">{{ 'payment.none' | t }}</div>
 
             <div *ngFor="let e of stepService.extras">
               {{ e.name }}
-              <span [ngClass]="{'text-danger': e.price < 0, 'text-success': e.price > 0}"> 
+              <span [ngClass]="{'text-danger': e.price < 0, 'text-success': e.price > 0}">
                   ({{ e.price > 0 ? '+' : '' }}{{ e.price }} ₺)
               </span>
             </div>
@@ -65,7 +65,7 @@
         </div>
 
         <div class="price-row">
-          <span>Ödenecek Tutar:</span>
+          <span>{{ 'payment.totalAmount' | t }}</span>
           <span class="price">{{ stepService.getTotalPrice() | number:'1.2-2' }} ₺</span>
         </div>
       </div>
@@ -77,22 +77,22 @@
 
     <div class="payment-card">
 
-      <h3>Kart Bilgileri</h3>
-      
+      <h3>{{ 'payment.cardInfo' | t }}</h3>
+
       <div class="input-group">
-          <label for="cardName">Kart Üzerindeki İsim</label>
-          <input type="text" id="cardName" [(ngModel)]="cardHolder" placeholder="Ad Soyad">
+          <label for="cardName">{{ 'payment.cardName' | t }}</label>
+          <input type="text" id="cardName" [(ngModel)]="cardHolder" [placeholder]="'payment.cardNamePlaceholder' | t">
       </div>
 
       <div class="input-group">
-          <label for="cardNumber">Kart Numarası</label>
+          <label for="cardNumber">{{ 'payment.cardNumber' | t }}</label>
           <input type="text" id="cardNumber" [(ngModel)]="cardNumber" placeholder="xxxx xxxx xxxx xxxx" maxlength="16">
       </div>
 
       <div class="row-2">
           <div class="input-group">
-              <label for="expiry">Son Kullanma Tarihi (MM/YY)</label>
-              <input type="text" id="expiry" [(ngModel)]="expiry" placeholder="MM/YY" maxlength="5">
+              <label for="expiry">{{ 'payment.expiry' | t }}</label>
+              <input type="text" id="expiry" [(ngModel)]="expiry" [placeholder]="'payment.expiryPlaceholder' | t" maxlength="5">
           </div>
 
           <div class="input-group">
@@ -103,11 +103,11 @@
 
       <label class="checkbox-row" for="saveCard">
         <input type="checkbox" id="saveCard" [(ngModel)]="saveCard">
-        Kartımı kaydet
+        {{ 'payment.saveCard' | t }}
       </label>
 
       <button class="pay-btn" (click)="pay()" [disabled]="loading">
-        {{ loading ? "Ödeme İşleniyor..." : "Ödemeyi Tamamla (" + stepService.getTotalPrice() + " ₺)" }}
+        {{ loading ? ('payment.processing' | t) : (('payment.complete' | t) + ' (' + stepService.getTotalPrice() + ' ₺)') }}
       </button>
 
       <p *ngIf="paymentError" class="result error">{{ paymentError }}</p>

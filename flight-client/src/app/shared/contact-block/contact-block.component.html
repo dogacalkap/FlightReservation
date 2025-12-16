@@ -1,50 +1,50 @@
 <section class="contact-section">
   <div class="contact-left">
-    <h3>Bizimle İletişime Geçin</h3>
-    <p class="subtitle">Her türlü soru, görüş ve öneriniz için bize ulaşabilirsiniz.</p>
+    <h3>{{ 'contact.title' | t }}</h3>
+    <p class="subtitle">{{ 'contact.subtitle' | t }}</p>
 
     <div class="contact-grid">
       <div class="contact-card">
         <i class="bi bi-envelope"></i>
         <div>
-          <strong>Email</strong>
+          <strong>{{ 'contact.email' | t }}</strong>
           <div>superairlines@gmail.com</div>
         </div>
       </div>
       <div class="contact-card">
         <i class="bi bi-telephone"></i>
         <div>
-          <strong>Telefon</strong>
+          <strong>{{ 'contact.phone' | t }}</strong>
           <div>+90 555 000 0000</div>
         </div>
       </div>
       <div class="contact-card">
         <i class="bi bi-geo-alt"></i>
         <div>
-          <strong>Adres</strong>
-          <div>İstanbul Havalimanı Terminal 2, İstanbul</div>
+          <strong>{{ 'contact.address' | t }}</strong>
+          <div>{{ 'contact.addressValue' | t }}</div>
         </div>
       </div>
       <div class="contact-card">
         <i class="bi bi-clock"></i>
         <div>
-          <strong>Çalışma Saatleri</strong>
-          <div>7/24 Destek</div>
+          <strong>{{ 'contact.hours' | t }}</strong>
+          <div>{{ 'contact.hoursValue' | t }}</div>
         </div>
       </div>
     </div>
   </div>
 
   <div class="contact-right">
-    <h4>İletişim Formu</h4>
+    <h4>{{ 'contact.form.title' | t }}</h4>
     <form (ngSubmit)="submit()">
       <div class="form-row">
-        <input type="text" placeholder="Ad Soyad" [(ngModel)]="form.fullName" name="fullName" required>
-        <input type="email" placeholder="Email" [(ngModel)]="form.email" name="email" required>
+        <input type="text" [placeholder]="'contact.form.fullName' | t" [(ngModel)]="form.fullName" name="fullName" required>
+        <input type="email" [placeholder]="'contact.form.email' | t" [(ngModel)]="form.email" name="email" required>
       </div>
-      <input type="text" placeholder="Konu" [(ngModel)]="form.subject" name="subject" required>
-      <textarea rows="3" placeholder="Mesajınız" [(ngModel)]="form.message" name="message" required></textarea>
-      <button type="submit">Gönder</button>
+      <input type="text" [placeholder]="'contact.form.subject' | t" [(ngModel)]="form.subject" name="subject" required>
+      <textarea rows="3" [placeholder]="'contact.form.message' | t" [(ngModel)]="form.message" name="message" required></textarea>
+      <button type="submit">{{ 'contact.form.submit' | t }}</button>
     </form>
   </div>
 </section>

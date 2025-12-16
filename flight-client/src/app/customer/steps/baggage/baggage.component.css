@@ -5,11 +5,12 @@
 }
 
 .banner {
-  background: linear-gradient(90deg, #007bff, #005fcc);
+  background: linear-gradient(120deg, #5b21b6, #7c3aed);
   color: #fff;
   padding: 25px 35px;
   border-radius: 14px;
   margin-bottom: 35px;
+  box-shadow: 0 12px 28px rgba(91, 33, 182, 0.25);
 }
 
 .baggage-cards {
@@ -23,7 +24,8 @@
   width: 32%;
   padding: 25px;
   border-radius: 16px;
-  box-shadow: 0 4px 14px rgba(0,0,0,0.1);
+  box-shadow: 0 10px 26px rgba(91, 33, 182, 0.08);
+  border: 1px solid rgba(124, 58, 237, 0.12);
   transition: 0.25s ease;
   text-align: center;
 }
@@ -31,6 +33,29 @@
 .card:hover {
   transform: translateY(-5px);
   box-shadow: 0 8px 22px rgba(0,0,0,0.12);
+}
+
+.card h4 {
+  color: #4c1d95;
+  margin-bottom: 10px;
+}
+
+.card ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  color: #4b5563;
+}
+
+.card ul li {
+  padding: 8px 10px;
+  border-radius: 10px;
+  background: #f5f2ff;
+  border: 1px solid rgba(76, 29, 149, 0.08);
+  text-align: left;
 }
 
 .lottie {
@@ -44,18 +69,19 @@
 }
 
 .continue-btn {
-  background: #0066ff;
+  background: linear-gradient(120deg, #5b21b6, #7c3aed);
   color: white;
   border: none;
   padding: 14px 32px;
-  border-radius: 10px;
+  border-radius: 12px;
   font-size: 17px;
   cursor: pointer;
   transition: 0.2s;
+  box-shadow: 0 10px 24px rgba(91, 33, 182, 0.25);
 }
 
 .continue-btn:hover {
-  background: #004dcc;
+  background: linear-gradient(120deg, #4c1d95, #6b21a8);
 }
 .checked-baggage-box {
   background: #fff;
@@ -99,4 +125,3 @@
   font-size: 14px;
   color: #666;
 }
-

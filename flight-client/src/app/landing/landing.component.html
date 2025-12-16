@@ -8,8 +8,8 @@
 
     <!-- LEFT: TEXT -->
     <div class="hero-text">
-      <h1>Uçuşunu Bir Tıkla Planla!</h1>
-      <p>En uygun fiyatlarla uçuş ara, karşılaştır ve kolayca bilet al.</p>
+      <h1>{{ 'landing.hero.title' | t }}</h1>
+      <p>{{ 'landing.hero.subtitle' | t }}</p>
     </div>
 
     <!-- RIGHT: LOTTIE ANIMATION -->
@@ -26,8 +26,8 @@
 
   <!-- FLIGHT SEARCH ON LANDING -->
   <section class="landing-search">
-    <h3>Hemen Uçuşunu Bul</h3>
-    <p class="subtitle">Şehir ve tarih seç, anında uygun uçuşları gör. Seçtiğinde süreç otomatik devam etsin.</p>
+    <h3>{{ 'landing.search.title' | t }}</h3>
+    <p class="subtitle">{{ 'landing.search.subtitle' | t }}</p>
     <app-seat-availability [redirectToCustomer]="true"></app-seat-availability>
   </section>
 

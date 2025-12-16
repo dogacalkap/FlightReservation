@@ -10,11 +10,12 @@ import { CustomerFlightService } from '../../../services/customer-flight.service
 import { Router } from '@angular/router';
 import { ReservationStepsService } from '../../../services/reservation-steps.service';
 import { ReservationDataService } from '../../../services/reservation-data.service';
+import { TranslatePipe } from '../../../shared/translate.pipe';
 
 @Component({
   selector: 'app-seat-availability',
   standalone: true,
-  imports: [CommonModule, FormsModule, DatePipe],
+  imports: [CommonModule, FormsModule, DatePipe, TranslatePipe],
   templateUrl: './seat-availability.component.html',
   styleUrls: ['./seat-availability.component.css']
 })
@@ -52,7 +53,12 @@ export class SeatAvailabilityComponent implements OnInit {
   }
 
   onClassChange() {
-    this.extraPrice = this.travelClass === 'business' ? 300 : 0;
+    this.extraPrice = this.travelClass === 'business' ? 500 : 0;
+
+    // Eğer arama sonuçları varsa sınıf değişiminde fiyatları güncelle
+    if (this.searched && this.fromAirportId && this.toAirportId && this.selectedDate) {
+      this.searchFlights();
+    }
   }
 
   loadAirports() {
@@ -85,6 +91,7 @@ export class SeatAvailabilityComponent implements OnInit {
     }
 
     const dateStr = this.selectedDate;
+    const classAddon = this.travelClass === 'business' ? 500 : 0;
 
     this.filteredFlights = this.allFlights
       .filter(f =>
@@ -94,7 +101,7 @@ export class SeatAvailabilityComponent implements OnInit {
       )
       .map(f => ({
         ...f,
-        finalPrice: f.price + this.extraPrice
+        finalPrice: Number(f.price ?? 0) + classAddon
       }));
 
     // ❌ Hiç uçuş yok ise uyarı göster
@@ -114,30 +121,34 @@ export class SeatAvailabilityComponent implements OnInit {
   // -------------------------------------------------
   //               SELECT FLIGHT
   // -------------------------------------------------
-  selectFlight(f: any) {
-  const selected = {
-    id: f.id,
-    fromAirportCity: f.fromAirportCity,
-    toAirportCity: f.toAirportCity,
-    departureTime: f.departureTime,
-    basePrice: f.finalPrice,   // Economy/Business fiyat dahil!
-    travelClass: this.travelClass
-  };
-
-  // ⭐ UÇUŞ BİLGİSİNİ YENİ SİSTEME KAYDEDİYORUZ
-  this.stepService.selectedFlight = selected;
-
-  // Eski servis artık kullanılmıyor → silebilirsin
-  // this.dataService.setFlight(selected);
-
-  this.stepService.completeStep('seatAvailability');
-  this.stepService.setActiveStep('passengerInfo');
-
-  if (this.redirectToCustomer) {
-    // Landing'den geldiğinde müşteri akışına yönlendir
-    this.router.navigate(['/customer']);
+  isFlightPast(f: any): boolean {
+    const departure = new Date(f.departureTime);
+    const now = new Date();
+    return departure.getTime() < now.getTime();
   }
-}
+
+  selectFlight(f: any) {
+    if (this.isFlightPast(f)) {
+      return;
+    }
+    const selected = {
+      id: f.id,
+      fromAirportCity: f.fromAirportCity,
+      toAirportCity: f.toAirportCity,
+      departureTime: f.departureTime,
+      basePrice: f.finalPrice,   // Economy/Business fiyat dahil!
+      travelClass: this.travelClass
+    };
+
+    // ⭐ UÇUŞ BİLGİSİNİ YENİ SİSTEME KAYDEDİYORUZ
+    this.stepService.selectedFlight = selected;
+
+    this.stepService.completeStep('seatAvailability');
+    this.stepService.setActiveStep('passengerInfo');
+
+    const route = this.stepService.getStepRoute('passengerInfo');
+    this.router.navigate(['/customer', route]);
+  }
 
   swapAirports() {
     const temp = this.fromAirportId;

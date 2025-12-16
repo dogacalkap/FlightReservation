@@ -5,6 +5,7 @@ import { LottieComponent, AnimationOptions } from 'ngx-lottie';
 import { SeatAvailabilityComponent } from '../customer/steps/seat-availability/seat-availability.component';
 import { NavbarComponent } from '../shared/navbar/navbar.component';
 import { ContactBlockComponent } from '../shared/contact-block/contact-block.component';
+import { TranslatePipe } from '../shared/translate.pipe';
 
 @Component({
   selector: 'app-landing',
@@ -15,7 +16,8 @@ import { ContactBlockComponent } from '../shared/contact-block/contact-block.com
     LottieComponent,
     SeatAvailabilityComponent,
     NavbarComponent,
-    ContactBlockComponent
+    ContactBlockComponent,
+    TranslatePipe
   ],
   templateUrl: './landing.component.html',
   styleUrls: ['./landing.component.css']

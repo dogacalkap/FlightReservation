@@ -2,10 +2,12 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
+import { TranslatePipe } from '../../shared/translate.pipe';
+
 @Component({
   selector: 'app-student-discount',
   standalone: true,
-  imports: [CommonModule, RouterLink],
+  imports: [CommonModule, RouterLink, TranslatePipe],
   templateUrl: './student-discount.component.html',
   styleUrls: ['./student-discount.component.css']
 })

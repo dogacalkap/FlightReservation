@@ -1,41 +1,92 @@
 <app-navbar></app-navbar>
 
-<div class="my-flights-page">
-  <h2 class="title">Uçuşlarım</h2>
+<section class="page-hero">
+  <div class="hero-content">
+    <p class="eyebrow">{{ 'myFlights.eyebrow' | t }}</p>
+    <h1>{{ 'myFlights.title' | t }}</h1>
+    <p class="lede">{{ 'myFlights.subtitle' | t }}</p>
 
-  <div *ngIf="tickets.length === 0" class="empty">
-    <i class="bi bi-airplane"></i>
-    Henüz bir biletiniz bulunmuyor.
+    <div class="hero-stats">
+      <div class="stat-box">
+        <div class="stat-label">{{ 'myFlights.activeTickets' | t }}</div>
+        <div class="stat-value">{{ tickets.length }}</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-label">{{ 'myFlights.totalSpent' | t }}</div>
+        <div class="stat-value">{{ totalSpent | number:'1.0-0' }} ₺</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="content-area">
+  <div *ngIf="loading" class="info-box">
+    <i class="bi bi-arrow-repeat spin"></i>
+    {{ 'myFlights.loading' | t }}
   </div>
 
-  <div *ngIf="tickets.length > 0" class="tickets-container">
+  <div *ngIf="error" class="info-box error">
+    <i class="bi bi-exclamation-triangle"></i>
+    {{ error }}
+  </div>
+
+  <div *ngIf="!loading && tickets.length === 0 && !error" class="empty-state">
+    <div class="empty-visual">
+      <i class="bi bi-ticket-perforated"></i>
+    </div>
+    <p>{{ 'myFlights.empty' | t }}</p>
+    <span class="muted">{{ 'myFlights.emptyHint' | t }}</span>
+  </div>
+
+  <div class="tickets-grid" *ngIf="tickets.length > 0">
     <div class="ticket-card" *ngFor="let t of tickets">
-
-      <div class="ticket-header">
-        <div class="route">
-          <i class="bi bi-geo-alt-fill"></i>
-          <span class="city">{{ t.flight.fromAirportId }}</span>
-          →
-          <span class="city">{{ t.flight.toAirportId }}</span>
+      <div class="card-head">
+        <div>
+          <div class="badge">{{ 'myFlights.badge.confirmed' | t }}</div>
+          <div class="flight-name">{{ t.flight.fromAirportCity }} → {{ t.flight.toAirportCity }}</div>
         </div>
-        <div class="flight-number">Flight #{{ t.flight.flightNumber }}</div>
+        <div class="flight-number">#{{ t.flight.flightNumber }}</div>
       </div>
 
-      <div class="ticket-body">
-        <p><b>Tarih:</b> {{ t.flight.departureTime | date:'dd MMM yyyy - HH:mm' }}</p>
-        <p><b>Koltuk:</b> {{ t.seatNumber }}</p>
-        <p><b>Fiyat:</b> {{ t.finalPrice }} ₺</p>
+      <div class="route-line">
+        <div class="airport">
+          <div class="code">{{ t.flight.fromAirportCode }}</div>
+          <div class="city">{{ t.flight.fromAirportCity }}</div>
+          <div class="time">{{ t.flight.departureTime | date:'dd MMM HH:mm' }}</div>
+        </div>
+
+        <div class="line">
+          <span class="dot"></span>
+          <span class="bar"></span>
+          <span class="dot"></span>
+        </div>
+
+        <div class="airport">
+          <div class="code">{{ t.flight.toAirportCode }}</div>
+          <div class="city">{{ t.flight.toAirportCity }}</div>
+          <div class="time">{{ t.flight.arrivalTime | date:'dd MMM HH:mm' }}</div>
+        </div>
       </div>
 
-      <hr>
-
-      <div class="ticket-footer">
-        <i class="bi bi-clock"></i>
-        Satın alma zamanı: {{ t.createdAt | date:'dd MMM yyyy - HH:mm' }}
+      <div class="meta-row">
+        <span class="pill">{{ 'myFlights.seat' | t }} {{ t.seatNumber }}</span>
+        <span class="pill muted">{{ 'myFlights.baggage' | t }} {{ t.baggageCount }}</span>
+        <span class="pill success" *ngIf="t.extraReward">{{ 'myFlights.reward' | t }} {{ t.extraReward }}</span>
+        <span class="price">{{ t.finalPrice }} ₺</span>
       </div>
 
+      <div class="card-footer">
+        <div class="footer-text">
+          {{ 'myFlights.purchaseDate' | t }} {{ t.createdAt | date:'dd MMM yyyy, HH:mm' }}
+        </div>
+        <button class="cancel-btn" (click)="cancelTicket(t.id)" [disabled]="cancellingId === t.id">
+          <i class="bi bi-x-circle"></i>
+          <span *ngIf="cancellingId !== t.id">{{ 'myFlights.cancelBtn' | t }}</span>
+          <span *ngIf="cancellingId === t.id">{{ 'myFlights.cancelling' | t }}</span>
+        </button>
       </div>
+    </div>
   </div>
-</div>
+</section>
 
 <app-contact-block></app-contact-block>

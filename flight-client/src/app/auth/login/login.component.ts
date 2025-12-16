@@ -4,12 +4,15 @@ import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angula
 import { Router } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
 import { ChangeDetectorRef } from '@angular/core';
+import { TranslatePipe } from '../../shared/translate.pipe';
+import { TranslationService } from '../../services/translation.service';
 
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule],
-  templateUrl: './login.component.html'
+  imports: [CommonModule, ReactiveFormsModule, TranslatePipe],
+  templateUrl: './login.component.html',
+  styleUrls: ['./login.component.css']
 })
 export class LoginComponent {
 
@@ -17,6 +20,8 @@ export class LoginComponent {
   @Output() success = new EventEmitter<any>();   // İstersen step’lere emit edersin
 
   loginForm: FormGroup;
+  registerForm: FormGroup;
+  mode: 'login' | 'register' = 'login';
   loading = false;
   error: string | null = null;
 
@@ -24,12 +29,20 @@ export class LoginComponent {
     private fb: FormBuilder,
     private router: Router,
     private auth: AuthService,
-    private cdr: ChangeDetectorRef  
+    private cdr: ChangeDetectorRef,
+    private i18n: TranslationService
   ) {
     this.loginForm = this.fb.group({
       // username alanına sen zaten email yazıyorsun
       username: ['', Validators.required],
       password: ['', Validators.required]
+    });
+
+    this.registerForm = this.fb.group({
+      fullName: ['', Validators.required],
+      nationalId: ['', Validators.required],
+      email: ['', [Validators.required, Validators.email]],
+      password: ['', [Validators.required, Validators.minLength(6)]]
     });
   }
 
@@ -37,7 +50,7 @@ export class LoginComponent {
     this.error = null;
 
     if (this.loginForm.invalid) {
-      this.error = 'Kullanıcı adı ve şifre zorunludur.';
+      this.error = this.i18n.translate('customerLogin.login.error');
       return;
     }
 
@@ -69,11 +82,43 @@ export class LoginComponent {
         // this.router.navigate(['/customer']);
       },
       error: () => {
-        this.error = 'Hatalı giriş.';
+        this.error = this.i18n.translate('customerLogin.login.errorFailed');
         this.loading = false;
         this.cdr.detectChanges();
       }
     });
+  }
+
+  onRegisterSubmit() {
+    this.error = null;
+
+    if (this.registerForm.invalid) {
+      this.error = this.i18n.translate('customerLogin.register.error');
+      return;
+    }
+
+    const values = this.registerForm.value;
+    this.loading = true;
+
+    this.auth.register(values).subscribe({
+      next: () => {
+        this.loading = false;
+        // Başarılı kayıt sonrası login sekmesine dön ve email’i doldur
+        this.mode = 'login';
+        this.loginForm.patchValue({ username: values.email });
+        this.cdr.detectChanges();
+      },
+      error: () => {
+        this.error = this.i18n.translate('customerLogin.register.errorFailed');
+        this.loading = false;
+        this.cdr.detectChanges();
+      }
+    });
+  }
+
+  switchMode(mode: 'login' | 'register') {
+    this.mode = mode;
+    this.error = null;
   }
 
   onCloseClick() {
