@@ -21,10 +21,24 @@ namespace FlightReservation.Data
         public DbSet<Reservation> Reservations { get; set; }
         public DbSet<ContactMessage> ContactMessages { get; set; }
         public DbSet<Message> Messages { get; set; }
+        public DbSet<PasswordResetToken> PasswordResetTokens { get; set; }
 
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            base.OnModelCreating(modelBuilder);
 
+            modelBuilder.Entity<PasswordResetToken>()
+                .HasIndex(t => t.TokenHash)
+                .IsUnique();
 
+            modelBuilder.Entity<PasswordResetToken>()
+                .HasIndex(t => t.UserId);
 
-
+            modelBuilder.Entity<PasswordResetToken>()
+                .HasOne(t => t.User)
+                .WithMany()
+                .HasForeignKey(t => t.UserId)
+                .OnDelete(DeleteBehavior.Cascade);
+        }
     }
 }

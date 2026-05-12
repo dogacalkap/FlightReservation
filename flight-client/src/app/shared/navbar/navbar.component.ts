@@ -14,15 +14,28 @@ import { TranslationService } from '../../services/translation.service';
 })
 export class NavbarComponent {
   currentUser: any = null;
-  links = [
-    { label: 'nav.flights', path: '/customer/my-flights' },
-    { label: 'nav.offers', path: '/offers' },
-    { label: 'nav.about', path: '/about' }
-  ];
 
   constructor(private auth: AuthService, private i18n: TranslationService) {
     this.currentUser = this.auth.getCurrentUser();
     this.auth.user$.subscribe(u => this.currentUser = u);
+  }
+
+  get links() {
+    const baseLinks = [
+      { label: 'nav.flights', path: '/customer/my-flights' },
+      { label: 'nav.offers', path: '/offers' },
+      { label: 'nav.about', path: '/about' }
+    ];
+
+    if (this.auth.isAdmin()) {
+      return [
+        { label: 'Admin Panel', path: '/admin/airports' },
+        { label: 'Bilet Al', path: '/customer' },
+        ...baseLinks
+      ];
+    }
+
+    return baseLinks;
   }
 
   logout() {

@@ -3,7 +3,7 @@ import { RouterOutlet, Router } from '@angular/router';
 import { RouterModule } from '@angular/router';
 
 import { CommonModule } from '@angular/common';
-import { AuthService } from '../../auth/auth';
+import { AuthService } from '../../services/auth.service';
 import { TranslatePipe } from '../../shared/translate.pipe';
 
 @Component({
@@ -23,9 +23,7 @@ export class LayoutComponent {
   constructor(private auth: AuthService, private router: Router) {}
 
   logout() {
-  console.log("LOGOUT ÇAĞRILDI!!!");
-  localStorage.removeItem("admin_token");
-  this.router.navigate(['/login']);
-}
+    this.auth.logout();
+  }
 
 }

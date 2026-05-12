@@ -69,7 +69,8 @@
       </div>
 
       <div class="meta-row">
-        <span class="pill">{{ 'myFlights.seat' | t }} {{ t.seatNumber }}</span>
+        <span class="pill">{{ 'myFlights.seat' | t }} {{ t.seatNumbers || t.seatNumber }}</span>
+        <span class="pill muted">{{ 'myFlights.passenger' | t }}: {{ t.passengerCount || 1 }}</span>
         <span class="pill muted">{{ 'myFlights.baggage' | t }} {{ t.baggageCount }}</span>
         <span class="pill success" *ngIf="t.extraReward">{{ 'myFlights.reward' | t }} {{ t.extraReward }}</span>
         <span class="price">{{ t.finalPrice }} ₺</span>

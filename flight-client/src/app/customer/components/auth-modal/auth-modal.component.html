@@ -4,12 +4,12 @@
   <div class="header">
     <div>
       <p class="eyebrow">Yolcu hesabı</p>
-      <h3>Giriş yap veya kayıt ol</h3>
+      <h3>{{ registerOnly ? 'Kayıt ol' : 'Giriş yap veya kayıt ol' }}</h3>
     </div>
     <button class="close-btn" (click)="close()"><i class="bi bi-x-lg"></i></button>
   </div>
 
-  <div class="tab-row">
+  <div class="tab-row" *ngIf="!registerOnly">
     <button class="tab-btn" [class.active]="mode === 'login'" (click)="changeMode('login')">Giriş Yap</button>
     <button class="tab-btn" [class.active]="mode === 'register'" (click)="changeMode('register')">Kayıt Ol</button>
   </div>
@@ -37,17 +37,23 @@
       <input placeholder="Ad Soyad" [(ngModel)]="registerData.fullName" name="regFullName">
     </label>
     <label>TCKN
-      <input placeholder="11 haneli TCKN" [(ngModel)]="registerData.nationalId" name="regNationalId">
+      <input
+        placeholder="11 haneli TCKN"
+        [(ngModel)]="registerData.nationalId"
+        name="regNationalId"
+        inputmode="numeric"
+        maxlength="11"
+        (input)="onRegisterNationalIdInput($event)">
     </label>
     <label>Email
       <input placeholder="ornek@mail.com" [(ngModel)]="registerData.email" name="regEmail">
     </label>
     <label>Şifre
-      <input type="password" placeholder="En az 6 karakter" [(ngModel)]="registerData.password" name="regPassword">
+      <input type="password" placeholder="En az 8 karakter" [(ngModel)]="registerData.password" name="regPassword">
     </label>
 
     <button class="primary-btn" (click)="register()">Kayıt Ol</button>
-    <div class="footer-links">
+    <div class="footer-links" *ngIf="!registerOnly">
       <a (click)="changeMode('login')">Giriş ekranına dön</a>
     </div>
   </div>
@@ -57,12 +63,9 @@
     <label>Email
       <input type="email" placeholder="ornek@mail.com" [(ngModel)]="resetEmail">
     </label>
-    <label>TCKN
-      <input type="text" placeholder="11 haneli TCKN" [(ngModel)]="resetTCKN">
-    </label>
 
     <button class="primary-btn" (click)="forgotCheck()" [disabled]="loadingStep1">
-      {{ loadingStep1 ? 'Doğrulanıyor...' : 'Doğrula' }}
+      {{ loadingStep1 ? 'Gönderiliyor...' : 'Sıfırlama bağlantısı gönder' }}
     </button>
     <div class="footer-links">
       <a (click)="changeMode('login')">Girişe dön</a>
@@ -71,6 +74,10 @@
 
   <!-- FORGOT PASSWORD — STEP 2 -->
   <div *ngIf="mode === 'forgot-step2'" class="body">
+    <p *ngIf="resetInfoMessage">{{ resetInfoMessage }}</p>
+    <label>Reset Token
+      <input type="text" placeholder="Email ile gelen token" [(ngModel)]="resetToken">
+    </label>
     <label>Yeni Şifre
       <input type="password" placeholder="Yeni şifre" [(ngModel)]="newPassword">
     </label>

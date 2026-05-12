@@ -1,7 +1,7 @@
-import { Component, Output, EventEmitter } from '@angular/core';
+import { Component, Output, EventEmitter, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
 import { ChangeDetectorRef } from '@angular/core';
 import { TranslatePipe } from '../../shared/translate.pipe';
@@ -16,18 +16,22 @@ import { TranslationService } from '../../services/translation.service';
 })
 export class LoginComponent {
 
+  @Input() startMode: 'login' | 'register' | 'forgot-request' | 'reset' | null = null;
   @Output() close = new EventEmitter<void>();   
   @Output() success = new EventEmitter<any>();   // İstersen step’lere emit edersin
 
   loginForm: FormGroup;
   registerForm: FormGroup;
-  mode: 'login' | 'register' = 'login';
+  forgotRequestForm: FormGroup;
+  resetPasswordForm: FormGroup;
+  mode: 'login' | 'register' | 'forgot-request' | 'reset' = 'login';
   loading = false;
   error: string | null = null;
 
   constructor(
     private fb: FormBuilder,
     private router: Router,
+    private route: ActivatedRoute,
     private auth: AuthService,
     private cdr: ChangeDetectorRef,
     private i18n: TranslationService
@@ -40,9 +44,40 @@ export class LoginComponent {
 
     this.registerForm = this.fb.group({
       fullName: ['', Validators.required],
-      nationalId: ['', Validators.required],
+      nationalId: ['', [
+        Validators.required,
+        Validators.pattern(/^\d{11}$/)
+      ]],
       email: ['', [Validators.required, Validators.email]],
-      password: ['', [Validators.required, Validators.minLength(6)]]
+      password: ['', [Validators.required, Validators.minLength(8)]]
+    });
+
+    this.forgotRequestForm = this.fb.group({
+      email: ['', [Validators.required, Validators.email]]
+    });
+
+    this.resetPasswordForm = this.fb.group({
+      token: ['', Validators.required],
+      newPassword: ['', [Validators.required, Validators.minLength(8)]]
+    });
+
+    this.route.queryParamMap.subscribe((params) => {
+      if (this.startMode) {
+        this.mode = this.startMode;
+        return;
+      }
+
+      const token = params.get('token');
+
+      if (token) {
+        this.mode = 'reset';
+        this.resetPasswordForm.patchValue({ token });
+        return;
+      }
+
+      if (params.get('mode') === 'register') {
+        this.mode = 'register';
+      }
     });
   }
 
@@ -60,26 +95,9 @@ export class LoginComponent {
     // AuthApiController.Login → Email + Password bekliyor.
     this.auth.login(username, password).subscribe({
       next: (res) => {
-        console.log("CUSTOMER LOGIN RESPONSE:", res);
-
-        // Backend login’ini şu şekilde değiştirdik:
-        // return Ok(new { userId = user.Id, email = user.Email, fullName = user.FullName });
-        const user = {
-        userId: res.userId,
-        fullName: res.fullName,
-        email: res.email
-      };
-
-
-        this.auth.setCurrentUser(user);
-
-        // İstersen step için bunu kullanırsın
-        this.success.emit(user);
+        this.success.emit(res.user);
 
         this.loading = false;
-
-        // İstersen buradan redirect de yapabilirsin, ama step içi login ise gerek yok:
-        // this.router.navigate(['/customer']);
       },
       error: () => {
         this.error = this.i18n.translate('customerLogin.login.errorFailed');
@@ -116,9 +134,71 @@ export class LoginComponent {
     });
   }
 
-  switchMode(mode: 'login' | 'register') {
+  onForgotRequestSubmit() {
+    this.error = null;
+
+    if (this.forgotRequestForm.invalid) {
+      this.error = 'Lutfen gecerli email girin.';
+      return;
+    }
+
+    this.loading = true;
+    this.auth.requestPasswordReset(this.forgotRequestForm.value).subscribe({
+      next: (response) => {
+        this.loading = false;
+        this.mode = 'reset';
+        this.error = response.debugResetToken
+          ? `Development reset token hazirlandi: ${response.debugResetToken}`
+          : 'Sifirlama talebi alindi. Link veya token e-posta ile gonderildi.';
+
+        if (response.debugResetToken) {
+          this.resetPasswordForm.patchValue({ token: response.debugResetToken });
+        }
+        this.cdr.detectChanges();
+      },
+      error: () => {
+        this.error = 'Sifre sifirlama talebi basarisiz oldu.';
+        this.loading = false;
+        this.cdr.detectChanges();
+      }
+    });
+  }
+
+  onResetPasswordSubmit() {
+    this.error = null;
+
+    if (this.resetPasswordForm.invalid) {
+      this.error = 'Token ve yeni sifre gerekli.';
+      return;
+    }
+
+    this.loading = true;
+    this.auth.resetPassword(this.resetPasswordForm.value).subscribe({
+      next: () => {
+        this.loading = false;
+        this.mode = 'login';
+        this.error = 'Sifre guncellendi. Simdi giris yapabilirsiniz.';
+        this.resetPasswordForm.reset();
+        this.cdr.detectChanges();
+      },
+      error: () => {
+        this.error = 'Token gecersiz veya suresi dolmus.';
+        this.loading = false;
+        this.cdr.detectChanges();
+      }
+    });
+  }
+
+  switchMode(mode: 'login' | 'register' | 'forgot-request' | 'reset') {
     this.mode = mode;
     this.error = null;
+  }
+
+  onNationalIdInput(event: Event) {
+    const input = event.target as HTMLInputElement;
+    const sanitized = input.value.replace(/\D/g, '').slice(0, 11);
+    this.registerForm.get('nationalId')?.setValue(sanitized, { emitEvent: false });
+    input.value = sanitized;
   }
 
   onCloseClick() {

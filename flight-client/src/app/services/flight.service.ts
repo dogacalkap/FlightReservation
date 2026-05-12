@@ -4,13 +4,14 @@ import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { Flight } from '../models/flight';
 import { FlightCreateDto } from '../models/flight-create-dto';
+import { environment } from '../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class FlightService {
 
-  private apiUrl = 'http://localhost:5096/api/FlightsApi';
+  private apiUrl = `${environment.apiBaseUrl}/api/FlightsApi`;
 
   constructor(private http: HttpClient) {}
 

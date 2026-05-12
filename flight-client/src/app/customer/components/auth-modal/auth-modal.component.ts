@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Output } from '@angular/core';
+import { Component, EventEmitter, Output, Input, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { AuthService } from '../../../services/auth.service';
@@ -10,10 +10,14 @@ import { ChangeDetectorRef } from '@angular/core'; // <-- cdr import'u burada ol
   templateUrl: './auth-modal.component.html',
   styleUrls: ['./auth-modal.component.css']
 })
-export class AuthModalComponent {
+export class AuthModalComponent implements OnInit {
+
+  @Input() initialMode: 'login' | 'register' | 'forgot-step1' | 'forgot-step2' = 'login';
+  @Input() registerOnly = false;
 
   @Output() closed = new EventEmitter<void>();
   @Output() loggedIn = new EventEmitter<any>();
+  @Output() registered = new EventEmitter<{ email: string }>();
 
   mode: 'login' | 'register' | 'forgot-step1' | 'forgot-step2' = 'login';
 
@@ -31,12 +35,17 @@ export class AuthModalComponent {
 
   // RESET PASSWORD
   resetEmail = '';
-  resetTCKN = '';
+  resetToken = '';
+  resetInfoMessage = '';
   newPassword = '';
 
   constructor(private authService: AuthService,
     private cdr: ChangeDetectorRef
   ) {}
+
+  ngOnInit(): void {
+    this.mode = this.registerOnly ? 'register' : this.initialMode;
+  }
 
   changeMode(m: any) {
     this.mode = m;
@@ -45,6 +54,21 @@ export class AuthModalComponent {
   close() {
     this.closed.emit();
   }
+
+  sanitizeNationalId(value: string) {
+    return value.replace(/\D/g, '').slice(0, 11);
+  }
+
+  private isValidTckn(value: string) {
+    return /^\d{11}$/.test(value);
+  }
+
+  onRegisterNationalIdInput(event: Event) {
+    const input = event.target as HTMLInputElement;
+    this.registerData.nationalId = this.sanitizeNationalId(input.value);
+    input.value = this.registerData.nationalId;
+  }
+
 login() {
   if (!this.email || !this.password) {
     alert("Email and password cannot be empty.");
@@ -53,14 +77,7 @@ login() {
 
   this.authService.login(this.email, this.password).subscribe({
     next: (res) => {
-      const user = {
-        userId: res.userId,
-        fullName: res.fullName,
-        email: res.email
-      };
-
-      this.authService.setCurrentUser(user);
-      this.loggedIn.emit(user);
+      this.loggedIn.emit(res.user);
 
       this.close();
     },
@@ -81,9 +98,26 @@ login() {
       return;
     }
 
+    if (!this.isValidTckn(d.nationalId)) {
+      alert("TCKN must be exactly 11 digits.");
+      return;
+    }
+
+    if (d.password.length < 8) {
+      alert("Password must be at least 8 characters.");
+      return;
+    }
+
     this.authService.register(d).subscribe({
       next: () => {
         alert("Registration successful!");
+        this.registered.emit({ email: d.email });
+
+        if (this.registerOnly) {
+          this.close();
+          return;
+        }
+
         this.email = d.email;
         this.mode = 'login';
       },
@@ -96,27 +130,27 @@ login() {
   loadingStep1 = false;
   // RESET — STEP 1
   forgotCheck() {
-    // ... (mevcut loading ve boş kontrolü)
+    if (!this.resetEmail) {
+      alert("Email cannot be empty.");
+      return;
+    }
 
     this.loadingStep1 = true;
-    this.authService.resetPasswordCheck({
-      email: this.resetEmail,
-      tckn: this.resetTCKN
+    this.authService.requestPasswordReset({
+      email: this.resetEmail
     }).subscribe({
-      next: () => {
-        alert("Identity verified. Please enter a new password.");
+      next: (response) => {
+        this.resetToken = response.debugResetToken ?? '';
+        this.resetInfoMessage = response.debugResetToken
+          ? "Development token generated. You can continue below."
+          : "If the account exists, reset instructions were sent.";
         this.mode = 'forgot-step2';
         this.loadingStep1 = false;
-        
-        // 💥 KRİTİK: Değişiklikleri hemen uygula
         this.cdr.detectChanges(); 
-
       },
       error: (err) => {
         this.loadingStep1 = false;
-        alert(err.error || "Email or TCKN is incorrect.");
-        
-        // 💥 Hata durumunda da butonu aktif etmek için güncelle
+        alert(err.error?.message || "Password reset request failed.");
         this.cdr.detectChanges(); 
       }
     });
@@ -124,14 +158,18 @@ login() {
 
   // RESET — STEP 2
   forgotSave() {
-    if (!this.newPassword) {
-      alert("New password cannot be empty.");
+    if (!this.resetToken || !this.newPassword) {
+      alert("Reset token and new password cannot be empty.");
+      return;
+    }
+
+    if (this.newPassword.length < 8) {
+      alert("Password must be at least 8 characters.");
       return;
     }
 
     this.authService.resetPassword({
-      email: this.resetEmail,
-      tckn: this.resetTCKN,
+      token: this.resetToken,
       newPassword: this.newPassword
     }).subscribe({
       next: () => {

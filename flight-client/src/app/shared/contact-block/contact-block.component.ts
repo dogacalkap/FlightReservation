@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
 import { TranslatePipe } from '../translate.pipe';
 import { TranslationService } from '../../services/translation.service';
+import { environment } from '../../../environments/environment';
 
 @Component({
   selector: 'app-contact-block',
@@ -32,7 +33,7 @@ export class ContactBlockComponent {
       return;
     }
 
-    this.http.post('http://localhost:5096/api/ContactApi/send', this.form).subscribe({
+    this.http.post(`${environment.apiBaseUrl}/api/ContactApi/send`, this.form).subscribe({
       next: () => {
         alert(this.i18n.translate('contact.form.success'));
         this.form = { fullName: '', email: '', subject: '', message: '' };

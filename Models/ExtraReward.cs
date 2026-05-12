@@ -5,10 +5,10 @@ namespace FlightReservation.Models
         public int Id { get; set; }
 
         public int UserId { get; set; }
-        public User User { get; set; }
+        public User? User { get; set; }
 
         public int FlightId { get; set; }
-        public Flight Flight { get; set; }
+        public Flight? Flight { get; set; }
 
         public string RewardText { get; set; } = "";
         public decimal DiscountAmount { get; set; } = 0;

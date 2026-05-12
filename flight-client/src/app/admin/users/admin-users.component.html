@@ -22,6 +22,32 @@
         [placeholder]="'adminUsers.create.email' | t"
         required />
 
+      <input
+        type="text"
+        name="tckn"
+        [(ngModel)]="newUser.tckn"
+        placeholder="TCKN"
+        maxlength="11"
+        inputmode="numeric"
+        (input)="onTcknInput($event.target, 'new')"
+        required />
+
+      <input
+        type="password"
+        name="password"
+        [(ngModel)]="newUser.password"
+        placeholder="Password"
+        minlength="8"
+        required />
+
+      <label>
+        <input
+          type="checkbox"
+          name="isAdmin"
+          [(ngModel)]="newUser.isAdmin" />
+        Admin
+      </label>
+
       <button
         type="submit"
         class="primary-btn"
@@ -41,7 +67,9 @@
       <tr>
         <th>{{ 'adminUsers.list.id' | t }}</th>
         <th>{{ 'adminUsers.list.fullName' | t }}</th>
+        <th>TCKN</th>
         <th>{{ 'adminUsers.list.email' | t }}</th>
+        <th>Role</th>
         <th>{{ 'adminUsers.list.createdAt' | t }}</th>
         <th>{{ 'adminUsers.list.actions' | t }}</th>
       </tr>
@@ -51,7 +79,9 @@
       <tr *ngFor="let u of users; trackBy: trackByUserId">
         <td>{{ u.id }}</td>
         <td>{{ u.fullName }}</td>
+        <td>{{ u.tckn }}</td>
         <td>{{ u.email }}</td>
+        <td>{{ u.isAdmin ? 'Admin' : 'Customer' }}</td>
         <td>{{ u.createdAt | date:'short' }}</td>
 
         <td class="actions">
@@ -96,6 +126,24 @@
         name="editEmail"
         [placeholder]="'adminUsers.edit.email' | t"
         required />
+
+      <input
+        type="text"
+        [(ngModel)]="editingUser.tckn"
+        name="editTckn"
+        placeholder="TCKN"
+        maxlength="11"
+        inputmode="numeric"
+        (input)="onTcknInput($event.target, 'edit')"
+        required />
+
+      <label>
+        <input
+          type="checkbox"
+          [(ngModel)]="editingUser.isAdmin"
+          name="editIsAdmin" />
+        Admin
+      </label>
 
       <div class="modal-actions">
         <button type="submit" class="primary-btn">{{ 'adminUsers.edit.save' | t }}</button>

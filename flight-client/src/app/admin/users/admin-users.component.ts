@@ -6,6 +6,7 @@ import { FormsModule } from '@angular/forms';
 import { DatePipe } from '@angular/common';
 import { TranslatePipe } from '../../shared/translate.pipe';
 import { TranslationService } from '../../services/translation.service';
+import { environment } from '../../../environments/environment';
 
 
 @Component({
@@ -19,13 +20,16 @@ export class AdminUsersComponent implements OnInit {
 
   // ================= STATE =================
   users: any[] = [];
-  apiUrl = 'http://localhost:5096/api/admin/users';
+  apiUrl = `${environment.apiBaseUrl}/api/admin/users`;
 
   deletingId: number | null = null;
 
   newUser = {
     fullName: '',
-    email: ''
+    tckn: '',
+    email: '',
+    password: '',
+    isAdmin: false
   };
 
   editingUser: any = null;
@@ -60,11 +64,11 @@ export class AdminUsersComponent implements OnInit {
 
   // ================= CREATE USER =================
   createUser() {
-    if (!this.newUser.fullName || !this.newUser.email) return;
+    if (!this.newUser.fullName || !this.newUser.tckn || !this.newUser.email || !this.newUser.password) return;
 
     this.http.post<any>(this.apiUrl, this.newUser).subscribe({
       next: () => {
-        this.newUser = { fullName: '', email: '' };
+        this.newUser = { fullName: '', tckn: '', email: '', password: '', isAdmin: false };
         this.loadUsers();
       },
       error: (err) => {
@@ -86,7 +90,9 @@ export class AdminUsersComponent implements OnInit {
       `${this.apiUrl}/${this.editingUser.id}`,
       {
         fullName: this.editingUser.fullName,
-        email: this.editingUser.email
+        tckn: this.editingUser.tckn,
+        email: this.editingUser.email,
+        isAdmin: this.editingUser.isAdmin
       }
     ).subscribe({
       next: () => {
@@ -101,6 +107,23 @@ export class AdminUsersComponent implements OnInit {
 
   cancelEdit() {
     this.editingUser = null;
+  }
+
+  onTcknInput(target: EventTarget | null, model: 'new' | 'edit') {
+    const input = target as HTMLInputElement | null;
+    if (!input) return;
+
+    const sanitized = input.value.replace(/\D/g, '').slice(0, 11);
+    input.value = sanitized;
+
+    if (model === 'new') {
+      this.newUser.tckn = sanitized;
+      return;
+    }
+
+    if (this.editingUser) {
+      this.editingUser.tckn = sanitized;
+    }
   }
 
   // ================= DELETE USER =================

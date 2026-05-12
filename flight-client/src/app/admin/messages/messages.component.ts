@@ -2,6 +2,7 @@ import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { TranslatePipe } from '../../shared/translate.pipe';
+import { environment } from '../../../environments/environment';
 
 @Component({
   selector: 'app-messages',
@@ -18,7 +19,7 @@ export class MessagesComponent implements OnInit {
   constructor(private http: HttpClient, private cdr: ChangeDetectorRef) {}
 
  ngOnInit(): void {
-  this.http.get<any[]>("http://localhost:5096/api/ContactApi")
+  this.http.get<any[]>(`${environment.apiBaseUrl}/api/ContactApi`)
     .subscribe({
       next: data => {
         console.log("API DATA:", data); 

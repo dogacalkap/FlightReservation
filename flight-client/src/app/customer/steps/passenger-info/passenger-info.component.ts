@@ -25,9 +25,16 @@ export class PassengerInfoComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
+    const savedPassenger = this.stepService.passengerInfo;
+    if (savedPassenger?.userId) {
+      this.loggedIn = true;
+      return;
+    }
+
     const user = this.auth.getCurrentUser();
     if (user) {
-      this.applyUser(user);
+      const shouldAutoAdvance = !this.stepService.steps.passengerInfo;
+      this.applyUser(user, shouldAutoAdvance);
     }
   }
 
@@ -40,30 +47,44 @@ export class PassengerInfoComponent implements OnInit {
   }
 
   modalLoggedIn(user: any) {
-    this.applyUser(user);
+    this.applyUser(user, true);
     this.showModal = false;
   }
 
-  private applyUser(user: any) {
+  private applyUser(user: any, navigateNext: boolean) {
     this.loggedIn = true;
-    // Kullanıcıyı global olarak kaydet ki header/steps görebilsin
     this.auth.setCurrentUser(user);
 
     this.stepService.passengerInfo = {
       userId: user.userId,
       name: user.fullName,
+      nationalId: user.tckn,
       email: user.email
     };
 
     this.stepService.completeStep('passengerInfo');
-    this.stepService.setActiveStep('seatSelection');
-    const route = this.stepService.getStepRoute('seatSelection');
-    this.router.navigate(['/customer', route]);
+
+    if (navigateNext) {
+      this.stepService.setActiveStep('seatSelection');
+      const route = this.stepService.getStepRoute('seatSelection');
+      this.router.navigate(['/customer', route]);
+    }
   }
 
   logoutPassenger() {
     this.auth.logout();
     this.loggedIn = false;
+  }
+
+  continue() {
+    if (!this.stepService.passengerInfo?.userId) {
+      return;
+    }
+
+    this.stepService.completeStep('passengerInfo');
+    this.stepService.setActiveStep('seatSelection');
+    const route = this.stepService.getStepRoute('seatSelection');
+    this.router.navigate(['/customer', route]);
   }
 
 }

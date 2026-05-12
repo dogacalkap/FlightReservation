@@ -1,94 +1,154 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { BehaviorSubject } from 'rxjs';
+import { BehaviorSubject, Observable, tap } from 'rxjs';
 import { ReservationStepsService } from './reservation-steps.service';
 import { Router } from '@angular/router';
+import { environment } from '../../environments/environment';
+
+export interface AuthUser {
+  id: number;
+  userId?: number;
+  fullName: string;
+  tckn?: string;
+  email: string;
+  role: 'Admin' | 'Customer';
+}
+
+export interface AuthResponse {
+  accessToken: string;
+  expiresAtUtc: string;
+  user: AuthUser;
+}
+
+export interface PasswordResetRequestResponse {
+  message: string;
+  debugResetToken?: string | null;
+  expiresAtUtc?: string | null;
+}
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
-
-  private apiUrl = 'http://localhost:5096/api/AuthApi';
-  private currentUser: any = null;
-  user$ = new BehaviorSubject<any>(null);
+  private readonly tokenStorageKey = 'auth_access_token';
+  private readonly userStorageKey = 'auth_user';
+  private apiUrl = `${environment.apiBaseUrl}/api/AuthApi`;
+  private currentUser: AuthUser | null = null;
+  user$ = new BehaviorSubject<AuthUser | null>(null);
 
   constructor(
     private http: HttpClient,
     private steps: ReservationStepsService,
     private router: Router
-  ) {}
-
-  // LOGIN → backend email + password bekliyor
-  login(email: string, password: string) {
-    return this.http.post<any>(`${this.apiUrl}/login`, { email, password });
+  ) {
+    this.restoreSession();
   }
 
-  // REGISTER
+  login(email: string, password: string): Observable<AuthResponse> {
+    return this.http.post<AuthResponse>(`${this.apiUrl}/login`, { email, password })
+      .pipe(tap((response) => this.setSession(response)));
+  }
+
+  loginAdmin(email: string, password: string): Observable<AuthResponse> {
+    return this.http.post<AuthResponse>(`${this.apiUrl}/admin/login`, { email, password })
+      .pipe(tap((response) => this.setSession(response)));
+  }
+
   register(data: any) {
-    return this.http.post<any>(`${this.apiUrl}/register`, {
+    return this.http.post(`${this.apiUrl}/register`, {
       fullName: data.fullName,
-      // 💥 DÜZELTME: Veri kaynağından gelen 'nationalId' alanını kullanıyoruz.
-      // API'ye gönderirken API'nin beklediği 'tckn' ismini kullanıyoruz.
-      tckn: data.nationalId, // <-- Veri kaynağını nationalId olarak değiştirdik
+      tckn: data.nationalId,
       email: data.email,
       password: data.password
     });
   }
 
-  // ======================================
-  // USER VERISI
-  // ======================================
-  setCurrentUser(user: any) {
-    this.currentUser = user;
-
-    // MyFlights bunu okuyor
-    localStorage.setItem("customerUser", JSON.stringify(user));
-
-    // Genel kullanım için de tutalım
-    localStorage.setItem("currentUser", JSON.stringify(user));
-
-    this.user$.next(user);
+  setSession(response: AuthResponse) {
+    this.currentUser = this.normalizeUser(response.user);
+    localStorage.setItem(this.tokenStorageKey, response.accessToken);
+    localStorage.setItem(this.userStorageKey, JSON.stringify(this.currentUser));
+    localStorage.setItem("customerUser", JSON.stringify(this.currentUser));
+    localStorage.setItem("currentUser", JSON.stringify(this.currentUser));
+    this.user$.next(this.currentUser);
   }
 
-  // Customer verisini doğru şekilde oku
+  setCurrentUser(user: AuthUser | any) {
+    this.currentUser = this.normalizeUser(user);
+    localStorage.setItem(this.userStorageKey, JSON.stringify(this.currentUser));
+    localStorage.setItem("customerUser", JSON.stringify(this.currentUser));
+    localStorage.setItem("currentUser", JSON.stringify(this.currentUser));
+    this.user$.next(this.currentUser);
+  }
+
   getCurrentUser() {
-    if (this.currentUser) return this.currentUser;
-
-    const stored = localStorage.getItem("customerUser");
-    if (stored) {
-      this.currentUser = JSON.parse(stored);
-      return this.currentUser;
-    }
-
-    return null;
+    return this.currentUser;
   }
 
   logout() {
+    localStorage.removeItem(this.tokenStorageKey);
+    localStorage.removeItem(this.userStorageKey);
     localStorage.removeItem("token");
+    localStorage.removeItem("admin_token");
     localStorage.removeItem("currentUser");
-    localStorage.removeItem("customerUser"); // ❗ Eksikti, eklendi
+    localStorage.removeItem("customerUser");
     this.currentUser = null;
     this.user$.next(null);
-
-    // Rezervasyon akışını sıfırla ve landing sayfasına dön
     this.steps.resetAll();
     this.router.navigate(['/landing']);
   }
 
-  // ======================================
-  // PASSWORD RESET (dokunmuyoruz)
-  // ======================================
-  resetPasswordCheck(body: { email: string; tckn: string }) {
-    return this.http.post<any>(`${this.apiUrl}/reset-password/check`, body);
+  requestPasswordReset(body: { email: string }) {
+    return this.http.post<PasswordResetRequestResponse>(`${this.apiUrl}/reset-password/request`, body);
   }
 
-  resetPassword(body: { email: string; tckn: string; newPassword: string }) {
-    return this.http.post<any>(`${this.apiUrl}/reset-password`, body);
+  resetPassword(body: { token: string; newPassword: string }) {
+    return this.http.post(`${this.apiUrl}/reset-password`, body);
   }
+
+  getToken(): string | null {
+    return localStorage.getItem(this.tokenStorageKey);
+  }
+
+  isAuthenticated(): boolean {
+    return !!this.getToken() && !!this.currentUser;
+  }
+
+  isAdmin(): boolean {
+    return this.currentUser?.role === 'Admin';
+  }
+
   getUserId(): number | null {
-  const user = this.getCurrentUser();
-  return user ? user.id : null;
-}
+    const user = this.getCurrentUser();
+    return user ? user.id : null;
+  }
 
+  private restoreSession() {
+    const token = localStorage.getItem(this.tokenStorageKey);
+    const userJson = localStorage.getItem(this.userStorageKey);
+
+    if (!token || !userJson) {
+      return;
+    }
+
+    try {
+      this.currentUser = this.normalizeUser(JSON.parse(userJson) as AuthUser);
+      this.user$.next(this.currentUser);
+    } catch {
+      localStorage.removeItem(this.tokenStorageKey);
+      localStorage.removeItem(this.userStorageKey);
+    }
+  }
+
+  private normalizeUser(user: AuthUser | any): AuthUser {
+    const id = user.id ?? user.userId;
+
+    return {
+      id,
+      userId: id,
+      fullName: user.fullName,
+      tckn: user.tckn ?? user.TCKN ?? user.nationalId,
+      email: user.email,
+      role: user.role ?? 'Customer'
+    };
+  }
 }

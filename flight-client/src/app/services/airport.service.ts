@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { Airport } from '../models/airport';
+import { environment } from '../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
@@ -9,7 +10,7 @@ import { Airport } from '../models/airport';
 export class AirportService {
 
   // ✔ MacOS büyük/küçük harfe duyarlı olduğu için doğru API endpoint
-  private apiUrl = 'http://localhost:5096/api/AirportsApi';
+  private apiUrl = `${environment.apiBaseUrl}/api/AirportsApi`;
 
   constructor(private http: HttpClient) {}
 

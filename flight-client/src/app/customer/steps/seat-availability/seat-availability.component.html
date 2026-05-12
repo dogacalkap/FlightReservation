@@ -63,6 +63,15 @@
         </div>
       </div>
 
+      <!-- PASSENGER COUNT -->
+      <div class="input-box">
+        <label>{{ 'passenger.count' | t }}</label>
+        <div class="input-inner">
+          <i class="bi bi-people"></i>
+          <input type="number" min="1" [(ngModel)]="passengerCount">
+        </div>
+      </div>
+
       <!-- SEARCH BUTTON -->
       <div class="search-btn-wrapper">
         <button class="search-btn" (click)="searchFlights()">

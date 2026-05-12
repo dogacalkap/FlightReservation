@@ -1,6 +1,4 @@
 using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
-
 namespace FlightReservation.Models
 {
     public class SeatOccupation
@@ -9,7 +7,7 @@ namespace FlightReservation.Models
 
         // Hangi uçuşa ait?
         public int FlightId { get; set; }
-        public Flight Flight { get; set; }
+        public Flight? Flight { get; set; }
 
         // Örn: "12A"
         [Required]

@@ -1,0 +1,12 @@
+@startuml
+title Translation Service Component Diagram
+component "Angular Component\n(Templates)" as NG
+component "TranslatePipe\n(name: 't')" as Pipe
+component "TranslationService\n(lang$, translate, setLang)" as Service
+database "localStorage\n(app_lang)" as LS
+
+NG --> Pipe : "template key => 'payment.title' | t"
+Pipe --> Service : translate(key)\nsubscribe lang$
+Service --> LS : read/write dil secimi
+Service --> Service : dictionaries[lang][key]\nappRef.tick()
+@enduml

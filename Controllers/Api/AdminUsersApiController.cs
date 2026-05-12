@@ -1,6 +1,8 @@
 using FlightReservation.Data;
 using FlightReservation.Dtos.Users;
 using FlightReservation.Models;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -8,13 +10,16 @@ namespace FlightReservation.Controllers.Api.Admin
 {
     [ApiController]
     [Route("api/admin/users")]
+    [Authorize(Roles = "Admin")]
     public class AdminUsersApiController : ControllerBase
     {
         private readonly ApplicationDbContext _context;
+        private readonly IPasswordHasher<User> _passwordHasher;
 
-        public AdminUsersApiController(ApplicationDbContext context)
+        public AdminUsersApiController(ApplicationDbContext context, IPasswordHasher<User> passwordHasher)
         {
             _context = context;
+            _passwordHasher = passwordHasher;
         }
 
         // ================= GET =================
@@ -26,7 +31,9 @@ namespace FlightReservation.Controllers.Api.Admin
                 {
                     u.Id,
                     u.FullName,
+                    Tckn = u.TCKN,
                     u.Email,
+                    u.IsAdmin,
                     u.CreatedAt
                 })
                 .ToListAsync();
@@ -38,12 +45,22 @@ namespace FlightReservation.Controllers.Api.Admin
         [HttpPost]
         public async Task<IActionResult> CreateUser([FromBody] CreateUserDto dto)
         {
+            if (!ModelState.IsValid)
+                return ValidationProblem(ModelState);
+
+            var normalizedEmail = dto.Email.Trim().ToLowerInvariant();
+            if (await _context.Users.AnyAsync(u => u.Email == normalizedEmail))
+                return Conflict(new { message = "This email is already in use." });
+
             var user = new User
             {
-                FullName = dto.FullName,
-                Email = dto.Email,
+                FullName = dto.FullName.Trim(),
+                TCKN = dto.Tckn.Trim(),
+                Email = normalizedEmail,
+                IsAdmin = dto.IsAdmin,
                 CreatedAt = DateTime.UtcNow
             };
+            user.Password = _passwordHasher.HashPassword(user, dto.Password);
 
             _context.Users.Add(user);
             await _context.SaveChangesAsync();
@@ -55,11 +72,21 @@ namespace FlightReservation.Controllers.Api.Admin
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateUser(int id, [FromBody] UpdateUserDto dto)
         {
+            if (!ModelState.IsValid)
+                return ValidationProblem(ModelState);
+
             var user = await _context.Users.FindAsync(id);
             if (user == null) return NotFound();
 
-            user.FullName = dto.FullName;
-            user.Email = dto.Email;
+            var normalizedEmail = dto.Email.Trim().ToLowerInvariant();
+            var emailInUse = await _context.Users.AnyAsync(u => u.Id != id && u.Email == normalizedEmail);
+            if (emailInUse)
+                return Conflict(new { message = "This email is already in use." });
+
+            user.FullName = dto.FullName.Trim();
+            user.TCKN = dto.Tckn.Trim();
+            user.Email = normalizedEmail;
+            user.IsAdmin = dto.IsAdmin;
 
             await _context.SaveChangesAsync();
             return Ok(user);

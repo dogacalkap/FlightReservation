@@ -22,14 +22,17 @@
         </div>
 
         <div class="info-row">
-         <span class="label">{{ 'payment.ticketPrice' | t }}</span>
-         <span class="value">{{ stepService.selectedFlight?.basePrice }} ₺</span>
+          <span class="label">{{ 'payment.ticketPrice' | t }}</span>
+         <span class="value">
+          {{ (stepService.selectedFlight?.basePrice || 0) * (stepService.passengerCount || 1) }} ₺
+          <small>({{ stepService.passengerCount || 1 }} x {{ stepService.selectedFlight?.basePrice }} ₺)</small>
+         </span>
         </div>
 
         <div class="info-row">
           <span class="label">{{ 'payment.seat' | t }}</span>
           <span class="value">
-            {{ stepService.seatSelection?.seatNumber }}
+            {{ stepService.seatSelection?.seatNumbers?.join(', ') }}
             <ng-container *ngIf="stepService.seatSelection as s">
                 <span *ngIf="s.price && s.price > 0" class="text-success">
                     (+{{ s.price }} ₺)

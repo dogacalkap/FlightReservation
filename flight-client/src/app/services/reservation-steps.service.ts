@@ -69,10 +69,13 @@ export class ReservationStepsService {
 
     // 2) Reservation data reset
     this.selectedFlight = null;
+    this.searchCriteria = null;
     this.passengerInfo = null;
     this.seatSelection = null;
     this.baggage = null;
     this.extras = [];
+    this.wheelResult = null;
+    this.paymentDraft = null;
 
     console.log("Rezervasyon tamamen sıfırlandı.");
   }
@@ -82,18 +85,26 @@ export class ReservationStepsService {
   // -----------------------------
 
   // 1) Uçuş bilgisi
-  selectedFlight: any = null;  // { from, to, date, basePrice }
+  selectedFlight: any = null;  // { from, to, date, basePrice, passengerCount }
+  passengerCount: number = 1;
+  searchCriteria: {
+    fromAirportId: number | null;
+    toAirportId: number | null;
+    selectedDate: string;
+    travelClass: string;
+  } | null = null;
 
   // 2) Yolcu bilgisi
   passengerInfo: {
     userId: number;
     name?: string;
+    nationalId?: string;
     email?: string;
   } | null = null;
 
   // 3) Koltuk seçimi
   seatSelection: {
-    seatNumber: string;
+    seatNumbers: string[];
     price: number;
   } | null = null;
 
@@ -105,6 +116,15 @@ export class ReservationStepsService {
 
   // 5) Ekstralar
   extras: Array<{ name: string; price: number; code: string }> = [];
+  wheelResult: string | null = null;
+
+  paymentDraft: {
+    cardHolder: string;
+    cardNumber: string;
+    expiry: string;
+    cvv: string;
+    saveCard: boolean;
+  } | null = null;
 
   // -----------------------------
   // FİYAT HESAPLAMA
@@ -113,7 +133,7 @@ export class ReservationStepsService {
     let total = 0;
 
     if (this.selectedFlight?.basePrice)
-      total += this.selectedFlight.basePrice;
+      total += this.selectedFlight.basePrice * (this.passengerCount || 1);
 
     if (this.seatSelection?.price)
       total += this.seatSelection.price;

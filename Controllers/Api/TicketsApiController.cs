@@ -1,7 +1,9 @@
 using FlightReservation.Data;
 using FlightReservation.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Security.Claims;
 
 namespace FlightReservation.Controllers.Api
 {
@@ -16,21 +18,27 @@ namespace FlightReservation.Controllers.Api
             _context = context;
         }
 
-        // GET: api/TicketsApi/user/7 → kullanıcının biletleri
-        [HttpGet("user/{userId}")]
-        public async Task<IActionResult> GetUserTickets(int userId)
+        [Authorize]
+        [HttpGet("me")]
+        public async Task<IActionResult> GetUserTickets()
         {
+            var userIdValue = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (!int.TryParse(userIdValue, out var userId))
+                return Unauthorized();
+
             var tickets = await _context.Tickets
                 .Where(t => t.UserId == userId)
                 .Include(t => t.Flight)
-                    .ThenInclude(f => f.FromAirport)
+                    .ThenInclude(f => f!.FromAirport)
                 .Include(t => t.Flight)
-                    .ThenInclude(f => f.ToAirport)
+                    .ThenInclude(f => f!.ToAirport)
                 .OrderByDescending(t => t.CreatedAt)
                 .Select(t => new
                 {
                     t.Id,
                     t.SeatNumber,
+                    t.SeatNumbers,
+                    t.PassengerCount,
                     t.BaggageCount,
                     t.SeatPrice,
                     t.BaggagePrice,
@@ -38,7 +46,7 @@ namespace FlightReservation.Controllers.Api
                     t.FinalPrice,
                     t.ExtraReward,
                     t.CreatedAt,
-                    Flight = new
+                    Flight = t.Flight == null ? null : new
                     {
                         t.Flight.Id,
                         t.Flight.FlightNumber,
@@ -47,12 +55,12 @@ namespace FlightReservation.Controllers.Api
                         t.Flight.Price,
                         t.Flight.FromAirportId,
                         t.Flight.ToAirportId,
-                        FromAirportCode = t.Flight.FromAirport!.Code,
-                        ToAirportCode = t.Flight.ToAirport!.Code,
-                        FromAirportName = t.Flight.FromAirport.Name,
-                        ToAirportName = t.Flight.ToAirport.Name,
-                        FromAirportCity = t.Flight.FromAirport.City,
-                        ToAirportCity = t.Flight.ToAirport.City
+                        FromAirportCode = t.Flight.FromAirport != null ? t.Flight.FromAirport.Code : string.Empty,
+                        ToAirportCode = t.Flight.ToAirport != null ? t.Flight.ToAirport.Code : string.Empty,
+                        FromAirportName = t.Flight.FromAirport != null ? t.Flight.FromAirport.Name : string.Empty,
+                        ToAirportName = t.Flight.ToAirport != null ? t.Flight.ToAirport.Name : string.Empty,
+                        FromAirportCity = t.Flight.FromAirport != null ? t.Flight.FromAirport.City : string.Empty,
+                        ToAirportCity = t.Flight.ToAirport != null ? t.Flight.ToAirport.City : string.Empty
                     }
                 })
                 .ToListAsync();
@@ -60,13 +68,20 @@ namespace FlightReservation.Controllers.Api
             return Ok(tickets);
         }
 
-        // DELETE: api/TicketsApi/8 → bileti iptal et
+        [Authorize]
         [HttpDelete("{ticketId}")]
         public async Task<IActionResult> CancelTicket(int ticketId)
         {
+            var userIdValue = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (!int.TryParse(userIdValue, out var userId))
+                return Unauthorized();
+
             var ticket = await _context.Tickets.FindAsync(ticketId);
             if (ticket == null)
                 return NotFound();
+
+            if (ticket.UserId != userId)
+                return Forbid();
 
             // İlgili koltuk rezervasyonunu da serbest bırak
             var seat = await _context.SeatOccupations

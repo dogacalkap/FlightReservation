@@ -1,5 +1,7 @@
 using FlightReservation.Data;
+using FlightReservation.Dtos.Flights;
 using FlightReservation.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -36,16 +38,16 @@ namespace FlightReservation.Controllers.Api
                     f.ToAirportId,
 
                     // Codes
-                    FromAirportCode = f.FromAirport.Code,
-                    ToAirportCode = f.ToAirport.Code,
+                    FromAirportCode = f.FromAirport != null ? f.FromAirport.Code : string.Empty,
+                    ToAirportCode = f.ToAirport != null ? f.ToAirport.Code : string.Empty,
 
                     // Names
-                    FromAirportName = f.FromAirport.Name,
-                    ToAirportName = f.ToAirport.Name,
+                    FromAirportName = f.FromAirport != null ? f.FromAirport.Name : string.Empty,
+                    ToAirportName = f.ToAirport != null ? f.ToAirport.Name : string.Empty,
 
                     // Cities
-                    FromAirportCity = f.FromAirport.City,
-                    ToAirportCity = f.ToAirport.City,
+                    FromAirportCity = f.FromAirport != null ? f.FromAirport.City : string.Empty,
+                    ToAirportCity = f.ToAirport != null ? f.ToAirport.City : string.Empty,
 
                     // Times
                     f.DepartureTime,
@@ -78,14 +80,14 @@ namespace FlightReservation.Controllers.Api
                     f.FromAirportId,
                     f.ToAirportId,
 
-                    FromAirportCode = f.FromAirport.Code,
-                    ToAirportCode = f.ToAirport.Code,
+                    FromAirportCode = f.FromAirport != null ? f.FromAirport.Code : string.Empty,
+                    ToAirportCode = f.ToAirport != null ? f.ToAirport.Code : string.Empty,
 
-                    FromAirportName = f.FromAirport.Name,
-                    ToAirportName = f.ToAirport.Name,
+                    FromAirportName = f.FromAirport != null ? f.FromAirport.Name : string.Empty,
+                    ToAirportName = f.ToAirport != null ? f.ToAirport.Name : string.Empty,
 
-                    FromAirportCity = f.FromAirport.City,
-                    ToAirportCity = f.ToAirport.City,
+                    FromAirportCity = f.FromAirport != null ? f.FromAirport.City : string.Empty,
+                    ToAirportCity = f.ToAirport != null ? f.ToAirport.City : string.Empty,
 
                     f.DepartureTime,
                     f.ArrivalTime,
@@ -104,10 +106,34 @@ namespace FlightReservation.Controllers.Api
         // Admin – Create flight
         // ------------------------------------------------------------
         [HttpPost]
-        public async Task<ActionResult<Flight>> CreateFlight([FromBody] Flight flight)
+        [Authorize(Roles = "Admin")]
+        public async Task<ActionResult<Flight>> CreateFlight([FromBody] UpsertFlightRequestDto request)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
+
+            if (request.FromAirportId == request.ToAirportId)
+                return BadRequest(new { message = "Departure and arrival airports cannot be the same." });
+
+            if (request.ArrivalTime <= request.DepartureTime)
+                return BadRequest(new { message = "Arrival time must be later than departure time." });
+
+            var airportsExist = await _context.Airports
+                .Where(a => a.Id == request.FromAirportId || a.Id == request.ToAirportId)
+                .CountAsync();
+
+            if (airportsExist != 2)
+                return BadRequest(new { message = "One or more airport references are invalid." });
+
+            var flight = new Flight
+            {
+                FlightNumber = request.FlightNumber.Trim().ToUpperInvariant(),
+                FromAirportId = request.FromAirportId,
+                ToAirportId = request.ToAirportId,
+                DepartureTime = request.DepartureTime,
+                ArrivalTime = request.ArrivalTime,
+                Price = request.Price
+            };
 
             _context.Flights.Add(flight);
             await _context.SaveChangesAsync();
@@ -120,15 +146,35 @@ namespace FlightReservation.Controllers.Api
         // Admin – Update flight
         // ------------------------------------------------------------
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateFlight(int id, [FromBody] Flight flight)
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> UpdateFlight(int id, [FromBody] UpsertFlightRequestDto request)
         {
-            if (id != flight.Id)
-                return BadRequest("Id uyuşmuyor.");
-
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            _context.Entry(flight).State = EntityState.Modified;
+            if (request.FromAirportId == request.ToAirportId)
+                return BadRequest(new { message = "Departure and arrival airports cannot be the same." });
+
+            if (request.ArrivalTime <= request.DepartureTime)
+                return BadRequest(new { message = "Arrival time must be later than departure time." });
+
+            var flight = await _context.Flights.FindAsync(id);
+            if (flight == null)
+                return NotFound();
+
+            var airportsExist = await _context.Airports
+                .Where(a => a.Id == request.FromAirportId || a.Id == request.ToAirportId)
+                .CountAsync();
+
+            if (airportsExist != 2)
+                return BadRequest(new { message = "One or more airport references are invalid." });
+
+            flight.FlightNumber = request.FlightNumber.Trim().ToUpperInvariant();
+            flight.FromAirportId = request.FromAirportId;
+            flight.ToAirportId = request.ToAirportId;
+            flight.DepartureTime = request.DepartureTime;
+            flight.ArrivalTime = request.ArrivalTime;
+            flight.Price = request.Price;
 
             try
             {
@@ -151,6 +197,7 @@ namespace FlightReservation.Controllers.Api
         // Admin – Delete flight
         // ------------------------------------------------------------
         [HttpDelete("{id}")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> DeleteFlight(int id)
         {
             var flight = await _context.Flights.FindAsync(id);

@@ -10,10 +10,11 @@
 using System;
 using System.Reflection;
 
+[assembly: Microsoft.Extensions.Configuration.UserSecrets.UserSecretsIdAttribute("FlightReservation-9f4d4be9-3fd4-40f2-8d13-7e4b4a1f0ac1")]
 [assembly: System.Reflection.AssemblyCompanyAttribute("FlightReservation")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+a0e51fc168bcff4bb610590b72bbde38ae635276")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+630c87eb02cb56fac25265284a82ac91f77561fa")]
 [assembly: System.Reflection.AssemblyProductAttribute("FlightReservation")]
 [assembly: System.Reflection.AssemblyTitleAttribute("FlightReservation")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

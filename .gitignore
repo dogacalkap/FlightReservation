@@ -1,1 +1,6 @@
 .DS_Store
+bin/
+obj/
+appsettings.Local.json
+flight-client/node_modules/
+flight-client/.angular/

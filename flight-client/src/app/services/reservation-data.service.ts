@@ -7,12 +7,13 @@ export class ReservationDataService {
 
   // ✈ 1) Flight Selection
   selectedFlight: any = null;
+  passengerCount: number = 1;
 
   // 👤 2) Passenger Info
   passengerInfo: any = null;
 
   // 💺 3) Seat Selection
-  selectedSeat: string | null = null;
+  selectedSeats: string[] = [];
 
   // 🧳 4) Baggage
   baggage: any = null;
@@ -39,8 +40,8 @@ export class ReservationDataService {
     this.passengerInfo = info;
   }
 
-  setSeat(seat: string) {
-    this.selectedSeat = seat;
+  setSeat(seats: string[]) {
+    this.selectedSeats = seats;
   }
 
   setBaggage(bag: any) {
@@ -77,8 +78,9 @@ export class ReservationDataService {
   getFinalReservation() {
     return {
       selectedFlight: this.selectedFlight,
+      passengerCount: this.passengerCount,
       passengerInfo: this.passengerInfo,
-      selectedSeat: this.selectedSeat,
+      selectedSeats: this.selectedSeats,
       baggage: this.baggage,
       extras: this.extras,
       bonusPrize: this.extraPrize,    // 🎁 BONUS BURADA EKLENDİ

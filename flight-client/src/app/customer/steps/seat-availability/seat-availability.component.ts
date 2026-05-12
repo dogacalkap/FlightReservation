@@ -38,6 +38,7 @@ export class SeatAvailabilityComponent implements OnInit {
 
   travelClass: string = 'economy';
   extraPrice = 0;
+  passengerCount: number = 1;
 
   constructor(
     private airportService: AirportService,
@@ -48,8 +49,23 @@ export class SeatAvailabilityComponent implements OnInit {
   ) {}
   
   ngOnInit(): void {
+    this.restoreState();
     this.loadAirports();
     this.loadFlights();
+  }
+
+  private restoreState() {
+    const criteria = this.stepService.searchCriteria;
+    if (!criteria) {
+      return;
+    }
+
+    this.fromAirportId = criteria.fromAirportId;
+    this.toAirportId = criteria.toAirportId;
+    this.selectedDate = criteria.selectedDate;
+    this.travelClass = criteria.travelClass || 'economy';
+    this.passengerCount = this.stepService.passengerCount || 1;
+    this.onClassChange();
   }
 
   onClassChange() {
@@ -72,6 +88,10 @@ export class SeatAvailabilityComponent implements OnInit {
   loadFlights() {
     this.flightService.getFlights().subscribe(data => {
       this.allFlights = data;
+
+      if (this.stepService.searchCriteria) {
+        this.searchFlights();
+      }
     });
   }
 
@@ -92,6 +112,13 @@ export class SeatAvailabilityComponent implements OnInit {
 
     const dateStr = this.selectedDate;
     const classAddon = this.travelClass === 'business' ? 500 : 0;
+
+    this.stepService.searchCriteria = {
+      fromAirportId: this.fromAirportId,
+      toAirportId: this.toAirportId,
+      selectedDate: this.selectedDate,
+      travelClass: this.travelClass
+    };
 
     this.filteredFlights = this.allFlights
       .filter(f =>
@@ -131,17 +158,20 @@ export class SeatAvailabilityComponent implements OnInit {
     if (this.isFlightPast(f)) {
       return;
     }
+    const passengerCountNum = Number(this.passengerCount) > 0 ? Number(this.passengerCount) : 1;
     const selected = {
       id: f.id,
       fromAirportCity: f.fromAirportCity,
       toAirportCity: f.toAirportCity,
       departureTime: f.departureTime,
       basePrice: f.finalPrice,   // Economy/Business fiyat dahil!
-      travelClass: this.travelClass
+      travelClass: this.travelClass,
+      passengerCount: passengerCountNum
     };
 
     // ⭐ UÇUŞ BİLGİSİNİ YENİ SİSTEME KAYDEDİYORUZ
     this.stepService.selectedFlight = selected;
+    this.stepService.passengerCount = passengerCountNum;
 
     this.stepService.completeStep('seatAvailability');
     this.stepService.setActiveStep('passengerInfo');

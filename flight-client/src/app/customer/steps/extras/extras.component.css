@@ -180,6 +180,22 @@
     box-shadow: none;
 }
 
+.continue-inline-btn {
+  margin-left: 12px;
+  background: transparent;
+  color: #e5e7eb;
+  border: 1px solid rgba(229, 231, 235, 0.3);
+  padding: 14px 24px;
+  border-radius: 14px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+
+.continue-inline-btn:hover {
+  background: rgba(255, 255, 255, 0.08);
+}
+
 
 /* Modal Ana Kartı */
 .wheel-card {
@@ -269,6 +285,13 @@
   color: #e5e7eb;
   border-radius: 10px;
   z-index: 21; /* Konfetinin altında kalmasın */
+}
+
+.confetti {
+  display: block;
+  width: 100%;
+  height: 120px;
+  margin-top: 10px;
 }
 
 /* Kapat Butonu */

@@ -41,6 +41,10 @@
       <button class="spin-open-btn" (click)="openWheel()" [disabled]="hasSpun">
           {{ hasSpun ? ('extras.wheel.opened' | t) : ('extras.wheel.open' | t) }}
       </button>
+
+      <button class="continue-inline-btn" (click)="continue()">
+          {{ 'extras.continue' | t }} <i class="bi bi-arrow-right"></i>
+      </button>
   </div>
 
 
@@ -79,7 +83,7 @@
           </ng-lottie>
         </div>
 
-        <button *ngIf="hasSpun" class="continue-btn primary-action-btn" (click)="continue()">
+        <button class="continue-btn primary-action-btn" (click)="continue()">
             {{ 'extras.continue' | t }} <i class="bi bi-arrow-right"></i>
         </button>
     </div>

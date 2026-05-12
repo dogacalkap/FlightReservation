@@ -1,5 +1,7 @@
 using FlightReservation.Data;
+using FlightReservation.Dtos.Contact;
 using FlightReservation.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -18,11 +20,21 @@ namespace FlightReservation.Controllers.Api
 
         // 🟢 MESAJ GÖNDERME (CLIENT)
         [HttpPost("send")]
-        public async Task<IActionResult> SendMessage([FromBody] ContactMessage dto)
+        public async Task<IActionResult> SendMessage([FromBody] ContactMessageCreateRequestDto request)
         {
-            dto.CreatedAt = DateTime.UtcNow;
+            if (!ModelState.IsValid)
+                return ValidationProblem(ModelState);
 
-            _context.ContactMessages.Add(dto);
+            var message = new ContactMessage
+            {
+                FullName = request.FullName.Trim(),
+                Email = request.Email.Trim().ToLowerInvariant(),
+                Subject = request.Subject.Trim(),
+                Message = request.Message.Trim(),
+                CreatedAt = DateTime.UtcNow
+            };
+
+            _context.ContactMessages.Add(message);
             await _context.SaveChangesAsync();
 
             return Ok(new { message = "Mesajınız başarıyla gönderildi." });
@@ -30,6 +42,7 @@ namespace FlightReservation.Controllers.Api
 
         // 🟠 TÜM MESAJLARI GETİRME (ADMIN)
         [HttpGet]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> GetMessages()
         {
             var list = await _context.ContactMessages

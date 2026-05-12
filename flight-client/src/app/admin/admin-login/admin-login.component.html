@@ -37,5 +37,21 @@
 
     <p *ngIf="errorMessage" class="error-msg">{{ errorMessage }}</p>
 
+    <div *ngIf="mode==='customer'" class="customer-register-box">
+      <p class="subtitle customer-register-text">Hesabin yoksa kaydol</p>
+      <button type="button" class="customer-register-btn" (click)="goToCustomerRegister()">
+        Kayit Ol
+      </button>
+    </div>
+
 
 </div>
+
+<app-auth-modal
+  *ngIf="showCustomerAuthPopup"
+  [initialMode]="'register'"
+  [registerOnly]="true"
+  (closed)="closeCustomerAuthPopup()"
+  (registered)="customerRegistered($event)"
+  (loggedIn)="customerAuthSuccess()">
+</app-auth-modal>

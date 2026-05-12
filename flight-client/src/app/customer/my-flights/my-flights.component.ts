@@ -6,6 +6,8 @@ import { NavbarComponent } from '../../shared/navbar/navbar.component';
 import { ContactBlockComponent } from '../../shared/contact-block/contact-block.component';
 import { TranslatePipe } from '../../shared/translate.pipe';
 import { TranslationService } from '../../services/translation.service';
+import { AuthService } from '../../services/auth.service';
+import { environment } from '../../../environments/environment';
 
 @Component({
   selector: 'app-my-flights',
@@ -25,7 +27,8 @@ export class MyFlightsComponent implements OnInit {
   constructor(
     private http: HttpClient,
     private cdRef: ChangeDetectorRef,
-    private i18n: TranslationService
+    private i18n: TranslationService,
+    private auth: AuthService
   ) {}
 
   ngOnInit(): void {
@@ -36,29 +39,16 @@ export class MyFlightsComponent implements OnInit {
     this.loading = true;
     this.error = null;
 
-    const stored = localStorage.getItem("customerUser");
-    if (!stored) {
+    const currentUser = this.auth.getCurrentUser();
+    if (!currentUser) {
       this.error = this.i18n.translate('myFlights.error.notFound');
       this.loading = false;
       return;
     }
 
-    this.user = JSON.parse(stored);
+    this.user = currentUser;
 
-    // Mümkün olan tüm id alanlarını dene
-    const userId =
-      this.user.id ??
-      this.user.userId ??
-      this.user.user?.id ??
-      this.user.user?.userId;
-
-    if (!userId) {
-      this.error = this.i18n.translate('myFlights.error.noId');
-      this.loading = false;
-      return;
-    }
-
-    this.http.get<any[]>(`http://localhost:5096/api/TicketsApi/user/${userId}`)
+    this.http.get<any[]>(`${environment.apiBaseUrl}/api/TicketsApi/me`)
       .subscribe({
         next: (res) => {
           this.tickets = res;
@@ -85,7 +75,7 @@ export class MyFlightsComponent implements OnInit {
 
     this.cancellingId = ticketId;
 
-    this.http.delete(`http://localhost:5096/api/TicketsApi/${ticketId}`)
+    this.http.delete(`${environment.apiBaseUrl}/api/TicketsApi/${ticketId}`)
       .subscribe({
         next: () => {
           // Ekrandan da kaldır

@@ -1,153 +1,111 @@
 using FlightReservation.Data;
+using FlightReservation.Dtos.Auth;
 using FlightReservation.Models;
+using FlightReservation.Services.Auth;
+using Microsoft.AspNetCore.RateLimiting;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using System.Security.Cryptography;
-using System.Text;
+using System.Security.Claims;
 
 namespace FlightReservation.Controllers.Api
 {
     [Route("api/[controller]")]
     [ApiController]
+    [EnableRateLimiting("auth")]
     public class AuthApiController : ControllerBase
     {
         private readonly ApplicationDbContext _context;
+        private readonly IAuthService _authService;
 
-        public AuthApiController(ApplicationDbContext context)
+        public AuthApiController(
+            ApplicationDbContext context,
+            IAuthService authService)
         {
             _context = context;
+            _authService = authService;
         }
 
-        // ------------------------------------------------------
-        // REGISTER
-        // ------------------------------------------------------
         [HttpPost("register")]
-        public async Task<IActionResult> Register([FromBody] User user)
+        public async Task<IActionResult> Register([FromBody] RegisterRequestDto request)
         {
-            if (string.IsNullOrWhiteSpace(user.Email) || string.IsNullOrWhiteSpace(user.Password))
-                return BadRequest("Email and password cannot be empty.");
+            if (!ModelState.IsValid)
+                return ValidationProblem(ModelState);
 
-            if (user.Password.Length < 6)
-                return BadRequest(new { error = "Şifre en az 6 karakter olmalıdır." });
-
-            if (string.IsNullOrWhiteSpace(user.TCKN) || user.TCKN.Length != 11)
-                return BadRequest(new { error = "TCKN 11 haneli olmalıdır." });
-
-            if (await _context.Users.AnyAsync(u => u.Email == user.Email))
-                return BadRequest("This email is already registered.");
-
-            // Şifreyi hashle
-            user.Password = HashPassword(user.Password);
-
-            user.IsAdmin = false; // kayıt olan herkes müşteri
-            _context.Users.Add(user);
-            await _context.SaveChangesAsync();
-
-            return Ok(new { message = "Registration successful.", user });
+            var result = await _authService.RegisterAsync(request, HttpContext.RequestAborted);
+            return StatusCode(result.StatusCode, result.Response);
         }
 
-        // ------------------------------------------------------
-        // LOGIN
-        // ------------------------------------------------------
         [HttpPost("login")]
-        public async Task<IActionResult> Login([FromBody] LoginDto dto)
+        public async Task<ActionResult<AuthResponseDto>> Login([FromBody] LoginRequestDto request)
         {
-            if (string.IsNullOrWhiteSpace(dto.Email))
-                return BadRequest("Email cannot be empty.");
+            if (!ModelState.IsValid)
+                return ValidationProblem(ModelState);
 
-            if (string.IsNullOrWhiteSpace(dto.Password))
-                return BadRequest("Password cannot be empty.");
-
-            var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == dto.Email);
-
-            if (user == null || user.IsAdmin)
-                return Unauthorized("Email not found.");
-
-            var hashedInput = HashPassword(dto.Password);
-
-            if (user.Password != hashedInput)
-                return Unauthorized("Incorrect password.");
-
-            return Ok(new { 
-            userId = user.Id,
-            email = user.Email,
-            fullName = user.FullName
-            });
-
+            var result = await _authService.LoginAsync(request, requireAdmin: false, HttpContext.Connection.RemoteIpAddress?.ToString(), HttpContext.RequestAborted);
+            return StatusCode(result.StatusCode, result.Response);
         }
 
-        // ------------------------------------------------------
-        // STEP 1 — VERIFY EMAIL + TCKN FOR RESET PASSWORD
-        // ------------------------------------------------------
-        [HttpPost("reset-password/check")]
-        public async Task<IActionResult> ResetPasswordCheck([FromBody] ResetPasswordCheckDto dto)
+        [HttpPost("admin/login")]
+        public async Task<ActionResult<AuthResponseDto>> AdminLogin([FromBody] LoginRequestDto request)
         {
-            if (string.IsNullOrWhiteSpace(dto.Email) || string.IsNullOrWhiteSpace(dto.TCKN))
-                return BadRequest("Email and TCKN cannot be empty.");
+            if (!ModelState.IsValid)
+                return ValidationProblem(ModelState);
 
-            var user = await _context.Users
-                .FirstOrDefaultAsync(u => u.Email == dto.Email && u.TCKN == dto.TCKN);
+            var result = await _authService.LoginAsync(request, requireAdmin: true, HttpContext.Connection.RemoteIpAddress?.ToString(), HttpContext.RequestAborted);
+            return StatusCode(result.StatusCode, result.Response);
+        }
 
+        [Authorize]
+        [HttpGet("me")]
+        public async Task<ActionResult<AuthUserDto>> Me()
+        {
+            var userIdValue = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (!int.TryParse(userIdValue, out var userId))
+                return Unauthorized();
+
+            var user = await _context.Users.FindAsync(userId);
             if (user == null)
-                return Unauthorized("Email or TCKN is incorrect.");
+                return Unauthorized();
 
-            return Ok(new { message = "Identity verified." });
+            return Ok(ToUserDto(user));
         }
 
-        // ------------------------------------------------------
-        // STEP 2 — SAVE NEW PASSWORD
-        // ------------------------------------------------------
+        [HttpPost("reset-password/request")]
+        public async Task<ActionResult<RequestPasswordResetResponseDto>> RequestPasswordReset([FromBody] RequestPasswordResetRequestDto request)
+        {
+            if (!ModelState.IsValid)
+                return ValidationProblem(ModelState);
+
+            var response = await _authService.RequestPasswordResetAsync(
+                request,
+                HttpContext.Connection.RemoteIpAddress?.ToString(),
+                Request.Headers.UserAgent.ToString(),
+                HttpContext.RequestAborted);
+
+            return Ok(response);
+        }
+
         [HttpPost("reset-password")]
-        public async Task<IActionResult> ResetPassword([FromBody] ResetPasswordDto dto)
+        public async Task<IActionResult> ResetPassword([FromBody] CompletePasswordResetRequestDto request)
         {
-            if (string.IsNullOrWhiteSpace(dto.Email) || string.IsNullOrWhiteSpace(dto.TCKN))
-                return BadRequest("Email and TCKN cannot be empty.");
+            if (!ModelState.IsValid)
+                return ValidationProblem(ModelState);
 
-            if (string.IsNullOrWhiteSpace(dto.NewPassword))
-                return BadRequest("New password cannot be empty.");
-
-            if (dto.NewPassword.Length < 6)
-                return BadRequest(new { error = "Yeni şifre en az 6 karakter olmalıdır." });
-
-            var user = await _context.Users
-                .FirstOrDefaultAsync(u => u.Email == dto.Email && u.TCKN == dto.TCKN);
-
-            if (user == null)
-                return Unauthorized("Email or TCKN is incorrect.");
-
-            user.Password = HashPassword(dto.NewPassword);
-            await _context.SaveChangesAsync();
-
-            return Ok(new { message = "Password has been updated successfully." });
+            var result = await _authService.CompletePasswordResetAsync(request, HttpContext.RequestAborted);
+            return StatusCode(result.StatusCode, result.Response);
         }
 
-        private static string HashPassword(string password)
+        private static AuthUserDto ToUserDto(User user)
         {
-            using var sha = SHA256.Create();
-            var bytes = Encoding.UTF8.GetBytes(password);
-            var hash = sha.ComputeHash(bytes);
-            return Convert.ToBase64String(hash);
+            return new AuthUserDto
+            {
+                Id = user.Id,
+                FullName = user.FullName,
+                Tckn = user.TCKN,
+                Email = user.Email,
+                Role = user.IsAdmin ? "Admin" : "Customer"
+            };
         }
-
-    }
-
-    // DTOs
-    public class LoginDto
-    {
-        public string Email { get; set; } = "";
-        public string Password { get; set; } = "";
-    }
-
-    public class ResetPasswordCheckDto
-    {
-        public string Email { get; set; } = "";
-        public string TCKN { get; set; } = "";
-    }
-
-    public class ResetPasswordDto
-    {
-        public string Email { get; set; } = "";
-        public string TCKN { get; set; } = "";
-        public string NewPassword { get; set; } = "";
     }
 }

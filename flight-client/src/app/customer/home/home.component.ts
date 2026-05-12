@@ -67,30 +67,15 @@ export class CustomerHomeComponent implements OnInit {
     });
 
     const routeStep = this.route.snapshot.data?.['step'] as StepKey | undefined;
-    if (routeStep) {
-      this.showWelcomeScreen = false;
-      this.showTransition = false;
-      this.stepService.setActiveStep(routeStep);
-    }
-
     this.setBackgroundBasedOnTime();
-
-    // Sayfa her açıldığında karşılama ekranı görünsün
-    this.showWelcomeScreen = true;
     this.showTransition = false;
+    this.showWelcomeScreen = !(routeStep || this.stepService.steps.seatAvailability || this.stepService.selectedFlight);
 
-    // Eğer landing'de arama yapılıp uçuş seçilmişse karşılama ekranını atla
-    if (this.stepService.steps.seatAvailability || this.stepService.selectedFlight) {
+    if (routeStep) {
+      this.stepService.setActiveStep(routeStep);
       this.showWelcomeScreen = false;
-      this.showTransition = false;
-
-      // İlk adım zaten tamamlandı, bir sonraki adıma geç
-      if (this.stepService.activeStep === 'seatAvailability') {
-        this.navigateToStep('passengerInfo');
-      }
-
-      // Anında UI'yı güncelle
-      this.cdr.detectChanges();
+    } else if (this.stepService.selectedFlight || this.stepService.steps.seatAvailability) {
+      this.showWelcomeScreen = false;
     }
 
     // Customer route içindeyken steps görünsün
@@ -146,8 +131,8 @@ export class CustomerHomeComponent implements OnInit {
   }
 
   /**
-   * 🚨 GÜNCELLENDİ: Kullanıcı step bar'dan adım seçtiğinde çalışır.
-   * Atlanan veya geri dönülen adımlarda sıfırlama kuralını uygular.
+   * Kullanıcı step bar'dan adım seçtiğinde çalışır.
+   * Geri dönüşe izin verir, ileri atlamada ise tamamlanma kuralını korur.
    */
   tryGoToStep(step: any) {
     const order = this.steps.map(s => s.key); // ['seat-status', 'passenger-info', ...]
@@ -160,47 +145,26 @@ export class CustomerHomeComponent implements OnInit {
         return;
     }
 
-    // ----------------------------------------------------
-    // KONTROL 1: GERİYE DÖNÜŞ VE SIFIRLAMA KONTROLÜ
-    // ----------------------------------------------------
-    // Geriye dönülmeye çalışılıyorsa
     if (targetIndex < activeIndex) {
-
-        const confirmReset = confirm(this.i18n.translate('home.alert.reset'));
-
-        if (confirmReset) {
-            // Rezervasyonu sıfırla (tüm veriler silinir)
-            this.stepService.resetAll();
-            // İlk adıma dön (UI key: 'seat-status', Service key: 'seatAvailability')
-            this.navigateToStep(this.steps[0].serviceKey);
-            this.cdr.detectChanges();
-            return;
-        } else {
-            return; // Vazgeçerse olduğu adımda kal
-        }
-    }
-
-
-    // ----------------------------------------------------
-    // KONTROL 2: İLERİYE ATLAMA KONTROLÜ (Tamamlanma Zorunluluğu)
-    // ----------------------------------------------------
-    
-    // Sadece bir sonraki adıma (targetIndex === activeIndex + 1) geçişe izin verilir.
-    // Daha ileriye atlanıyorsa (targetIndex > activeIndex + 1), sırayı kontrol et.
-
-    const prevKey = order[activeIndex]; // Şu an bulunduğumuz adımın UI key'i
-    const currentStepService = this.steps.find(s => s.key === prevKey)!;
-
-    // Aktif adımdan daha ileri bir adıma (bir sonraki adım değil) atlanmaya çalışılıyorsa:
-    if (targetIndex > activeIndex + 1) {
-        alert(this.i18n.translate('home.alert.noSkip'));
+        this.navigateToStep(step.serviceKey);
+        this.cdr.detectChanges();
         return;
     }
 
-    // Eğer bir sonraki adıma (normal akış) geçiliyorsa, mevcut adımın tamamlandığını kontrol et
-    // Not: Bu kontrol, step içeriğindeki 'continue' butonu ile completion bayrağı tetiklenmediyse önemlidir.
-    if (targetIndex === activeIndex + 1) {
-        if (!this.stepService.steps[currentStepService.serviceKey]) {
+
+    const prevKey = order[activeIndex];
+    const currentStepService = this.steps.find(s => s.key === prevKey)!;
+
+    if (targetIndex > activeIndex) {
+        const requiredSteps = this.steps.slice(0, targetIndex);
+        const canAccessTarget = requiredSteps.every(required => this.stepService.steps[required.serviceKey]);
+
+        if (!canAccessTarget) {
+            alert(this.i18n.translate('home.alert.noSkip'));
+            return;
+        }
+
+        if (targetIndex === activeIndex + 1 && !this.stepService.steps[currentStepService.serviceKey]) {
             alert(this.i18n.translate('home.alert.completeFirst'));
             return;
         }
@@ -281,8 +245,7 @@ export class CustomerHomeComponent implements OnInit {
       'baggage': {
         title: this.i18n.translate('home.stepInfo.baggage.title'),
         description: this.i18n.translate('home.stepInfo.baggage.description'),
-        icon: 'bi bi-bag',
-        image: 'assets/info/baggage.png'
+        icon: 'bi bi-bag'
       },
       'extras': {
         title: this.i18n.translate('home.stepInfo.extras.title'),

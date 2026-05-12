@@ -16,7 +16,7 @@
             *ngIf="i < 3"
             class="seat"
             [class.taken]="isSeatOccupied(seat)"
-            [class.selected]="selectedSeat === seat"
+            [class.selected]="selectedSeats.includes(seat)"
             [class.disabled]="isSeatOccupied(seat)"
             (click)="!isSeatOccupied(seat) && selectSeat(seat)">
             {{ seat }}
@@ -38,7 +38,7 @@
             *ngIf="i >= 3"
             class="seat"
             [class.taken]="isSeatOccupied(seat)"
-            [class.selected]="selectedSeat === seat"
+            [class.selected]="selectedSeats.includes(seat)"
             [class.disabled]="isSeatOccupied(seat)"
             (click)="!isSeatOccupied(seat) && selectSeat(seat)">
             {{ seat }}
@@ -73,18 +73,18 @@
 
     <div class="total-and-action">
       <div class="total-label">
-        {{ 'seat.selectedLabel' | t }} {{ selectedSeat || ('seat.none' | t) }}
+        {{ 'seat.selectedLabel' | t }} {{ selectedSeats.length ? selectedSeats.join(', ') : ('seat.none' | t) }}
       </div>
 
       <div class="total-price">
-        {{ selectedSeat ? (getSeatPrice(selectedSeat) + ' ₺') : '0 ₺' }}
+        {{ selectedSeats.length ? (seatTotal + ' ₺') : '0 ₺' }}
       </div>
 
       <div class="continue-box">
         <button
           class="continue-btn"
           (click)="continue()"
-          [disabled]="!selectedSeat">
+          [disabled]="selectedSeats.length !== (stepService.passengerCount || 1)">
           {{ 'seat.continue' | t }}
         </button>
       </div>

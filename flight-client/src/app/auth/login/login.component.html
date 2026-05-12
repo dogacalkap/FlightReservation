@@ -40,6 +40,10 @@
           <span *ngIf="loading" class="spinner"></span>
         </button>
       </form>
+
+      <div class="footer-links">
+        <a (click)="switchMode('forgot-request')">Sifremi unuttum</a>
+      </div>
     </div>
 
     <div class="card-body" *ngIf="mode === 'register'">
@@ -56,8 +60,17 @@
           <input formControlName="fullName" type="text" [placeholder]="'customerLogin.register.fullNamePlaceholder' | t" />
         </label>
         <label>{{ 'customerLogin.register.nationalId' | t }}
-          <input formControlName="nationalId" type="text" [placeholder]="'customerLogin.register.nationalIdPlaceholder' | t" />
+          <input
+            formControlName="nationalId"
+            type="text"
+            inputmode="numeric"
+            maxlength="11"
+            [placeholder]="'customerLogin.register.nationalIdPlaceholder' | t"
+            (input)="onNationalIdInput($event)" />
         </label>
+        <small class="muted" *ngIf="registerForm.get('nationalId')?.invalid && registerForm.get('nationalId')?.touched">
+          {{ 'customerLogin.register.nationalIdPlaceholder' | t }}
+        </small>
         <label>{{ 'customerLogin.register.email' | t }}
           <input formControlName="email" type="email" [placeholder]="'customerLogin.register.emailPlaceholder' | t" />
         </label>
@@ -70,6 +83,63 @@
           <span *ngIf="loading" class="spinner"></span>
         </button>
       </form>
+
+      <div class="footer-links">
+        <a (click)="switchMode('login')">Giris ekranina don</a>
+      </div>
+    </div>
+
+    <div class="card-body" *ngIf="mode === 'forgot-request'">
+      <h2>Sifreyi Sifirla</h2>
+      <p class="muted">Kayitli email adresinizi girin. Sifirlama linki veya token olusturulacak.</p>
+
+      <div *ngIf="error" class="error-box">
+        <i class="bi bi-exclamation-circle"></i>
+        {{ error }}
+      </div>
+
+      <form [formGroup]="forgotRequestForm" (ngSubmit)="onForgotRequestSubmit()">
+        <label>Email
+          <input formControlName="email" type="email" placeholder="ornek@mail.com" />
+        </label>
+
+        <button class="primary-btn" type="submit" [disabled]="loading">
+          <span *ngIf="!loading">Sifirlama Talebi Gonder</span>
+          <span *ngIf="loading" class="spinner"></span>
+        </button>
+      </form>
+
+      <div class="footer-links">
+        <a (click)="switchMode('login')">Giris ekranina don</a>
+      </div>
+    </div>
+
+    <div class="card-body" *ngIf="mode === 'reset'">
+      <h2>Yeni Sifre Belirle</h2>
+      <p class="muted">Email ile gelen tokeni girin veya development ortamiysa otomatik doldurulan tokeni kullanin.</p>
+
+      <div *ngIf="error" class="error-box">
+        <i class="bi bi-exclamation-circle"></i>
+        {{ error }}
+      </div>
+
+      <form [formGroup]="resetPasswordForm" (ngSubmit)="onResetPasswordSubmit()">
+        <label>Reset Token
+          <input formControlName="token" type="text" placeholder="Reset token" />
+        </label>
+        <label>Yeni Sifre
+          <input formControlName="newPassword" type="password" placeholder="En az 8 karakter" />
+        </label>
+
+        <button class="primary-btn" type="submit" [disabled]="loading">
+          <span *ngIf="!loading">Sifreyi Guncelle</span>
+          <span *ngIf="loading" class="spinner"></span>
+        </button>
+      </form>
+
+      <div class="footer-links">
+        <a (click)="switchMode('login')">Giris ekranina don</a>
+      </div>
     </div>
   </div>
 </div>

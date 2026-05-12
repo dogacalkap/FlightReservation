@@ -253,6 +253,51 @@ namespace FlightReservation.Migrations
                     b.ToTable("PaymentCards");
                 });
 
+            modelBuilder.Entity("FlightReservation.Models.PasswordResetToken", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime?>("ConsumedAtUtc")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<DateTime>("CreatedAtUtc")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<DateTime>("ExpiresAtUtc")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<string>("RequestedByIp")
+                        .IsRequired()
+                        .HasMaxLength(64)
+                        .HasColumnType("character varying(64)");
+
+                    b.Property<string>("TokenHash")
+                        .IsRequired()
+                        .HasMaxLength(128)
+                        .HasColumnType("character varying(128)");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("UserAgent")
+                        .IsRequired()
+                        .HasMaxLength(512)
+                        .HasColumnType("character varying(512)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("TokenHash")
+                        .IsUnique();
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("PasswordResetTokens");
+                });
+
             modelBuilder.Entity("FlightReservation.Models.Reservation", b =>
                 {
                     b.Property<int>("Id")
@@ -280,7 +325,14 @@ namespace FlightReservation.Migrations
                     b.Property<int>("FlightId")
                         .HasColumnType("integer");
 
+                    b.Property<int>("PassengerCount")
+                        .HasColumnType("integer");
+
                     b.Property<string>("SeatNumber")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("SeatNumbers")
                         .IsRequired()
                         .HasColumnType("text");
 
@@ -362,7 +414,14 @@ namespace FlightReservation.Migrations
                     b.Property<int>("FlightId")
                         .HasColumnType("integer");
 
+                    b.Property<int>("PassengerCount")
+                        .HasColumnType("integer");
+
                     b.Property<string>("SeatNumber")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("SeatNumbers")
                         .IsRequired()
                         .HasColumnType("text");
 
@@ -474,6 +533,17 @@ namespace FlightReservation.Migrations
                 });
 
             modelBuilder.Entity("FlightReservation.Models.PaymentCard", b =>
+                {
+                    b.HasOne("FlightReservation.Models.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("FlightReservation.Models.PasswordResetToken", b =>
                 {
                     b.HasOne("FlightReservation.Models.User", "User")
                         .WithMany()

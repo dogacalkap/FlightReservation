@@ -1,11 +1,13 @@
 using FlightReservation.Data;
+using FlightReservation.Dtos.Airports;
 using FlightReservation.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace FlightReservation.Controllers.Api
 {
-    [Route("api/Airportsapi")] 
+    [Route("api/[controller]")] 
     [ApiController]
     public class AirportsApiController : ControllerBase
     {
@@ -16,7 +18,7 @@ namespace FlightReservation.Controllers.Api
             _context = context;
         }
 
-        // GET: api/Airportsapi
+        // GET: api/AirportsApi
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Airport>>> GetAirports()
      {
@@ -29,7 +31,7 @@ namespace FlightReservation.Controllers.Api
     }
 
 
-        // GET: api/Airportsapi/5
+        // GET: api/AirportsApi/5
         [HttpGet("{id}")]
         public async Task<ActionResult<Airport>> GetAirport(int id)
         {
@@ -41,31 +43,44 @@ namespace FlightReservation.Controllers.Api
             return Ok(airport);
         }
 
-        // POST: api/Airportsapi
+        // POST: api/AirportsApi
         [HttpPost]
-        public async Task<ActionResult<Airport>> CreateAirport([FromBody] Airport airport)
+        [Authorize(Roles = "Admin")]
+        public async Task<ActionResult<Airport>> CreateAirport([FromBody] UpsertAirportRequestDto request)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
+
+            var airport = new Airport
+            {
+                Code = request.Code.Trim().ToUpperInvariant(),
+                Name = request.Name.Trim(),
+                City = request.City.Trim(),
+                Country = request.Country.Trim()
+            };
 
             _context.Airports.Add(airport);
             await _context.SaveChangesAsync();
 
-            // 201 Created + Location header
             return CreatedAtAction(nameof(GetAirport), new { id = airport.Id }, airport);
         }
 
-        // PUT: api/Airportsapi/5
+        // PUT: api/AirportsApi/5
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateAirport(int id, [FromBody] Airport airport)
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> UpdateAirport(int id, [FromBody] UpsertAirportRequestDto request)
         {
-            if (id != airport.Id)
-                return BadRequest("Id uyuşmuyor.");
-
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            _context.Entry(airport).State = EntityState.Modified;
+            var airport = await _context.Airports.FindAsync(id);
+            if (airport == null)
+                return NotFound();
+
+            airport.Code = request.Code.Trim().ToUpperInvariant();
+            airport.Name = request.Name.Trim();
+            airport.City = request.City.Trim();
+            airport.Country = request.Country.Trim();
 
             try
             {
@@ -80,12 +95,12 @@ namespace FlightReservation.Controllers.Api
                 throw; // başka bir concurrency hatasıysa patlasın, görürüz
             }
 
-            // 204 NoContent
             return NoContent();
         }
 
-        // DELETE: api/Airportsapi/5
+        // DELETE: api/AirportsApi/5
         [HttpDelete("{id}")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> DeleteAirport(int id)
         {
             var airport = await _context.Airports.FindAsync(id);
@@ -94,8 +109,6 @@ namespace FlightReservation.Controllers.Api
 
             _context.Airports.Remove(airport);
             await _context.SaveChangesAsync();
-
-            // 204 NoContent
             return NoContent();
         }
     }

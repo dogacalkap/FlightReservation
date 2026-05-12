@@ -25,6 +25,10 @@
         <i class="bi bi-check-circle-fill"></i>
         {{ stepService.passengerInfo?.name || ('passenger.loggedSuccess' | t) }}
       </div>
+
+      <button class="login-btn" (click)="continue()">
+        Devam Et
+      </button>
     </div>
 
   </div>

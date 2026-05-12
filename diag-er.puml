@@ -1,0 +1,108 @@
+@startuml
+left to right direction
+skinparam dpi 200
+title ER Diagram - FlightReservation DB
+entity "Users" as Users {
+  *Id : int
+  FullName : string
+  Email : string
+  Password : string
+  IsAdmin : bool
+}
+entity "Airports" as Airports {
+  *Id : int
+  Code : string
+  Name : string
+  City : string
+  Country : string
+}
+entity "Flights" as Flights {
+  *Id : int
+  FlightNumber : string
+  FromAirportId : int
+  ToAirportId : int
+  DepartureTime : datetime
+  ArrivalTime : datetime
+  Price : decimal
+}
+entity "SeatOccupations" as Seats {
+  *Id : int
+  FlightId : int
+  SeatNumber : string
+  IsReserved : bool
+  UserId : int
+  ReservedAt : datetime
+}
+entity "Tickets" as Tickets {
+  *Id : int
+  UserId : int
+  FlightId : int
+  SeatNumber : string
+  SeatPrice : decimal
+  BaggagePrice : decimal
+  ExtrasTotal : decimal
+  FinalPrice : decimal
+  ExtraReward : string
+  CreatedAt : datetime
+}
+entity "Reservations" as Resv {
+  *Id : int
+  UserId : int
+  FlightId : int
+  SeatNumber : string
+  BaggageCount : int
+  BaggagePrice : decimal
+  ExtraReward : string
+  ExtraDiscountAmount : decimal
+  TotalPrice : decimal
+  CreatedAt : datetime
+}
+entity "ExtraRewards" as Rewards {
+  *Id : int
+  UserId : int
+  FlightId : int
+  RewardText : string
+  DiscountAmount : decimal
+  EarnedAt : datetime
+}
+entity "BaggageSelections" as Baggage {
+  *Id : int
+  UserId : int
+  FlightId : int
+  BaggageCount : int
+  Price : decimal
+  CreatedAt : datetime
+}
+entity "PaymentCards" as Cards {
+  *Id : int
+  UserId : int
+  CardHolderName : string
+  CardNumberMasked : string
+  ExpiryMonth : string
+  ExpiryYear : string
+  SavedAt : datetime
+}
+entity "ContactMessages" as Msgs {
+  *Id : int
+  FullName : string
+  Email : string
+  Subject : string
+  Message : string
+  CreatedAt : datetime
+}
+
+Flights }o--|| Airports : FromAirportId
+Flights }o--|| Airports : ToAirportId
+Seats }o--|| Flights
+Seats }o--|| Users
+Tickets }o--|| Flights
+Tickets }o--|| Users
+Resv }o--|| Flights
+Resv }o--|| Users
+Rewards }o--|| Flights
+Rewards }o--|| Users
+Baggage }o--|| Flights
+Baggage }o--|| Users
+Cards }o--|| Users
+Msgs }o--|| Users : Email match
+@enduml

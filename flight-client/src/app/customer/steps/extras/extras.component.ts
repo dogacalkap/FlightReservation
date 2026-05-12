@@ -89,6 +89,7 @@ export class ExtrasComponent {
     });
     // Çark çevrildi mi kontrolü
     this.hasSpun = this.stepService.extras.some(e => e.code.includes('DISC') || e.code === 'FREE_BAG' || e.code === 'BAG50' || e.code === 'FREE_TICKET');
+    this.result = this.stepService.wheelResult;
   }
 
   // 💥 HİZMET EKLE/KALDIR METODU (Çark ödüllerini koruyan temiz yol)
@@ -156,6 +157,7 @@ export class ExtrasComponent {
     clearInterval(tickInterval);
 
     this.result = prize.label;
+    this.stepService.wheelResult = prize.label;
     this.spinning = false;
     this.hasSpun = true;
 

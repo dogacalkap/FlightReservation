@@ -1,18 +1,18 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { LottieComponent, provideLottieOptions } from 'ngx-lottie';
 import player from 'lottie-web';
 import { AuthService } from '../../services/auth.service';
+import { AuthModalComponent } from '../../customer/components/auth-modal/auth-modal.component';
 import { TranslatePipe } from '../../shared/translate.pipe';
 import { TranslationService } from '../../services/translation.service';
 
 @Component({
   selector: 'app-admin-login',
   standalone: true,
-  imports: [CommonModule, FormsModule, LottieComponent, TranslatePipe],
+  imports: [CommonModule, FormsModule, LottieComponent, TranslatePipe, AuthModalComponent],
   providers: [
     provideLottieOptions({ player: () => player })
   ],
@@ -25,13 +25,13 @@ export class AdminLoginComponent {
   password = "";
   errorMessage = "";
   mode: 'admin' | 'customer' = 'admin';
+  showCustomerAuthPopup = false;
 
   adminLottie = {
     path: "https://lottie.host/40f4975f-d0f9-4c3a-8412-72acb43dfb77/OguCzCvY9B.json"
   };
 
   constructor(
-    private http: HttpClient,
     private router: Router,
     private auth: AuthService,
     private i18n: TranslationService
@@ -49,12 +49,8 @@ export class AdminLoginComponent {
     }
 
     if (this.mode === 'admin') {
-      this.http.post<any>("http://localhost:5096/api/AdminAuth/login", {
-        email: this.email,
-        password: this.password
-      }).subscribe({
-        next: (res: any) => {
-          localStorage.setItem("admin_token", res.token);
+      this.auth.loginAdmin(this.email, this.password).subscribe({
+        next: () => {
           this.router.navigate(['/admin/airports']);
         },
         error: () => {
@@ -63,14 +59,7 @@ export class AdminLoginComponent {
       });
     } else {
       this.auth.login(this.email, this.password).subscribe({
-        next: (res) => {
-          const user = {
-            userId: res.userId,
-            fullName: res.fullName,
-            email: res.email
-          };
-          this.auth.setCurrentUser(user);
-          // Yolcu akışına yönlendir
+        next: () => {
           this.router.navigate(['/customer']);
         },
         error: () => {
@@ -83,5 +72,23 @@ export class AdminLoginComponent {
   goHome() {
   this.router.navigate(['/landing']);
 }
+
+  goToCustomerRegister() {
+    this.showCustomerAuthPopup = true;
+  }
+
+  closeCustomerAuthPopup() {
+    this.showCustomerAuthPopup = false;
+  }
+
+  customerRegistered(event: { email: string }) {
+    this.email = event.email;
+    this.mode = 'customer';
+  }
+
+  customerAuthSuccess() {
+    this.showCustomerAuthPopup = false;
+    this.router.navigate(['/customer']);
+  }
 
 }

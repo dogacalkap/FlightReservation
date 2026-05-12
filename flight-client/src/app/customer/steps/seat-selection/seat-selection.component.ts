@@ -4,6 +4,7 @@ import { HttpClient } from '@angular/common/http';
 import { ReservationStepsService } from '../../../services/reservation-steps.service';
 import { Router } from '@angular/router';
 import { TranslatePipe } from '../../../shared/translate.pipe';
+import { environment } from '../../../../environments/environment';
 
 @Component({
   selector: 'app-seat-selection',
@@ -20,18 +21,19 @@ export class SeatSelectionComponent implements OnInit {
   seatMap: string[][] = [];
 
   takenSeats: string[] = [];
-  selectedSeat: string | null = null;
+  selectedSeats: string[] = [];
 
-  apiUrl = 'http://localhost:5096/api/SeatOccupation';
+  apiUrl = `${environment.apiBaseUrl}/api/SeatOccupation`;
 
   constructor(
-    private stepService: ReservationStepsService,
+    public stepService: ReservationStepsService,
     private http: HttpClient,
     private router: Router
   ) {}
 
   ngOnInit(): void {
     this.buildSeatMap();
+    this.selectedSeats = [...(this.stepService.seatSelection?.seatNumbers ?? [])];
 
     // ❌ Flight seçilmeden buraya gelinmişse DUR
     if (!this.stepService.selectedFlight?.id) {
@@ -90,7 +92,21 @@ export class SeatSelectionComponent implements OnInit {
 
   selectSeat(seat: string) {
     if (this.isSeatOccupied(seat)) return;
-    this.selectedSeat = seat;
+
+    const maxSeats = this.getMaxSeats();
+    const exists = this.selectedSeats.includes(seat);
+
+    if (exists) {
+      this.selectedSeats = this.selectedSeats.filter(s => s !== seat);
+      return;
+    }
+
+    if (this.selectedSeats.length >= maxSeats) {
+      // En eskiyi çıkarıp yeni koltuğu ekleyelim
+      this.selectedSeats.shift();
+    }
+
+    this.selectedSeats.push(seat);
   }
 
   // -----------------------------
@@ -112,16 +128,25 @@ export class SeatSelectionComponent implements OnInit {
     return 'row-standard';
   }
 
+  get seatTotal(): number {
+    return this.selectedSeats.reduce((sum, seat) => sum + this.getSeatPrice(seat), 0);
+  }
+
+  private getMaxSeats(): number {
+    return Number(this.stepService.passengerCount) > 0 ? Number(this.stepService.passengerCount) : 1;
+  }
+
   // -----------------------------
   // DEVAM
   // -----------------------------
   continue() {
-    if (!this.selectedSeat) return;
+    const maxSeats = this.getMaxSeats();
+    if (this.selectedSeats.length !== maxSeats) return;
 
-    const price = this.getSeatPrice(this.selectedSeat);
+    const price = this.selectedSeats.reduce((sum, seat) => sum + this.getSeatPrice(seat), 0);
 
     this.stepService.seatSelection = {
-      seatNumber: this.selectedSeat,
+      seatNumbers: [...this.selectedSeats],
       price: price
     };
 

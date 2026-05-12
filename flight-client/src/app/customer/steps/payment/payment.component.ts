@@ -1,4 +1,4 @@
-import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, OnDestroy, ChangeDetectorRef } from '@angular/core';
 import { CommonModule, DatePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
@@ -8,6 +8,7 @@ import { Router } from '@angular/router';
 import { AuthService } from '../../../services/auth.service';
 import { TranslatePipe } from '../../../shared/translate.pipe';
 import { TranslationService } from '../../../services/translation.service';
+import { environment } from '../../../../environments/environment';
 
 @Component({
   selector: 'app-payment',
@@ -16,9 +17,9 @@ import { TranslationService } from '../../../services/translation.service';
   templateUrl: './payment.component.html',
   styleUrls: ['./payment.component.css']
 })
-export class PaymentComponent implements OnInit {
+export class PaymentComponent implements OnInit, OnDestroy {
 
-  private API_URL = "http://localhost:5096/api/PaymentApi/pay"; 
+  private API_URL = `${environment.apiBaseUrl}/api/PaymentApi/pay`;
 
   // KART BİLGİLERİ VE DURUM DEĞİŞKENLERİ
   cardHolder = "";
@@ -44,6 +45,7 @@ export class PaymentComponent implements OnInit {
 
   ngOnInit() {
     this.finalPrice = this.stepService.getTotalPrice();
+    this.restoreDraft();
     if (!this.auth.getCurrentUser() || !this.stepService.selectedFlight) {
         Swal.fire(
           this.i18n.translate('payment.error.title'),
@@ -52,6 +54,29 @@ export class PaymentComponent implements OnInit {
         );
         this.router.navigate(['/landing']);
     }
+  }
+
+  ngOnDestroy(): void {
+    this.stepService.paymentDraft = {
+      cardHolder: this.cardHolder,
+      cardNumber: this.cardNumber,
+      expiry: this.expiry,
+      cvv: this.cvv,
+      saveCard: this.saveCard
+    };
+  }
+
+  private restoreDraft() {
+    const draft = this.stepService.paymentDraft;
+    if (!draft) {
+      return;
+    }
+
+    this.cardHolder = draft.cardHolder;
+    this.cardNumber = draft.cardNumber;
+    this.expiry = draft.expiry;
+    this.cvv = draft.cvv;
+    this.saveCard = draft.saveCard;
   }
 
   // ---------------------------------------------
@@ -128,25 +153,16 @@ export class PaymentComponent implements OnInit {
 
     // 💥 API'ye GÖNDERİLECEK VERİ (C# DTO'ya uyumlu CamelCase)
     const body = {
-        UserId: currentUser.userId,
         FlightId: this.stepService.selectedFlight.id, 
-        
-        // 🚨 KRİTİK DÜZELTME: C# API'sinin hesaplamayı doğru yapması için fiyatları DECIMAL olarak gönderiyoruz.
-        SeatNumber: this.stepService.seatSelection?.seatNumber ?? '',
-        SeatPrice: this.stepService.seatSelection?.price ?? 0, // C# tarafında decimal olmalı
+        PassengerCount: this.stepService.passengerCount || 1,
+        SeatNumber: this.stepService.seatSelection?.seatNumbers?.[0] ?? '',
+        SeatNumbers: this.stepService.seatSelection?.seatNumbers ?? [],
         BaggageCount: this.stepService.baggage?.weight ?? 0,
-        BaggagePrice: this.stepService.baggage?.price ?? 0, // C# tarafında decimal olmalı
-        
-        // Ekstralar listesi
         Extras: this.stepService.extras.map(e => ({
             ExtraCode: e.code,
-            ExtraName: e.name,
-            ExtraPrice: e.price // C# tarafında decimal olmalı
+            ExtraName: e.name
         })),
-
-        // C# API'niz tek bir string beklediği için en kritik ödülü gönderiyoruz.
         ExtraReward: this.stepService.extras.find(e => e.price < 0)?.name ?? '',
-        
         CardNumber: this.cardNumber.replace(/\s/g, ''),
         NameOnCard: this.cardHolder,
         ExpiryMonth: this.expiry.split('/')[0],
@@ -156,6 +172,13 @@ export class PaymentComponent implements OnInit {
     };
 
     console.log("API'ye Gönderilen BODY (JSON):", body);
+    this.stepService.paymentDraft = {
+      cardHolder: this.cardHolder,
+      cardNumber: this.cardNumber,
+      expiry: this.expiry,
+      cvv: this.cvv,
+      saveCard: this.saveCard
+    };
     this.loading = true;
     this.cdr.detectChanges(); 
 

@@ -1,8 +1,12 @@
 using FlightReservation.Data;
+using FlightReservation.Dtos.Payments;
 using FlightReservation.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using System.Linq;
+using System.Security.Claims;
+using FlightReservation.Services.Pricing;
+using FlightReservation.Services.Auth;
 
 namespace FlightReservation.Controllers.Api
 {
@@ -11,66 +15,64 @@ namespace FlightReservation.Controllers.Api
     public class PaymentApiController : ControllerBase
     {
         private readonly ApplicationDbContext _context;
+        private readonly IPricingService _pricingService;
+        private readonly IAuditService _auditService;
 
-        public PaymentApiController(ApplicationDbContext context)
+        public PaymentApiController(ApplicationDbContext context, IPricingService pricingService, IAuditService auditService)
         {
             _context = context;
+            _pricingService = pricingService;
+            _auditService = auditService;
         }
 
-        // ============================================
-        //                   PAY
-        // ============================================
+        [Authorize]
         [HttpPost("pay")]
-        public async Task<IActionResult> Pay([FromBody] PaymentDto dto)
+        public async Task<IActionResult> Pay([FromBody] PaymentRequestDto dto)
         {
+            if (!ModelState.IsValid)
+                return ValidationProblem(ModelState);
+
+            var userIdValue = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (!int.TryParse(userIdValue, out var userId))
+                return Unauthorized(new { message = "Invalid user context." });
+
             var flight = await _context.Flights.FindAsync(dto.FlightId);
             if (flight == null)
-                return BadRequest("Flight not found.");
+                return BadRequest(new { message = "Flight not found." });
 
-            // -------------------------------------------------------
-            // 🔥 1) BASE PRICE (Flight price)
-            // -------------------------------------------------------
-            decimal finalPrice = flight.Price; 
+            var passengerCount = dto.PassengerCount > 0 ? dto.PassengerCount : 1;
+            var seatList = dto.SeatNumbers?.Any() == true
+                ? dto.SeatNumbers.Select(s => s.Trim().ToUpperInvariant()).ToList()
+                : (string.IsNullOrWhiteSpace(dto.SeatNumber)
+                    ? new List<string>()
+                    : new List<string> { dto.SeatNumber.Trim().ToUpperInvariant() });
 
-            // -------------------------------------------------------
-            // 🔥 2) SEAT PRICE & 3) BAGGAGE PRICE
-            // Angular'dan gelen ücretleri doğrudan ekliyoruz.
-            // -------------------------------------------------------
-            if (dto.SeatPrice > 0)
-                finalPrice += dto.SeatPrice;
+            if (seatList.Count == 0)
+                return BadRequest(new { message = "Seat list cannot be empty." });
 
-            if (dto.BaggagePrice > 0)
-                finalPrice += dto.BaggagePrice;
+            if (seatList.Count != passengerCount)
+                return BadRequest(new { message = "Selected seat count must match passenger count." });
 
-            // -------------------------------------------------------
-            // 🔥 4) EXTRAS (Hizmetler ve Çark İndirimleri)
-            // -------------------------------------------------------
-            if (dto.Extras != null && dto.Extras.Any())
-            {
-                foreach (var extra in dto.Extras)
-                {
-                    // ExtraPrice pozitif (ücret) veya negatif (indirim) olabilir.
-                    finalPrice += extra.ExtraPrice; 
-                }
-            }
+            if (seatList.Count != seatList.Distinct(StringComparer.OrdinalIgnoreCase).Count())
+                return BadRequest(new { message = "Duplicate seat numbers are not allowed." });
 
-            // -------------------------------------------------------
-            // 💥 DİKKAT: C# API'sinde tekrar hesaplama/indirim yapmıyoruz.
-            // Zaten Angular'dan gelen ExtraPrice değerleri (çark dahil) 
-            // doğru hesaplanmıştır.
-            // -------------------------------------------------------
-            
-            // -------------------------------------------------------
-            // 🔥 5) KART KAYIT MANTIĞI
-            // -------------------------------------------------------
+            decimal baseFlightTotal = flight.Price * passengerCount;
+            decimal calculatedSeatPrice = seatList.Sum(_pricingService.CalculateSeatPrice);
+            decimal calculatedBaggagePrice = _pricingService.CalculateBaggagePrice(dto.BaggageCount);
+            var calculatedExtras = CalculateExtras(dto.Extras, baseFlightTotal, calculatedBaggagePrice);
+
+            decimal finalPrice = baseFlightTotal
+                + calculatedSeatPrice
+                + calculatedBaggagePrice
+                + calculatedExtras.Sum(e => e.Price);
+
             if (dto.SaveCard)
             {
-                // ... (Kart maskeleme ve kaydetme mantığı aynı kalır)
                 var masked = MaskCardNumber(dto.CardNumber);
 
                 var card = new PaymentCard
                 {
-                    UserId = dto.UserId,
+                    UserId = userId,
                     CardHolderName = dto.NameOnCard,
                     CardNumberMasked = masked,
                     ExpiryMonth = dto.ExpiryMonth,
@@ -78,71 +80,118 @@ namespace FlightReservation.Controllers.Api
                     SavedAt = DateTime.UtcNow
                 };
 
-                
-
                 _context.PaymentCards.Add(card);
             }
 
-            // -------------------------------------------------------
-            // 🔥 6) KOLTUK REZERVASYONU
-            // -------------------------------------------------------
-            var seat = await _context.SeatOccupations
-                .FirstOrDefaultAsync(s =>
-                    s.FlightId == dto.FlightId &&
-                    s.SeatNumber == dto.SeatNumber);
+            var existingSeats = await _context.SeatOccupations
+                .Where(s => s.FlightId == dto.FlightId && seatList.Contains(s.SeatNumber))
+                .Select(s => s.SeatNumber)
+                .ToListAsync();
 
-            if (seat == null)
+            if (existingSeats.Any())
+                return BadRequest(new { message = $"Seats already taken: {string.Join(",", existingSeats)}" });
+
+            foreach (var seatNo in seatList)
             {
-                seat = new SeatOccupation
+                var seat = await _context.SeatOccupations
+                    .FirstOrDefaultAsync(s => s.FlightId == dto.FlightId && s.SeatNumber == seatNo);
+
+                if (seat == null)
                 {
-                    FlightId = dto.FlightId,
-                    SeatNumber = dto.SeatNumber,
-                    IsReserved = true,
-                    UserId = dto.UserId
-                };
+                    seat = new SeatOccupation
+                    {
+                        FlightId = dto.FlightId,
+                        SeatNumber = seatNo,
+                        IsReserved = true,
+                        UserId = userId
+                    };
 
-                _context.SeatOccupations.Add(seat);
-            }
-            else
-            {
-                seat.IsReserved = true;
-                seat.UserId = dto.UserId;
+                    _context.SeatOccupations.Add(seat);
+                }
+                else
+                {
+                    seat.IsReserved = true;
+                    seat.UserId = userId;
+                }
             }
 
-            // -------------------------------------------------------
-            // 🔥 7) TICKET CREATE
-            // -------------------------------------------------------
             var ticket = new Ticket
             {
-                UserId = dto.UserId,
+                UserId = userId,
                 FlightId = dto.FlightId,
-                SeatNumber = dto.SeatNumber,
-                // ExtraReward: İndirim adını alıyoruz
-                ExtraReward = dto.Extras.FirstOrDefault(e => e.ExtraPrice < 0)?.ExtraName ?? "", 
+                SeatNumber = seatList.FirstOrDefault() ?? string.Empty,
+                SeatNumbers = string.Join(",", seatList),
+                PassengerCount = passengerCount,
+                ExtraReward = calculatedExtras.FirstOrDefault(e => e.Price < 0)?.Name ?? string.Empty,
                 BaggageCount = dto.BaggageCount,
-                FinalPrice = finalPrice, // 🔥 Doğru hesaplanan fiyatı kaydet
-                CreatedAt = DateTime.UtcNow
+                FinalPrice = finalPrice,
+                CreatedAt = DateTime.UtcNow,
+                SeatPrice = calculatedSeatPrice,
+                BaggagePrice = calculatedBaggagePrice,
+                ExtrasTotal = calculatedExtras.Sum(e => e.Price)
             };
 
-                ticket.SeatPrice = dto.SeatPrice;
-                ticket.BaggagePrice = dto.BaggagePrice;
-                ticket.ExtrasTotal = dto.Extras.Sum(e => e.ExtraPrice);
-
             _context.Tickets.Add(ticket);
-
-            // KAYDET
             await _context.SaveChangesAsync();
+            _auditService.Write("PaymentCompleted", "Payment completed and ticket created.", new { userId, dto.FlightId, ticket.Id, finalPrice });
 
             return Ok(new
             {
                 message = "Payment successful",
                 ticketId = ticket.Id,
-                finalPrice = finalPrice // API'den dönen fiyat da doğru olmalı
+                finalPrice
             });
         }
 
-        // KART MASKELEME
-        private string MaskCardNumber(string number)
+        private List<CalculatedExtra> CalculateExtras(
+            IEnumerable<PaymentExtraRequestDto> extras,
+            decimal baseFlightTotal,
+            decimal baggagePrice)
+        {
+            var calculated = new List<CalculatedExtra>();
+
+            foreach (var extra in extras ?? Enumerable.Empty<PaymentExtraRequestDto>())
+            {
+                var code = extra.ExtraCode?.Trim().ToUpperInvariant();
+                if (string.IsNullOrWhiteSpace(code))
+                    continue;
+
+                switch (code)
+                {
+                    case "INSURANCE":
+                        calculated.Add(new CalculatedExtra(code, "Travel Insurance", _pricingService.CalculateExtraAdjustment(code, baseFlightTotal, baggagePrice)));
+                        break;
+                    case "MEAL":
+                        calculated.Add(new CalculatedExtra(code, "Meal", _pricingService.CalculateExtraAdjustment(code, baseFlightTotal, baggagePrice)));
+                        break;
+                    case "FAST_TRACK":
+                        calculated.Add(new CalculatedExtra(code, "Fast Track", _pricingService.CalculateExtraAdjustment(code, baseFlightTotal, baggagePrice)));
+                        break;
+                    case "DISC10":
+                        calculated.Add(new CalculatedExtra(code, "%10 Discount", _pricingService.CalculateExtraAdjustment(code, baseFlightTotal, baggagePrice)));
+                        break;
+                    case "DISC15":
+                        calculated.Add(new CalculatedExtra(code, "%15 Discount", _pricingService.CalculateExtraAdjustment(code, baseFlightTotal, baggagePrice)));
+                        break;
+                    case "FREE_BAG":
+                        calculated.Add(new CalculatedExtra(code, "Free Cabin Bag", _pricingService.CalculateExtraAdjustment(code, baseFlightTotal, baggagePrice)));
+                        break;
+                    case "BAG50":
+                        calculated.Add(new CalculatedExtra(code, "Baggage 50% Discount", _pricingService.CalculateExtraAdjustment(code, baseFlightTotal, baggagePrice)));
+                        break;
+                    case "FREE_TICKET":
+                        calculated.Add(new CalculatedExtra(code, "Next Ticket Free", _pricingService.CalculateExtraAdjustment(code, baseFlightTotal, baggagePrice)));
+                        break;
+                    case "NONE":
+                        calculated.Add(new CalculatedExtra(code, "No Reward", _pricingService.CalculateExtraAdjustment(code, baseFlightTotal, baggagePrice)));
+                        break;
+                }
+            }
+
+            return calculated;
+        }
+
+        private static string MaskCardNumber(string number)
         {
             if (number.Length < 4)
                 return "****";
@@ -150,40 +199,7 @@ namespace FlightReservation.Controllers.Api
             string last4 = number.Substring(number.Length - 4);
             return "**** **** **** " + last4;
         }
-    }
 
-    // =============================================================
-    //                         DTOs
-    // =============================================================
-
-    public class PaymentDto
-    {
-        public int UserId { get; set; }
-        public int FlightId { get; set; }
-
-        public string SeatNumber { get; set; }
-        public decimal SeatPrice { get; set; } // 💥 DÜZELTİLDİ: Decimal
-        public string Cvv { get; set; } // Eksik Cvv alanı
-        
-        public int BaggageCount { get; set; }
-        public decimal BaggagePrice { get; set; } // 💥 DÜZELTİLDİ: Decimal
-
-        public List<ExtraDto> Extras { get; set; } = new();
-
-        public string ExtraReward { get; set; } // Bu alanın varlığını koruyoruz, ancak kullanılmıyor.
-
-        // ... (Kart bilgileri aynı kalır)
-        public string CardNumber { get; set; }
-        public string NameOnCard { get; set; }
-        public string ExpiryMonth { get; set; }
-        public string ExpiryYear { get; set; }
-        public bool SaveCard { get; set; }
-    }
-
-    public class ExtraDto
-    {
-        public string ExtraCode { get; set; }
-        public string ExtraName { get; set; }
-        public decimal ExtraPrice { get; set; } // 💥 DÜZELTİLDİ: Decimal
+        private sealed record CalculatedExtra(string Code, string Name, decimal Price);
     }
 }

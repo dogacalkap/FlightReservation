@@ -10,6 +10,8 @@ namespace FlightReservation.Models
         public string FullName { get; set; } = "";
 
         [Required]
+        [StringLength(11, MinimumLength = 11, ErrorMessage = "TCKN 11 haneli olmalıdır.")]
+        [RegularExpression("^[0-9]{11}$", ErrorMessage = "TCKN yalnızca 11 haneli rakamlardan oluşmalıdır.")]
         public string TCKN { get; set; } = "";
 
         [Required]

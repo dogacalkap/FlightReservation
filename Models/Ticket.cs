@@ -1,4 +1,4 @@
-using System;
+using System.ComponentModel.DataAnnotations;
 
 namespace FlightReservation.Models
 {
@@ -8,13 +8,18 @@ namespace FlightReservation.Models
 
         // İlişkiler
         public int UserId { get; set; }
-        public User User { get; set; }
+        public User? User { get; set; }
 
         public int FlightId { get; set; }
-        public Flight Flight { get; set; }
+        public Flight? Flight { get; set; }
 
         // Seat seçimi
-        public string SeatNumber { get; set; } = "";
+        [StringLength(10)]
+        public string SeatNumber { get; set; } = string.Empty;
+
+        [StringLength(200)]
+        public string SeatNumbers { get; set; } = string.Empty; // Çoklu koltuk seçimi (virgül ile)
+        public int PassengerCount { get; set; } = 1;
 
         // Extra ödül (Spin Wheel)
         public string? ExtraReward { get; set; }
