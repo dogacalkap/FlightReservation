@@ -83,5 +83,7 @@
 </div>
 
 <div class="continue-wrapper">
-  <button class="continue-btn" (click)="continue()">{{ 'baggage.continue' | t }}</button>
+  <button class="continue-btn" [disabled]="saving" (click)="continue()">
+    {{ (saving ? 'baggage.saving' : 'baggage.continue') | t }}
+  </button>
 </div>

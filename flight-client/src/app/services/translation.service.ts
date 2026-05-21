@@ -69,6 +69,11 @@ export class TranslationService {
       'baggage.selection.title': 'Uçak Altı Bagaj Seçimi',
       'baggage.selection.info': 'Ekstra her bir bagaj için 32 kg\'a kadar taşıma hakkı tanımlanır.',
       'baggage.continue': 'Devam Et',
+      'baggage.saving': 'Kaydediliyor...',
+      'baggage.error.title': 'Bagaj Kaydedilemedi',
+      'baggage.error.loginRequired': 'Bagaj seçimini kaydetmek için tekrar giriş yapmanız gerekiyor.',
+      'baggage.error.flightMissing': 'Bagaj kaydı için uçuş bilgisi bulunamadı.',
+      'baggage.error.saveFailed': 'Bagaj seçimi kaydedilirken bir hata oluştu.',
       // Extras
       'extras.eyebrow': 'Değer katan hizmetler',
       'extras.title': 'Ek Hizmetler',
@@ -509,6 +514,11 @@ export class TranslationService {
       'baggage.selection.title': 'Checked Baggage Selection',
       'baggage.selection.info': 'Each extra baggage grants up to 32 kg carrying allowance.',
       'baggage.continue': 'Continue',
+      'baggage.saving': 'Saving...',
+      'baggage.error.title': 'Baggage Could Not Be Saved',
+      'baggage.error.loginRequired': 'You need to sign in again to save your baggage selection.',
+      'baggage.error.flightMissing': 'Flight information was not found for baggage saving.',
+      'baggage.error.saveFailed': 'An error occurred while saving the baggage selection.',
       // Extras
       'extras.eyebrow': 'Value-added services',
       'extras.title': 'Extra Services',

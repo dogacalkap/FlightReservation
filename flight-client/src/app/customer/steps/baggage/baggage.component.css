@@ -83,6 +83,12 @@
 .continue-btn:hover {
   background: linear-gradient(120deg, #4c1d95, #6b21a8);
 }
+
+.continue-btn:disabled {
+  cursor: wait;
+  opacity: 0.72;
+  box-shadow: none;
+}
 .checked-baggage-box {
   background: #fff;
   padding: 20px;

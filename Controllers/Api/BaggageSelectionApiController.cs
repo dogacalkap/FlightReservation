@@ -37,19 +37,35 @@ namespace FlightReservation.Controllers.Api
             if (!flightExists)
                 return BadRequest(new { message = "Flight not found." });
 
-            var bag = new BaggageSelection
-            {
-                UserId = userId,
-                FlightId = request.FlightId,
-                BaggageCount = request.BaggageCount,
-                Price = _pricingService.CalculateBaggagePrice(request.BaggageCount),
-                CreatedAt = DateTime.UtcNow
-            };
+            var calculatedPrice = _pricingService.CalculateBaggagePrice(request.BaggageCount);
+            var bag = await _context.BaggageSelections
+                .SingleOrDefaultAsync(x => x.UserId == userId && x.FlightId == request.FlightId);
 
-            _context.BaggageSelections.Add(bag);
+            var isNewRecord = bag is null;
+
+            if (isNewRecord)
+            {
+                bag = new BaggageSelection
+                {
+                    UserId = userId,
+                    FlightId = request.FlightId
+                };
+                _context.BaggageSelections.Add(bag);
+            }
+
+            bag!.BaggageCount = request.BaggageCount;
+            bag.Price = calculatedPrice;
+            bag.CreatedAt = DateTime.UtcNow;
+
             await _context.SaveChangesAsync();
 
-            return Ok(new { message = "Baggage saved.", bag.Id });
+            return Ok(new
+            {
+                message = isNewRecord ? "Baggage saved." : "Baggage updated.",
+                bag.Id,
+                bag.BaggageCount,
+                bag.Price
+            });
         }
 
         [Authorize]
